@@ -3,4 +3,9 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="sbprompt">Enter search in romaji, kanji, or kana</string>
+    <string name="jp">Japanese</string>
+    <string name="en">English</string>
+    <string name="query">Query Language:</string>
+    <string name="search">Search jisho.org</string>
 </resources>
