@@ -21,5 +21,6 @@
         <activity android:name=".DisplayQueryActivity"
             android:parentActivityName=".SearchActivity"></activity>
     </application>
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
 </manifest>
