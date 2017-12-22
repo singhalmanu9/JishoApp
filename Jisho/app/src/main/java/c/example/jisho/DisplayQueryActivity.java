@@ -17,6 +17,7 @@ import java.net.URL;
 public class DisplayQueryActivity extends AppCompatActivity {
 
     public static final String API = "http://jisho.org/api/v1/search/words?keyword=";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,25 +41,25 @@ public class DisplayQueryActivity extends AppCompatActivity {
                         stringBuilder.append(line).append("\n");
                     }
                     bufferedReader.close();
-                            //FIXME doesn't work as intended
                     return stringBuilder.toString();
-                }
-                finally {
+                } finally {
                     urlConnection.disconnect();
                 }
             } catch (Exception e) {
                 Log.e("ERROR", e.getMessage(), e);
-                return  null;
+                return null;
             }
         }
+
         protected void onPostExecute(String response) {
-            //FIXME will parse the JSON array and construct the results page.
+
             String processed;
-            if (response == null ) {
+            if (response == null) {
                 processed = "there was an error :(";
             } else {
                 try {
                     JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
+                    textViewCreate(object);
                     processed = object.toString(5);
                 } catch (JSONException e) {
                     processed = "there was an error :(";
@@ -66,6 +67,85 @@ public class DisplayQueryActivity extends AppCompatActivity {
             }
             TextView tv = findViewById(R.id.loleroni);
             tv.setText(processed);
+            //FIXME need to remove unnecessary lines here.
+        }
+
+        /**
+         * creates the TextView objects for a query.
+         *
+         * @param object the JSONObject received by a query.
+         * @throws JSONException handled in higher frame.
+         */
+        protected void textViewCreate(JSONObject object)
+                throws JSONException {
+            JSONArray array = object.getJSONArray("data");
+            for (int i = 0; array.getJSONObject(i) != null; i++) {
+                objTextViewCreate(array.getJSONObject(i));
+            }
+        }
+
+        /**
+         * creates the TextView for a single translation of the query.
+         *
+         * @param object the JSONObject for a single translation of the query.
+         * @throws JSONException handled in higher frame.
+         */
+        protected void objTextViewCreate(JSONObject object)
+                throws JSONException {
+            objCommonTV(object);
+            objJPTV(object);
+            objENGTV(object);
+
+        }
+
+        /**
+         * creates the TextView that describes
+         * whether a translation of the query is common.
+         *
+         * @param object the JSONObject for a single translation of the query.
+         * @throws JSONException handled in higher frame.
+         */
+        protected void objCommonTV(JSONObject object)
+                throws JSONException {
+            //FIXME
+        }
+
+        /**
+         * creates the TextView corresponding to the
+         * Japanese script for a translation of the query.
+         *
+         * @param object the JSONObject for a single translation of the query.
+         * @throws JSONException handled in higher frame.
+         */
+        protected void objJPTV(JSONObject object)
+                throws JSONException {
+            //FIXME
+        }
+
+        /**
+         * creates the TextView corresponding to the
+         * English definitions of the Japanese word given as a translation
+         * of the query.
+         *
+         * @param object the JSONObject for a single translation of the query.
+         * @throws JSONException handled in higher frame.
+         */
+        protected void objENGTV(JSONObject object)
+                throws JSONException {
+            objPartSpeechTV(object);
+            //FIXME
+        }
+
+        /**
+         * creates the TextView corresponding to the part of speech
+         * that is given for an English translation of the Japanese word.
+         *
+         * @param object the JSONObject for a single translation of the query.
+         * @throws JSONException handled in higher frame.
+         */
+        protected void objPartSpeechTV(JSONObject object)
+                throws JSONException {
+            //FIXME
         }
     }
 }
