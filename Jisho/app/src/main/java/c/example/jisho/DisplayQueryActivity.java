@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.json.*;
@@ -65,8 +66,6 @@ public class DisplayQueryActivity extends AppCompatActivity {
                     processed = "there was an error :(";
                 }
             }
-            TextView tv = findViewById(R.id.loleroni);
-            tv.setText(processed);
             //FIXME need to remove unnecessary lines here.
         }
 
@@ -76,11 +75,16 @@ public class DisplayQueryActivity extends AppCompatActivity {
          * @param object the JSONObject received by a query.
          * @throws JSONException handled in higher frame.
          */
-        protected void textViewCreate(JSONObject object)
-                throws JSONException {
-            JSONArray array = object.getJSONArray("data");
-            for (int i = 0; array.getJSONObject(i) != null; i++) {
-                objTextViewCreate(array.getJSONObject(i));
+        protected void textViewCreate(JSONObject object) {
+            try {
+                JSONArray array = object.getJSONArray("data");
+                int i = 0;
+                while (true) {
+                    objTextViewCreate(array.getJSONObject(i));
+                    i++;
+                }
+            } catch (JSONException e) {
+                System.err.println("end of query reached.");
             }
         }
 
@@ -94,7 +98,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
                 throws JSONException {
             objCommonTV(object);
             objJPTV(object);
-            objENGTV(object);
+            objSenseTV(object);
 
         }
 
@@ -107,7 +111,18 @@ public class DisplayQueryActivity extends AppCompatActivity {
          */
         protected void objCommonTV(JSONObject object)
                 throws JSONException {
-            //FIXME
+            LinearLayout linlay = (LinearLayout) findViewById(R.id.llMain);
+            if (object.getBoolean("is_common")) {
+                TextView txt = new TextView(getApplicationContext());
+                txt.setLayoutParams(new LinearLayout.LayoutParams
+                        (LinearLayout.LayoutParams.FILL_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT));
+                txt.setText("Common");
+                linlay.addView(txt);
+            } else {
+                //not necessary, but for clarity.
+                return;
+            }
         }
 
         /**
@@ -119,7 +134,21 @@ public class DisplayQueryActivity extends AppCompatActivity {
          */
         protected void objJPTV(JSONObject object)
                 throws JSONException {
-            //FIXME
+            LinearLayout linlay = (LinearLayout) findViewById(R.id.llMain);
+            JSONArray x =  object.getJSONArray("japanese");
+            JSONObject jpObj = x.getJSONObject(0);
+            TextView textWord = new TextView(getApplicationContext());
+            TextView textReading = new TextView(getApplicationContext());
+            textWord.setLayoutParams(new LinearLayout.LayoutParams
+                (LinearLayout.LayoutParams.FILL_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT));
+            textReading.setLayoutParams(new LinearLayout.LayoutParams
+                    (LinearLayout.LayoutParams.FILL_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT));
+            textWord.setText(jpObj.getString("word"));
+            textReading.setText(jpObj.getString("reading"));
+            linlay.addView(textReading);
+            linlay.addView(textWord);
         }
 
         /**
@@ -130,10 +159,26 @@ public class DisplayQueryActivity extends AppCompatActivity {
          * @param object the JSONObject for a single translation of the query.
          * @throws JSONException handled in higher frame.
          */
-        protected void objENGTV(JSONObject object)
-                throws JSONException {
+        protected void objENGTV(JSONObject object) {
             objPartSpeechTV(object);
-            //FIXME
+            LinearLayout linlay = (LinearLayout) findViewById(R.id.llMain);
+            TextView txt = new TextView(getApplicationContext());
+            txt.setLayoutParams(new LinearLayout.LayoutParams
+                    (LinearLayout.LayoutParams.FILL_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT));
+            StringBuilder x = new StringBuilder();
+            try {
+                JSONArray englishDefinitions = object.getJSONArray("english_definitions");
+                int i = 0;
+                while (true) {
+                    x.append(englishDefinitions.getString(i) + "; ");
+                    i++;
+                }
+            } catch (JSONException e) {
+                System.err.println("ENGLISH DEF PARSING COMPLETE.");
+            }
+            txt.setText(x.toString());
+            linlay.addView(txt);
         }
 
         /**
@@ -143,9 +188,50 @@ public class DisplayQueryActivity extends AppCompatActivity {
          * @param object the JSONObject for a single translation of the query.
          * @throws JSONException handled in higher frame.
          */
-        protected void objPartSpeechTV(JSONObject object)
-                throws JSONException {
-            //FIXME
+        protected void objPartSpeechTV(JSONObject object) {
+            LinearLayout linlay = (LinearLayout) findViewById(R.id.llMain);
+            TextView txt = new TextView(getApplicationContext());
+            txt.setLayoutParams(new LinearLayout.LayoutParams
+                    (LinearLayout.LayoutParams.FILL_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT));
+            StringBuilder x = new StringBuilder();
+            try {
+                JSONArray partsOfSpeech = object.getJSONArray("parts_of_speech");
+                int i = 0;
+                while (true) {
+                    x.append(partsOfSpeech.getString(i) + ", ");
+                    i++;
+                }
+            } catch (JSONException e) {
+                System.err.println("PARTS OF SPEECH PARSING COMPLETE.");
+            }
+            txt.setText(x.toString());
+            linlay.addView(txt);
+        }
+
+        /**
+         * creates the TextView for the senses of a word. this handles
+         * the English part of the text
+         * @param object the JSONObject that needs parsing.
+         */
+        protected void objSenseTV(JSONObject object) {
+            try {
+                JSONArray senses = object.getJSONArray("senses");
+                int i = 0;
+                while (true) {
+                    objENGTV(senses.getJSONObject(i));
+                    i++;
+                }
+            } catch (JSONException e) {
+                System.err.println("OBJECT SENSE ITERATION FINISHED.");
+            }
+            LinearLayout linlay = (LinearLayout) findViewById(R.id.llMain);
+            TextView linebreak = new TextView(getApplicationContext());
+            linebreak.setLayoutParams(new LinearLayout.LayoutParams
+                    (LinearLayout.LayoutParams.FILL_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT));
+            linebreak.setText("");
+            linlay.addView(linebreak);
         }
     }
 }
