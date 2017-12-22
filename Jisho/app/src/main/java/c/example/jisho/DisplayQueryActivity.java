@@ -16,22 +16,20 @@ import java.net.URL;
 
 public class DisplayQueryActivity extends AppCompatActivity {
 
+    public static final String API = "http://jisho.org/api/v1/search/words?keyword=";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_query);
         Intent intent = getIntent();
 
-        String processed = "http://jisho.org/api/v1/search/words?keyword=" + intent.getStringExtra(SearchActivity.EXTRA_MESSAGE);
-        new Search().execute(processed);
-        TextView tv = findViewById(R.id.loleroni);
-        tv.setText(processed);
+        new Search().execute(intent);
     }
 
-    private class Search extends AsyncTask<String, Void, JSONArray> {
-        protected JSONArray doInBackground(String... query) {
+    private class Search extends AsyncTask<Intent, Void, String> {
+        protected String doInBackground(Intent... intent) {
             try {
-                URL url = new URL(query[0]);
+                URL url = new URL(API + intent[0].getStringExtra(SearchActivity.EXTRA_MESSAGE).toLowerCase());
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 try {
                     BufferedReader bufferedReader = new BufferedReader(new
@@ -43,7 +41,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
                     }
                     bufferedReader.close();
                             //FIXME doesn't work as intended
-                    return new JSONArray((stringBuilder.toString()));
+                    return stringBuilder.toString();
                 }
                 finally {
                     urlConnection.disconnect();
@@ -53,8 +51,21 @@ public class DisplayQueryActivity extends AppCompatActivity {
                 return  null;
             }
         }
-        protected void onPostExecute(JSONArray response) {
+        protected void onPostExecute(String response) {
             //FIXME will parse the JSON array and construct the results page.
+            String processed;
+            if (response == null ) {
+                processed = "there was an error :(";
+            } else {
+                try {
+                    JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
+                    processed = object.toString(5);
+                } catch (JSONException e) {
+                    processed = "there was an error :(";
+                }
+            }
+            TextView tv = findViewById(R.id.loleroni);
+            tv.setText(processed);
         }
     }
 }
