@@ -2,5 +2,5 @@
     <string name="app_name">Jisho</string>
     <string name="search">Search jisho.org</string>
     <string name="sbprompt">Enter romaji, kana, or kanji</string>
-    <string name="en">English</string>
+    <string name="en">To translate E -> J, surround with \" \"</string>
 </resources>

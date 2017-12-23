@@ -53,20 +53,24 @@ public class DisplayQueryActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(String response) {
-
-            String processed;
             if (response == null) {
-                processed = "there was an error :(";
+                errorMessageCreate();
             } else {
                 try {
                     JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
                     textViewCreate(object);
-                    processed = object.toString(5);
                 } catch (JSONException e) {
-                    processed = "there was an error :(";
+                    errorMessageCreate();
                 }
             }
             //FIXME need to remove unnecessary lines here.
+        }
+
+        protected void errorMessageCreate() {
+            LinearLayout linlay = findViewById(R.id.llMain);
+            TextView err = new TextView(getApplicationContext());
+            err.setText("Query could not be processed.");
+            linlay.addView(err);
         }
 
         /**
@@ -75,9 +79,14 @@ public class DisplayQueryActivity extends AppCompatActivity {
          * @param object the JSONObject received by a query.
          * @throws JSONException handled in higher frame.
          */
+        @SuppressWarnings("InfiniteLoopStatement")
         protected void textViewCreate(JSONObject object) {
             try {
                 JSONArray array = object.getJSONArray("data");
+                if (array.isNull(0)) {
+                    errorMessageCreate();
+                    return;
+                }
                 int i = 0;
                 while (true) {
                     objTextViewCreate(array.getJSONObject(i));
