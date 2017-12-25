@@ -58,6 +58,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
             } else {
                 try {
                     JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
+                    System.out.println(object.toString(5));
                     textViewCreate(object);
                 } catch (JSONException e) {
                     errorMessageCreate();
@@ -88,10 +89,15 @@ public class DisplayQueryActivity extends AppCompatActivity {
                     return;
                 }
                 int i = 0;
-                while (true) {
-                    objTextViewCreate(array.getJSONObject(i));
+                while (!array.isNull(i)) {
+                    JSONObject obj = array.getJSONObject(i);
+                    objTextViewCreate(obj);
                     i++;
                 }
+//                while (true) {
+//                    objTextViewCreate(array.getJSONObject(i));
+//                    i++;
+//                }
             } catch (JSONException e) {
                 System.err.println("end of query reached.");
             }
