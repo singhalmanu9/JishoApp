@@ -1,6 +1,7 @@
 package c.example.jisho;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -111,8 +112,8 @@ public class DisplayQueryActivity extends AppCompatActivity {
          */
         protected void objTextViewCreate(JSONObject object)
                 throws JSONException {
-            objCommonTV(object);
             objJPTV(object);
+            objCommonTV(object);
             objSenseTV(object);
 
         }
@@ -130,9 +131,11 @@ public class DisplayQueryActivity extends AppCompatActivity {
             if (object.getBoolean("is_common")) {
                 TextView txt = new TextView(getApplicationContext());
                 txt.setLayoutParams(new LinearLayout.LayoutParams
-                        (LinearLayout.LayoutParams.FILL_PARENT,
+                        (LinearLayout.LayoutParams.WRAP_CONTENT,
                                 LinearLayout.LayoutParams.WRAP_CONTENT));
                 txt.setText("Common");
+                txt.setBackgroundColor(Color.rgb(200, 0, 200));
+                txt.setTextColor(Color.rgb(255, 255, 255));
                 linlay.addView(txt);
             } else {
                 //not necessary, but for clarity.
@@ -150,20 +153,31 @@ public class DisplayQueryActivity extends AppCompatActivity {
         protected void objJPTV(JSONObject object)
                 throws JSONException {
             LinearLayout linlay = (LinearLayout) findViewById(R.id.llMain);
+
+            // get pertinent japanese
             JSONArray x =  object.getJSONArray("japanese");
             JSONObject jpObj = x.getJSONObject(0);
+
+            // make and set several params for TV
             TextView textWord = new TextView(getApplicationContext());
             TextView textReading = new TextView(getApplicationContext());
             textWord.setLayoutParams(new LinearLayout.LayoutParams
-                (LinearLayout.LayoutParams.FILL_PARENT,
+                (LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT));
             textReading.setLayoutParams(new LinearLayout.LayoutParams
-                    (LinearLayout.LayoutParams.FILL_PARENT,
+                    (LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT));
-            textWord.setText(jpObj.getString("word"));
-            textReading.setText(jpObj.getString("reading"));
-            linlay.addView(textReading);
-            linlay.addView(textWord);
+            try {
+                textReading.setText(jpObj.getString("reading"));
+                textReading.setTextSize(24);
+                linlay.addView(textReading);
+            } catch (JSONException e) {}
+            try {
+                textWord.setText(jpObj.getString("word"));
+                textWord.setTextSize(48);
+                linlay.addView(textWord);
+            } catch (JSONException e) {}
+
         }
 
         /**
@@ -179,7 +193,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
             LinearLayout linlay = (LinearLayout) findViewById(R.id.llMain);
             TextView txt = new TextView(getApplicationContext());
             txt.setLayoutParams(new LinearLayout.LayoutParams
-                    (LinearLayout.LayoutParams.FILL_PARENT,
+                    (LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT));
             StringBuilder x = new StringBuilder();
             try {
@@ -207,7 +221,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
             LinearLayout linlay = (LinearLayout) findViewById(R.id.llMain);
             TextView txt = new TextView(getApplicationContext());
             txt.setLayoutParams(new LinearLayout.LayoutParams
-                    (LinearLayout.LayoutParams.FILL_PARENT,
+                    (LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT));
             StringBuilder x = new StringBuilder();
             try {
