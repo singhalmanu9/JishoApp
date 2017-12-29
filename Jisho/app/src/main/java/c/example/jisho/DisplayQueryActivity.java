@@ -93,6 +93,8 @@ public class DisplayQueryActivity extends AppCompatActivity {
         protected String displayQuery(String query) {
             if (query.charAt(0) != '"' && isRomaji(query)) {
                 query = new RomajiToHira().convert(query.toLowerCase());
+            } else {
+                query = "\"" + query + "\"";
             }
             String queryResult = "Displaying search results for: " + query ;
             return queryResult;
@@ -289,11 +291,17 @@ public class DisplayQueryActivity extends AppCompatActivity {
         protected boolean isRomaji(String query) {
             RomajiToHira x = new RomajiToHira();
             for (int i = 0; i != query.length(); i++) {
-                if (x.isConsonant(query.charAt(i)) || x.isVowel(query.charAt(i))) {
-                    return true;
+                if (!x.isConsonant(query.charAt(i)) && !x.isVowel(query.charAt(i))) {
+                    return false;
                 }
             }
-            return false;
+            String hira = x.convert(query);
+            for (char c : hira.toCharArray()) {
+                if (x.isConsonant(c) || x.isVowel(c)) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 
@@ -557,7 +565,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
             return specialDigraphMap.containsKey(addition);
         }
         boolean isConsonant(char character) {
-            return "BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz".indexOf(character) != -1;
+            return "BDFGHJKMNPRSTWYZbdfghjkmnprstwyz".indexOf(character) != -1;
         }
         boolean isVowel(char character) {
             return "AEIOUaeiou".indexOf(character) != -1;
