@@ -295,6 +295,12 @@ public class DisplayQueryActivity extends AppCompatActivity {
                     return false;
                 }
             }
+            String hira = x.convert(query);
+            for (char c : hira.toCharArray()) {
+                if (x.isConsonant(c) || x.isVowel(c)) {
+                    return false;
+                }
+            }
             return true;
         }
     }
