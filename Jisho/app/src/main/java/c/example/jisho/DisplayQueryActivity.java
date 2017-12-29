@@ -295,12 +295,6 @@ public class DisplayQueryActivity extends AppCompatActivity {
                     return false;
                 }
             }
-            String hira = x.convert(query);
-            for (char c : hira.toCharArray()) {
-                if (x.isConsonant(c) || x.isVowel(c)) {
-                    return false;
-                }
-            }
             return true;
         }
     }
@@ -427,6 +421,11 @@ public class DisplayQueryActivity extends AppCompatActivity {
             conversionMap.put("ru", "る");
             conversionMap.put("re", "れ");
             conversionMap.put("ro", "ろ");
+            conversionMap.put("la", "ら");
+            conversionMap.put("li", "り");
+            conversionMap.put("lu", "る");
+            conversionMap.put("le", "れ");
+            conversionMap.put("lo", "ろ");
             conversionMap.put("wa", "わ");
             conversionMap.put("wo", "を");
             conversionMap.put("n", "ん");
@@ -520,7 +519,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
                     hiragana.append(conversionMap.get(concat));
                     romaji = romaji.substring(1);
                     continue;
-                } else if (digraph(first, romaji.charAt(0))) {
+                } else if (digraph(first, romaji.charAt(0)) && isVowel(romaji.charAt(1))) {
                     String concat = Character.toString(first) + Character.toString(romaji.charAt(0));
                     romaji = romaji.substring(1);
                     concat += Character.toString(romaji.charAt(0));
@@ -536,6 +535,9 @@ public class DisplayQueryActivity extends AppCompatActivity {
                 if (!isVowel(romaji.charAt(0)) && !isConsonant(romaji.charAt(0))) {
                     hiragana.append(romaji.charAt(0));
                     romaji = romaji.substring(1);
+                }
+                if (first != 0) {
+                    hiragana.append(first);
                 }
             }
             return hiragana.toString();
@@ -565,7 +567,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
             return specialDigraphMap.containsKey(addition);
         }
         boolean isConsonant(char character) {
-            return "BDFGHJKMNPRSTWYZbdfghjkmnprstwyz".indexOf(character) != -1;
+            return "BDFGHJKLMNPRSTWXYZbdfghjklmnprstwxyz".indexOf(character) != -1;
         }
         boolean isVowel(char character) {
             return "AEIOUaeiou".indexOf(character) != -1;
