@@ -506,6 +506,8 @@ public class DisplayQueryActivity extends AppCompatActivity {
                     continue;
                 } else if (isConsonant(romaji.charAt(0)) && first == romaji.charAt(0)) {
                     hiragana.append(conversionMap.get("ttsu"));
+                    first = romaji.charAt(0);
+                    romaji = romaji.substring(1);
                 }
                 if (!digraph(first, romaji.charAt(0)) && !specialDigraph(first, romaji.charAt(0))) {
                     if (isVowel(romaji.charAt(0)) && first != 0) {
