@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:elevation="24dp"
-        android:hapticFeedbackEnabled="false"
         android:onClick="search"
         android:text="@string/search"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
@@ -57,6 +56,7 @@
         android:layout_width="297dp"
         android:layout_height="140dp"
         android:layout_marginBottom="8dp"
+        android:contentDescription="@string/JishoLogo"
         app:layout_constraintBottom_toTopOf="@+id/searchField"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -64,24 +64,26 @@
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="308dp"
+        android:layout_height="14dp"
         android:layout_marginBottom="16dp"
-        android:layout_marginLeft="16dp"
-        android:textSize="8sp"
+        android:layout_marginEnd="60dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/developers"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        tools:text="Developed by Abhimanyu Singhal and Tim Toombs" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="14dp"
         android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        android:textSize="8sp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/devYear"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="2018" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

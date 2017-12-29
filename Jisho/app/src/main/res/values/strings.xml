@@ -3,4 +3,7 @@
     <string name="search">Search jisho.org</string>
     <string name="sbprompt">Enter romaji, kana, or kanji</string>
     <string name="en">To translate E -> J, surround with \" \"</string>
+    <string name="developers">Developed by Abhimanyu Singhal and Tim Toombs</string>
+    <string name="devYear">2018</string>
+    <string name="JishoLogo">the logo of Jisho.org.</string>
 </resources>
