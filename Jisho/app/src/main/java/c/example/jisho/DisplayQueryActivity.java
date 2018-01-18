@@ -484,7 +484,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
          * If a syllable is not present, it is left in romaji.
          * @param romaji the romaji string to be converted.
          */
-        String convert(String romaji) {
+               String convert(String romaji) {
             StringBuilder hiragana = new StringBuilder();
             while (!romaji.equals("")) {
                 char first = 0;
@@ -543,13 +543,20 @@ public class DisplayQueryActivity extends AppCompatActivity {
                     hiragana.append(romaji.charAt(0));
                     romaji = romaji.substring(1);
                 }
+                if (first == 't' && romaji.charAt(0) == 's') {
+                    hiragana.append(conversionMap.get("tsu"));
+                    if (romaji.charAt(1) == 'u') {
+                        romaji = romaji.substring(2);
+                    }
+                    continue;
+                }
                 if (first != 0) {
                     hiragana.append(first);
                 }
             }
             return hiragana.toString();
         }
-
+        
         /**
          * returns true if two characters are part of a digraph.
          * @param first the first character in a sequence.
