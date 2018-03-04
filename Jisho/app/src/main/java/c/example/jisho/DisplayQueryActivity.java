@@ -94,7 +94,9 @@ public class DisplayQueryActivity extends AppCompatActivity {
             if (query.charAt(0) != '"' && isRomaji(query)) {
                 query = new RomajiToHira().convert(query.toLowerCase());
             } else {
-                query = "\"" + query + "\"";
+                if (query.charAt(0) != '"') {
+                    query = "\"" + query + "\"";
+                }
             }
             String queryResult = "Displaying search results for: " + query ;
             return queryResult;
@@ -581,7 +583,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
             return specialDigraphMap.containsKey(addition);
         }
         boolean isConsonant(char character) {
-            return "BDFGHJKLMNPRSTWXYZbdfghjklmnprstwxyz".indexOf(character) != -1;
+            return "BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz".indexOf(character) != -1;
         }
         boolean isVowel(char character) {
             return "AEIOUaeiou".indexOf(character) != -1;
