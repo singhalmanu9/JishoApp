@@ -6,4 +6,5 @@
     <string name="developers">Developed by Abhimanyu Singhal and Tim Toombs</string>
     <string name="devYear">2018</string>
     <string name="JishoLogo">the logo of Jisho.org.</string>
+    <string name="plsenter">Please enter a query</string>
 </resources>
