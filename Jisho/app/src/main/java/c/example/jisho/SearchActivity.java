@@ -35,4 +35,9 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
+    public void openAbout(View view) {
+        Intent i = new Intent(this, AboutActivity.class);
+        startActivity(i);
+    }
+
 }
