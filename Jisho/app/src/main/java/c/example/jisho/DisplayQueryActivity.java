@@ -45,6 +45,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
                 queryTV.setTextSize(18);
                 linlay.addView(queryTV);
                 linlay.addView(new TextView(getApplicationContext()));
+
                 try {
                     BufferedReader bufferedReader = new BufferedReader(new
                             InputStreamReader(urlConnection.getInputStream()));
