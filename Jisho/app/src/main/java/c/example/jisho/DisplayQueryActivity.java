@@ -17,13 +17,14 @@ import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 
+import javax.net.ssl.HttpsURLConnection;
+
 public class DisplayQueryActivity extends AppCompatActivity {
 
-    public static final String API = "http://jisho.org/api/v1/search/words?keyword=";
+    public static final String API = "https://jisho.org/api/v1/search/words?keyword=";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +41,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
             try {
                 String query = intent[0].getStringExtra(SearchActivity.EXTRA_MESSAGE);
                 URL url = new URL(API + query);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
                 String queryResult = displayQuery(query);
                 final LinearLayout linlay = (LinearLayout) findViewById(R.id.llMain);
                 final TextView queryTV = new TextView(getApplicationContext());
@@ -55,8 +56,6 @@ public class DisplayQueryActivity extends AppCompatActivity {
                         linlay.addView(new TextView(getApplicationContext()));
                     }
                 });
-
-                /* error is happening in this block; input data isn't working?*/
                 try {
                     BufferedReader bufferedReader = new BufferedReader(new
                             InputStreamReader(urlConnection.getInputStream()));
