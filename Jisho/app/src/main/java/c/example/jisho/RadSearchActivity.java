@@ -1,57 +1,97 @@
 package c.example.jisho;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.Toast;
+import android.support.v7.app.AppCompatActivity;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class RadSearchActivity extends AppCompatActivity {
+    private RadSearchActivity() {}
+    private static HashMap<String, Integer> strokeMap;
+    private static HashMap<String, ArrayList<String>> radicalMap;
+    private static HashSet<String> radicalsSelected;
+    private static HashSet<String> kanji;
 
-    public static final String EXTRA_MESSAGE = "github.jishoapp.MESSAGE";
+    /**
+     * reads in the strokeMap from a serialized file of it.
+     * @return the strokeMap from a serialized file.
+     */
+    protected HashMap<String, Integer> readstrokeMap() {
+        HashMap<String, Integer> obj;
+        File inFile = new File("./strokeMap.dat");
+        try {
+            ObjectInputStream inp =
+                    new ObjectInputStream(new FileInputStream(inFile));
+            obj = (HashMap<String, Integer>) inp.readObject();
+            inp.close();
+        } catch (IOException |
+                ClassNotFoundException excp) {
+            obj = null;
+        }
+        return obj;
+    }
+
+    /**
+     * reads in the RadicalMap from a serialized file of it.
+     * @return the radicalMap from a serialized file.
+     */
+    protected HashMap<String, ArrayList<String>> readRadicalMap() {
+        HashMap<String, ArrayList<String>> obj;
+        File inFile = new File("./radicalMap.dat");
+        try {
+            ObjectInputStream inp =
+                    new ObjectInputStream(new FileInputStream(inFile));
+            obj = (HashMap<String, ArrayList<String>>) inp.readObject();
+            inp.close();
+        } catch (IOException |
+                ClassNotFoundException excp) {
+            obj = null;
+        }
+        return obj;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rad_search);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        strokeMap = readstrokeMap();
+        radicalMap = readRadicalMap();
+        radicalsSelected = new HashSet<>();
+        kanji = new HashSet<>();
+    }
 
-        TableLayout radList = findViewById(R.id.tableLayout);
-        for (int i = 0; i < 26; i ++) {
-            TableRow row = new TableRow(this);
-            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-            row.setLayoutParams(lp);
-            for (int j = 0; j < 10; j ++) {
-                ImageButton rad = new ImageButton(this);
-                rad.setImageResource(R.drawable.ichi);
-                row.addView(rad);
+    /**
+     * adds a radical into radicalsSelected and intersects kanji with the characters provided by
+     * radicalMap when using radical as a key.
+     * @param radical the radical that's set will be used to intersect.
+     */
+    protected void newIntersect(String radical) {
+         radicalsSelected.add(radical);
+         kanji.retainAll(radicalMap.get(radical));
+    }
+
+    /**
+     * removes the radical from radicalsSelected and recalculates kanji.
+     * @param radical the radical that will be removed.
+     */
+    protected void removefromSet(String radical) {
+        radicalsSelected.remove(radical);
+        HashSet<String> newKanji = null;
+        for(String rad: radicalsSelected) {
+            newKanji = new HashSet<>(radicalMap.get(rad));
+            break;
+        }
+        if(newKanji != null) {
+            for (String rad : radicalsSelected) {
+                newKanji.retainAll(radicalMap.get(rad));
             }
-            radList.addView(row);
         }
-    }
-
-    public void onRadPush(View view) {
-
-    }
-
-    public void search(View view) {
-        Intent i = new Intent(this, DisplayQueryActivity.class);
-        EditText editText = findViewById(R.id.editText);
-        String query = editText.getText().toString();
-        if (query.isEmpty()){
-            Toast t = Toast.makeText(getApplicationContext(), R.string.plsenter, Toast.LENGTH_SHORT);
-            t.setGravity(Gravity.TOP, 0, 0);
-            t.show();
-        }
-        else {
-            i.putExtra(EXTRA_MESSAGE, query);
-            startActivity(i);
-        }
+        kanji = newKanji;
     }
 }
