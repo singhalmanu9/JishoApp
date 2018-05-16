@@ -40,4 +40,9 @@ public class SearchActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    public void openRad(View view) {
+        Intent i = new Intent(this, RadSearchActivity.class);
+        startActivity(i);
+    }
+
 }
