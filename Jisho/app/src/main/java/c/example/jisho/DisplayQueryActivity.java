@@ -2,16 +2,18 @@ package c.example.jisho;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.AndroidException;
+import android.support.annotation.MainThread;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.json.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -33,19 +35,28 @@ public class DisplayQueryActivity extends AppCompatActivity {
     }
 
     private class Search extends AsyncTask<Intent, Void, String> {
+        @MainThread
         protected String doInBackground(Intent... intent) {
             try {
                 String query = intent[0].getStringExtra(SearchActivity.EXTRA_MESSAGE);
                 URL url = new URL(API + query);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 String queryResult = displayQuery(query);
-                LinearLayout linlay = (LinearLayout) findViewById(R.id.llMain);
-                TextView queryTV = new TextView(getApplicationContext());
+                final LinearLayout linlay = (LinearLayout) findViewById(R.id.llMain);
+                final TextView queryTV = new TextView(getApplicationContext());
                 queryTV.setText(queryResult);
                 queryTV.setTextSize(18);
-                linlay.addView(queryTV);
-                linlay.addView(new TextView(getApplicationContext()));
+                /* makes Ui thread the only thread to update Ui */
+                runOnUiThread(new Runnable() {
 
+                    @Override
+                    public void run() {
+                        linlay.addView(queryTV);
+                        linlay.addView(new TextView(getApplicationContext()));
+                    }
+                });
+
+                /* error is happening in this block; input data isn't working?*/
                 try {
                     BufferedReader bufferedReader = new BufferedReader(new
                             InputStreamReader(urlConnection.getInputStream()));
@@ -60,6 +71,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
                     urlConnection.disconnect();
                 }
             } catch (Exception e) {
+                System.out.println(e.getMessage());
                 Log.e("ERROR", e.getMessage(), e);
                 return null;
             }
