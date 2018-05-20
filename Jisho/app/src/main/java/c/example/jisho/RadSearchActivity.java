@@ -1,7 +1,12 @@
 package c.example.jisho;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,11 +17,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class RadSearchActivity extends AppCompatActivity {
-    private RadSearchActivity() {}
+    public RadSearchActivity() {}
     private static HashMap<String, Integer> strokeMap;
     private static HashMap<String, ArrayList<String>> radicalMap;
     private static HashSet<String> radicalsSelected;
     private static HashSet<String> kanji;
+
+    public static final String EXTRA_MESSAGE = "github.jishoapp.MESSAGE";
 
     /**
      * reads in the strokeMap from a serialized file of it.
@@ -64,6 +71,21 @@ public class RadSearchActivity extends AppCompatActivity {
         radicalMap = readRadicalMap();
         radicalsSelected = new HashSet<>();
         kanji = new HashSet<>();
+    }
+
+    protected void search(View view) {
+        Intent i = new Intent(this, DisplayQueryActivity.class);
+        EditText editText = findViewById(R.id.editText);
+        String query = editText.getText().toString();
+        if (query.isEmpty()){
+            Toast t = Toast.makeText(getApplicationContext(), R.string.plsenter, Toast.LENGTH_SHORT);
+            t.setGravity(Gravity.TOP, 0, 0);
+            t.show();
+        }
+        else {
+            i.putExtra(EXTRA_MESSAGE, query);
+            startActivity(i);
+        }
     }
 
     /**
