@@ -1,11 +1,16 @@
 package c.example.jisho;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.Toast;
 
 import java.io.File;
@@ -29,9 +34,9 @@ public class RadSearchActivity extends AppCompatActivity {
      * reads in the strokeMap from a serialized file of it.
      * @return the strokeMap from a serialized file.
      */
-    protected HashMap<String, Integer> readstrokeMap() {
+    protected HashMap<String, Integer> readStrokeMap() {
         HashMap<String, Integer> obj;
-        File inFile = new File("./strokeMap.dat");
+        File inFile = new File("strokeMap.dat");
         try {
             ObjectInputStream inp =
                     new ObjectInputStream(new FileInputStream(inFile));
@@ -39,6 +44,7 @@ public class RadSearchActivity extends AppCompatActivity {
             inp.close();
         } catch (IOException |
                 ClassNotFoundException excp) {
+
             obj = null;
         }
         return obj;
@@ -63,14 +69,31 @@ public class RadSearchActivity extends AppCompatActivity {
         return obj;
     }
 
+    protected void fillTable(TableLayout table) {
+        int[] dim = {286/5 + 1, 5};
+
+        for(int i = 0; i < dim[0]; i ++) {
+            TableRow row = new TableRow(this);
+            for (int j = 0; j < dim[1]; j++) {
+                ImageButton rad = new ImageButton(this);
+                rad.setImageResource(getResources().getIdentifier("r4e00", "drawable", getPackageName()));
+                row.addView(rad);
+            }
+            table.addView(row);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rad_search);
-        strokeMap = readstrokeMap();
+        strokeMap = readStrokeMap();
         radicalMap = readRadicalMap();
         radicalsSelected = new HashSet<>();
         kanji = new HashSet<>();
+
+        TableLayout radtable = findViewById(R.id.tableLayout);
+        fillTable(radtable);
     }
 
     protected void search(View view) {
