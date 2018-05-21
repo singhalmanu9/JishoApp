@@ -1,9 +1,9 @@
 package c.example.jisho;
 
 import android.content.Intent;
-import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,9 +36,12 @@ public class RadSearchActivity extends AppCompatActivity {
      * reads in the strokeMap from a serialized file of it.
      * @return the strokeMap from a serialized file.
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     protected HashMap<String, Integer> readStrokeMap() {
         HashMap<String, Integer> obj;
-        File inFile = new File("strokeMap.dat");
+        Path currentRelativePath = Paths.get("");
+        String s = currentRelativePath.toAbsolutePath().toString();
+        File inFile = new File(s, "strokeMap.dat");
         try {
             ObjectInputStream inp =
                     new ObjectInputStream(new FileInputStream(inFile));
@@ -54,9 +59,12 @@ public class RadSearchActivity extends AppCompatActivity {
      * reads in the RadicalMap from a serialized file of it.
      * @return the radicalMap from a serialized file.
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     protected HashMap<String, ArrayList<String>> readRadicalMap() {
         HashMap<String, ArrayList<String>> obj;
-        File inFile = new File("./radicalMap.dat");
+        Path currentRelativePath = Paths.get("");
+        String s = currentRelativePath.toAbsolutePath().toString();
+        File inFile = new File(s, "radicalMap.dat");
         try {
             ObjectInputStream inp =
                     new ObjectInputStream(new FileInputStream(inFile));
@@ -83,6 +91,7 @@ public class RadSearchActivity extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
