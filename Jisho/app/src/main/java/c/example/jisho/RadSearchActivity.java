@@ -1,6 +1,8 @@
 package c.example.jisho;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -29,7 +31,7 @@ public class RadSearchActivity extends AppCompatActivity {
     private static HashMap<String, ArrayList<String>> radicalMap;
     private static HashSet<String> radicalsSelected;
     private static HashSet<String> kanji;
-
+    private static HashMap<String, String> unicodeMap;
     public static final String EXTRA_MESSAGE = "github.jishoapp.MESSAGE";
 
     /**
@@ -60,18 +62,20 @@ public class RadSearchActivity extends AppCompatActivity {
      * @return the radicalMap from a serialized file.
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    protected HashMap<String, ArrayList<String>> readRadicalMap() {
+    protected HashMap<String, ArrayList<String>> readRadicalMap() throws PackageManager.NameNotFoundException {
         HashMap<String, ArrayList<String>> obj;
-        Path currentRelativePath = Paths.get("");
-        String s = currentRelativePath.toAbsolutePath().toString();
-        File inFile = new File(s, "radicalMap.dat");
+        Resources x = getResources();
         try {
+
             ObjectInputStream inp =
-                    new ObjectInputStream(new FileInputStream(inFile));
+                    new ObjectInputStream(x.openRawResource(R.raw.radicalmap));
             obj = (HashMap<String, ArrayList<String>>) inp.readObject();
             inp.close();
-        } catch (IOException |
-                ClassNotFoundException excp) {
+        } catch (IOException e) {
+            e.printStackTrace();
+            obj = null;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
             obj = null;
         }
         return obj;
@@ -93,16 +97,20 @@ public class RadSearchActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rad_search);
-        strokeMap = readStrokeMap();
-        radicalMap = readRadicalMap();
-        radicalsSelected = new HashSet<>();
-        kanji = new HashSet<>();
-
-        TableLayout radtable = findViewById(R.id.tableLayout);
-        fillTable(radtable);
+            setContentView(R.layout.activity_rad_search);
+            strokeMap = readStrokeMap();
+            try {
+                radicalMap = readRadicalMap();
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+            unicodeMap = generateUnicodeMap();
+            radicalsSelected = new HashSet<>();
+            kanji = new HashSet<>();
+            TableLayout radtable = findViewById(R.id.tableLayout);
+            fillTable(radtable);
     }
 
     protected void search(View view) {
@@ -147,5 +155,25 @@ public class RadSearchActivity extends AppCompatActivity {
             }
         }
         kanji = newKanji;
+    }
+
+    protected HashMap<String, String> generateUnicodeMap() {
+        HashMap<String, String> uniMap = new HashMap<>();
+        for(String radical : radicalMap.keySet()) {
+            uniMap.put(unicodeEscaped(radical.charAt(0)),radical);
+        }
+        System.out.println("finished gen");
+        return uniMap;
+    }
+
+    public static String unicodeEscaped(char ch) {
+        if (ch < 0x10) {
+            return "\\u000" + Integer.toHexString(ch);
+        } else if (ch < 0x100) {
+            return "\\u00" + Integer.toHexString(ch);
+        } else if (ch < 0x1000) {
+            return "\\u0" + Integer.toHexString(ch);
+        }
+        return "\\u" + Integer.toHexString(ch);
     }
 }
