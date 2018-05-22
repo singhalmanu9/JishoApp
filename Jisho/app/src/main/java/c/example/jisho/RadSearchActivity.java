@@ -9,18 +9,17 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -83,18 +82,6 @@ public class RadSearchActivity extends AppCompatActivity {
     }
 
     protected void fillTable(TableLayout table) {
-//        int[] dim = {286/5 + 1, 5};
-//
-//        for(int i = 0; i < dim[0]; i ++) {
-//            TableRow row = new TableRow(this);
-//            for (int j = 0; j < dim[1]; j++) {
-//                ImageButton rad = new ImageButton(this);
-//                rad.setImageResource(getResources().getIdentifier("r4e00", "drawable", getPackageName()));
-//                row.addView(rad);
-//            }
-//            table.addView(row);
-//        }
-
         ArrayList<String> allRadicals = new ArrayList<String>();
         for (int i : strokeMap.keySet()) {
             allRadicals.addAll(strokeMap.get(i));
@@ -102,7 +89,7 @@ public class RadSearchActivity extends AppCompatActivity {
 
         TableRow row = new TableRow(this);
         int count = 0;
-        for (String rad : allRadicals) {
+        for (final String rad : allRadicals) {
             if (count > 4) {
                 count = 0;
                 table.addView(row);
@@ -111,8 +98,37 @@ public class RadSearchActivity extends AppCompatActivity {
             ImageButton button = new ImageButton(this);
             String drawId = "r" + unicodeMap.get(rad).substring(2);
             button.setImageResource(getResources().getIdentifier(drawId, "drawable", getPackageName()));
+            button.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    if (radicalsSelected.contains(rad)) {
+                        removefromSet(rad);
+                    } else {
+                        newIntersect(rad);
+                    }
+                    updateDisplayKanji();
+                }
+            });
             row.addView(button);
             count ++;
+        }
+    }
+
+    protected void updateDisplayKanji() {
+        LinearLayout kanjiLay = findViewById(R.id.kanjilay);
+        kanjiLay.removeAllViews();
+        if (kanji != null) {
+            for (final String k : kanji) {
+                Button kButton = new Button(this);
+                kButton.setText(k);
+                kButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                kButton.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        EditText editText = findViewById(R.id.editText);
+                        editText.setText(editText.getText().toString() + k, TextView.BufferType.EDITABLE);
+                    }
+                });
+                kanjiLay.addView(kButton);
+            }
         }
     }
 
@@ -155,8 +171,12 @@ public class RadSearchActivity extends AppCompatActivity {
      * @param radical the radical that's set will be used to intersect.
      */
     protected void newIntersect(String radical) {
-         radicalsSelected.add(radical);
-         kanji.retainAll(radicalMap.get(radical));
+        if (!radicalsSelected.isEmpty()) {
+            kanji.retainAll(radicalMap.get(radical));
+        } else {
+            kanji.addAll(radicalMap.get(radical));
+        }
+        radicalsSelected.add(radical);
     }
 
     /**
@@ -165,12 +185,12 @@ public class RadSearchActivity extends AppCompatActivity {
      */
     protected void removefromSet(String radical) {
         radicalsSelected.remove(radical);
-        HashSet<String> newKanji = null;
+        HashSet<String> newKanji = new HashSet<String>();
         for(String rad: radicalsSelected) {
             newKanji = new HashSet<>(radicalMap.get(rad));
             break;
         }
-        if(newKanji != null) {
+        if(!newKanji.isEmpty()) {
             for (String rad : radicalsSelected) {
                 newKanji.retainAll(radicalMap.get(rad));
             }
