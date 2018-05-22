@@ -3,12 +3,14 @@ package c.example.jisho;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -90,20 +92,23 @@ public class RadSearchActivity extends AppCompatActivity {
         TableRow row = new TableRow(this);
         int count = 0;
         for (final String rad : allRadicals) {
-            if (count > 4) {
+            if (count > 6) {
                 count = 0;
                 table.addView(row);
                 row = new TableRow(this);
             }
-            ImageButton button = new ImageButton(this);
+            final ImageButton button = new ImageButton(this);
             String drawId = "r" + unicodeMap.get(rad).substring(2);
             button.setImageResource(getResources().getIdentifier(drawId, "drawable", getPackageName()));
+            button.setBackgroundColor(Color.WHITE);
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     if (radicalsSelected.contains(rad)) {
                         removefromSet(rad);
+                        button.setBackgroundColor(Color.WHITE);
                     } else {
                         newIntersect(rad);
+                        button.setBackgroundColor(Color.GREEN);
                     }
                     updateDisplayKanji();
                 }
@@ -137,6 +142,8 @@ public class RadSearchActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rad_search);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         try {
             strokeMap = readStrokeMap();
             radicalMap = readRadicalMap();
