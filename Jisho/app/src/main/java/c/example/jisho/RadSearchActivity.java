@@ -27,7 +27,7 @@ import java.util.HashSet;
 
 public class RadSearchActivity extends AppCompatActivity {
     public RadSearchActivity() {}
-    private static HashMap<String, Integer> strokeMap;
+    private static HashMap<Integer, ArrayList<String>> strokeMap;
     private static HashMap<String, ArrayList<String>> radicalMap;
     private static HashSet<String> radicalsSelected;
     private static HashSet<String> kanji;
@@ -39,19 +39,20 @@ public class RadSearchActivity extends AppCompatActivity {
      * @return the strokeMap from a serialized file.
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    protected HashMap<String, Integer> readStrokeMap() {
-        HashMap<String, Integer> obj;
-        Path currentRelativePath = Paths.get("");
-        String s = currentRelativePath.toAbsolutePath().toString();
-        File inFile = new File(s, "strokeMap.dat");
+    protected HashMap<Integer, ArrayList<String>> readStrokeMap() {
+        HashMap<Integer, ArrayList<String>> obj;
+        Resources x = getResources();
         try {
-            ObjectInputStream inp =
-                    new ObjectInputStream(new FileInputStream(inFile));
-            obj = (HashMap<String, Integer>) inp.readObject();
-            inp.close();
-        } catch (IOException |
-                ClassNotFoundException excp) {
 
+            ObjectInputStream inp =
+                    new ObjectInputStream(x.openRawResource(R.raw.strokemap));
+            obj = (HashMap<Integer, ArrayList<String>>) inp.readObject();
+            inp.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            obj = null;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
             obj = null;
         }
         return obj;
@@ -82,16 +83,36 @@ public class RadSearchActivity extends AppCompatActivity {
     }
 
     protected void fillTable(TableLayout table) {
-        int[] dim = {286/5 + 1, 5};
+//        int[] dim = {286/5 + 1, 5};
+//
+//        for(int i = 0; i < dim[0]; i ++) {
+//            TableRow row = new TableRow(this);
+//            for (int j = 0; j < dim[1]; j++) {
+//                ImageButton rad = new ImageButton(this);
+//                rad.setImageResource(getResources().getIdentifier("r4e00", "drawable", getPackageName()));
+//                row.addView(rad);
+//            }
+//            table.addView(row);
+//        }
 
-        for(int i = 0; i < dim[0]; i ++) {
-            TableRow row = new TableRow(this);
-            for (int j = 0; j < dim[1]; j++) {
-                ImageButton rad = new ImageButton(this);
-                rad.setImageResource(getResources().getIdentifier("r4e00", "drawable", getPackageName()));
-                row.addView(rad);
+        ArrayList<String> allRadicals = new ArrayList<String>();
+        for (int i : strokeMap.keySet()) {
+            allRadicals.addAll(strokeMap.get(i));
+        }
+
+        TableRow row = new TableRow(this);
+        int count = 0;
+        for (String rad : allRadicals) {
+            if (count > 4) {
+                count = 0;
+                table.addView(row);
+                row = new TableRow(this);
             }
-            table.addView(row);
+            ImageButton button = new ImageButton(this);
+            String drawId = "r" + unicodeMap.get(rad).substring(2);
+            button.setImageResource(getResources().getIdentifier(drawId, "drawable", getPackageName()));
+            row.addView(button);
+            count ++;
         }
     }
 
@@ -99,18 +120,18 @@ public class RadSearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_rad_search);
+        setContentView(R.layout.activity_rad_search);
+        try {
             strokeMap = readStrokeMap();
-            try {
-                radicalMap = readRadicalMap();
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            }
-            unicodeMap = generateUnicodeMap();
-            radicalsSelected = new HashSet<>();
-            kanji = new HashSet<>();
-            TableLayout radtable = findViewById(R.id.tableLayout);
-            fillTable(radtable);
+            radicalMap = readRadicalMap();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        unicodeMap = generateUnicodeMap();
+        radicalsSelected = new HashSet<>();
+        kanji = new HashSet<>();
+        TableLayout radtable = findViewById(R.id.tableLayout);
+        fillTable(radtable);
     }
 
     protected void search(View view) {
@@ -160,7 +181,7 @@ public class RadSearchActivity extends AppCompatActivity {
     protected HashMap<String, String> generateUnicodeMap() {
         HashMap<String, String> uniMap = new HashMap<>();
         for(String radical : radicalMap.keySet()) {
-            uniMap.put(unicodeEscaped(radical.charAt(0)),radical);
+            uniMap.put(radical, unicodeEscaped(radical.charAt(0)));
         }
         System.out.println("finished gen");
         return uniMap;
