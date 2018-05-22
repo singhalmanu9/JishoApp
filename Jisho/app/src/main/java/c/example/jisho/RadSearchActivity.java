@@ -30,6 +30,8 @@ public class RadSearchActivity extends AppCompatActivity {
     private static HashSet<String> radicalsSelected;
     private static HashSet<String> kanji;
 
+    
+
     public static final String EXTRA_MESSAGE = "github.jishoapp.MESSAGE";
 
     /**
