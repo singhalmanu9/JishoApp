@@ -157,7 +157,7 @@ public class RadSearchActivity extends AppCompatActivity {
         fillTable(radtable);
     }
 
-    protected void search(View view) {
+    public void search(View view) {
         Intent i = new Intent(this, DisplayQueryActivity.class);
         EditText editText = findViewById(R.id.editText);
         String query = editText.getText().toString();
