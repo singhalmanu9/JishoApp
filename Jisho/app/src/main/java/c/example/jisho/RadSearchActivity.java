@@ -86,6 +86,7 @@ public class RadSearchActivity extends AppCompatActivity {
     protected void fillTable(TableLayout table) {
         ArrayList<String> allRadicals = new ArrayList<String>();
         for (int i : strokeMap.keySet()) {
+            allRadicals.add(i + "");
             allRadicals.addAll(strokeMap.get(i));
         }
 
@@ -97,25 +98,32 @@ public class RadSearchActivity extends AppCompatActivity {
                 table.addView(row);
                 row = new TableRow(this);
             }
+
             final ImageButton button = new ImageButton(this);
-            String drawId = "r" + unicodeMap.get(rad).substring(2);
-            button.setImageResource(getResources().getIdentifier(drawId, "drawable", getPackageName()));
-            button.setBackgroundColor(Color.WHITE);
-            button.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View view) {
-                    if (radicalsSelected.contains(rad)) {
-                        removefromSet(rad);
-                        button.setBackgroundColor(Color.WHITE);
-                    } else {
-                        newIntersect(rad);
-                        button.setBackgroundColor(Color.GREEN);
+            if (rad.matches("\\d+")) {
+                button.setImageResource(getResources().getIdentifier("stroke" + rad, "drawable", getPackageName()));
+                button.setBackgroundColor(Color.WHITE);
+            } else {
+                String drawId = "r" + unicodeMap.get(rad).substring(2);
+                button.setImageResource(getResources().getIdentifier(drawId, "drawable", getPackageName()));
+                button.setBackgroundColor(Color.WHITE);
+                button.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        if (radicalsSelected.contains(rad)) {
+                            removefromSet(rad);
+                            button.setBackgroundColor(Color.WHITE);
+                        } else {
+                            newIntersect(rad);
+                            button.setBackgroundColor(Color.GREEN);
+                        }
+                        updateDisplayKanji();
                     }
-                    updateDisplayKanji();
-                }
-            });
+                });
+            }
             row.addView(button);
             count ++;
         }
+        table.addView(row);
     }
 
     protected void updateDisplayKanji() {
