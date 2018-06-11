@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="jdom-2.0.6-contrib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/jdom-2.0.6/jdom-2.0.6-contrib.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jdom-2.0.6/jdom-2.0.6-junit.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jdom-2.0.6/jdom-2.0.6.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/jdom-2.0.6/jdom-2.0.6-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/jdom-2.0.6/jdom-2.0.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
