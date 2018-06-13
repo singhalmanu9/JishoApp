@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -165,6 +166,10 @@ public class RadSearchActivity extends AppCompatActivity {
         fillTable(radtable);
     }
 
+    /**
+     * searches the Jisho.org API given a user-defined query.
+     * @param view
+     */
     public void search(View view) {
         Intent i = new Intent(this, DisplayQueryActivity.class);
         EditText editText = findViewById(R.id.editText);
@@ -176,6 +181,10 @@ public class RadSearchActivity extends AppCompatActivity {
         }
         else {
             i.putExtra(EXTRA_MESSAGE, query);
+            CheckBox romanization = findViewById(R.id.romanization);
+            Boolean ROMANIZATION = romanization.isChecked();
+            i.putExtra(EXTRA_MESSAGE, query);
+            i.putExtra("ROMANIZATION",ROMANIZATION);
             startActivity(i);
         }
     }
@@ -222,6 +231,11 @@ public class RadSearchActivity extends AppCompatActivity {
         return uniMap;
     }
 
+    /**
+     * gives the UTF-16 value of a character.
+     * @param ch the character being converted to unicode.
+     * @return a string that is equivalent to the UTF-16 code of a character.
+     */
     public static String unicodeEscaped(char ch) {
         if (ch < 0x10) {
             return "\\u000" + Integer.toHexString(ch);

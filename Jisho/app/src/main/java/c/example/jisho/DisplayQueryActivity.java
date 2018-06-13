@@ -195,8 +195,8 @@ public class DisplayQueryActivity extends AppCompatActivity {
             TextView textWord = new TextView(getApplicationContext());
             TextView textReading = new TextView(getApplicationContext());
             textWord.setLayoutParams(new LinearLayout.LayoutParams
-                (LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT));
+                            (LinearLayout.LayoutParams.WRAP_CONTENT,
+                                    LinearLayout.LayoutParams.WRAP_CONTENT));
             textReading.setLayoutParams(new LinearLayout.LayoutParams
                     (LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -204,13 +204,23 @@ public class DisplayQueryActivity extends AppCompatActivity {
                 textReading.setText(jpObj.getString("reading"));
                 textReading.setTextSize(24);
                 linlay.addView(textReading);
+
             } catch (JSONException e) {}
             try {
                 textWord.setText(jpObj.getString("word"));
                 textWord.setTextSize(48);
                 linlay.addView(textWord);
             } catch (JSONException e) {}
-
+            Boolean romanization = getIntent().getBooleanExtra("ROMANIZATION", false);
+            if (romanization) {
+                TextView romaji = new TextView(getApplicationContext());
+                romaji.setLayoutParams(new LinearLayout.LayoutParams
+                        (LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT));
+                romaji.setText(new KanaToRoma().toRomaji(jpObj.getString("reading")));
+                romaji.setTextSize(24);
+                linlay.addView(romaji);
+            }
         }
 
         /**
@@ -302,6 +312,12 @@ public class DisplayQueryActivity extends AppCompatActivity {
             linebreak.setText("");
             linlay.addView(linebreak);
         }
+
+        /**
+         * A method to detect whether a given string is romaji.
+         * @param query the string to be tested for romaji.
+         * @return whether the string is completely romaji or not.
+         */
         protected boolean isRomaji(String query) {
             RomajiToHira x = new RomajiToHira();
             for (int i = 0; i != query.length(); i++) {
@@ -319,6 +335,505 @@ public class DisplayQueryActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * A class that facilitates transliteration from kana to romaji.
+     * @author Tim Toombs
+     */
+    private class KanaToRoma{
+        /**
+         * the mapping of each katakana and hiragana to its respective romanization. adapted from
+         * kakasi-java.
+         */
+        HashMap<String, String> kana = new HashMap<String, String>();
+
+        // Constructor
+        private KanaToRoma() {
+            kana.put("\u30a1", "a");
+            kana.put("\u30a2", "a");
+            kana.put("\u30a3", "i");
+            kana.put("\u30a4", "i");
+            kana.put("\u30a5", "u");
+            kana.put("\u30a6", "u");
+            kana.put("\u30a7", "e");
+            kana.put("\u30a8", "e");
+            kana.put("\u30a9", "o");
+            kana.put("\u30aa", "o");
+            kana.put("\u30ab", "ka");
+            kana.put("\u30ac", "ga");
+            kana.put("\u30ad", "ki");
+            kana.put("\u30ad\u30e3", "kya");
+            kana.put("\u30ad\u30e5", "kyu");
+            kana.put("\u30ad\u30e7", "kyo");
+            kana.put("\u30ae", "gi");
+            kana.put("\u30ae\u30e3", "gya");
+            kana.put("\u30ae\u30e5", "gyu");
+            kana.put("\u30ae\u30e7", "gyo");
+            kana.put("\u30af", "ku");
+            kana.put("\u30b0", "gu");
+            kana.put("\u30b1", "ke");
+            kana.put("\u30b2", "ge");
+            kana.put("\u30b3", "ko");
+            kana.put("\u30b4", "go");
+            kana.put("\u30b5", "sa");
+            kana.put("\u30b6", "za");
+            kana.put("\u30b7", "shi");
+            kana.put("\u30b7\u30e3", "sha");
+            kana.put("\u30b7\u30e5", "shu");
+            kana.put("\u30b7\u30e7", "sho");
+            kana.put("\u30b8", "ji");
+            kana.put("\u30b8\u30e3", "ja");
+            kana.put("\u30b8\u30e5", "ju");
+            kana.put("\u30b8\u30e7", "jo");
+            kana.put("\u30b9", "su");
+            kana.put("\u30ba", "zu");
+            kana.put("\u30bb", "se");
+            kana.put("\u30bc", "ze");
+            kana.put("\u30bd", "so");
+            kana.put("\u30be", "zo");
+            kana.put("\u30bf", "ta");
+            kana.put("\u30c0", "da");
+            kana.put("\u30c1", "chi");
+            kana.put("\u30c1\u30e3", "cha");
+            kana.put("\u30c1\u30e5", "chu");
+            kana.put("\u30c1\u30e7", "cho");
+            kana.put("\u30c2", "di");
+            kana.put("\u30c2\u30e3", "dya");
+            kana.put("\u30c2\u30e5", "dyu");
+            kana.put("\u30c2\u30e7", "dyo");
+            kana.put("\u30c3", "tsu");
+            kana.put("\u30c3\u30ab", "kka");
+            kana.put("\u30c3\u30ac", "gga");
+            kana.put("\u30c3\u30ad", "kki");
+            kana.put("\u30c3\u30ad\u30e3", "kkya");
+            kana.put("\u30c3\u30ad\u30e5", "kkyu");
+            kana.put("\u30c3\u30ad\u30e7", "kkyo");
+            kana.put("\u30c3\u30ae", "ggi");
+            kana.put("\u30c3\u30ae\u30e3", "ggya");
+            kana.put("\u30c3\u30ae\u30e5", "ggyu");
+            kana.put("\u30c3\u30ae\u30e7", "ggyo");
+            kana.put("\u30c3\u30af", "kku");
+            kana.put("\u30c3\u30b0", "ggu");
+            kana.put("\u30c3\u30b1", "kke");
+            kana.put("\u30c3\u30b2", "gge");
+            kana.put("\u30c3\u30b3", "kko");
+            kana.put("\u30c3\u30b4", "ggo");
+            kana.put("\u30c3\u30b5", "ssa");
+            kana.put("\u30c3\u30b6", "zza");
+            kana.put("\u30c3\u30b7", "sshi");
+            kana.put("\u30c3\u30b7\u30e3", "ssha");
+            kana.put("\u30c3\u30b7\u30e5", "sshu");
+            kana.put("\u30c3\u30b7\u30e7", "ssho");
+            kana.put("\u30c3\u30b8", "jji");
+            kana.put("\u30c3\u30b8\u30e3", "jja");
+            kana.put("\u30c3\u30b8\u30e5", "jju");
+            kana.put("\u30c3\u30b8\u30e7", "jjo");
+            kana.put("\u30c3\u30b9", "ssu");
+            kana.put("\u30c3\u30ba", "zzu");
+            kana.put("\u30c3\u30bb", "sse");
+            kana.put("\u30c3\u30bc", "zze");
+            kana.put("\u30c3\u30bd", "sso");
+            kana.put("\u30c3\u30be", "zzo");
+            kana.put("\u30c3\u30bf", "tta");
+            kana.put("\u30c3\u30c0", "dda");
+            kana.put("\u30c3\u30c1", "cchi");
+            kana.put("\u30c3\u30c1\u30e3", "ccha");
+            kana.put("\u30c3\u30c1\u30e5", "cchu");
+            kana.put("\u30c3\u30c1\u30e7", "ccho");
+            kana.put("\u30c3\u30c2", "ddi");
+            kana.put("\u30c3\u30c2\u30e3", "ddya");
+            kana.put("\u30c3\u30c2\u30e5", "ddyu");
+            kana.put("\u30c3\u30c2\u30e7", "ddyo");
+            kana.put("\u30c3\u30c4", "ttsu");
+            kana.put("\u30c3\u30c5", "ddu");
+            kana.put("\u30c3\u30c6", "tte");
+            kana.put("\u30c3\u30c7", "dde");
+            kana.put("\u30c3\u30c8", "tto");
+            kana.put("\u30c3\u30c9", "ddo");
+            kana.put("\u30c3\u30cf", "hha");
+            kana.put("\u30c3\u30d0", "bba");
+            kana.put("\u30c3\u30d1", "ppa");
+            kana.put("\u30c3\u30d2", "hhi");
+            kana.put("\u30c3\u30d2\u30e3", "hhya");
+            kana.put("\u30c3\u30d2\u30e5", "hhyu");
+            kana.put("\u30c3\u30d2\u30e7", "hhyo");
+            kana.put("\u30c3\u30d3", "bbi");
+            kana.put("\u30c3\u30d3\u30e3", "bbya");
+            kana.put("\u30c3\u30d3\u30e5", "bbyu");
+            kana.put("\u30c3\u30d3\u30e7", "bbyo");
+            kana.put("\u30c3\u30d4", "ppi");
+            kana.put("\u30c3\u30d4\u30e3", "ppya");
+            kana.put("\u30c3\u30d4\u30e5", "ppyu");
+            kana.put("\u30c3\u30d4\u30e7", "ppyo");
+            kana.put("\u30c3\u30d5", "ffu");
+            kana.put("\u30c3\u30d5\u30a1", "ffa");
+            kana.put("\u30c3\u30d5\u30a3", "ffi");
+            kana.put("\u30c3\u30d5\u30a7", "ffe");
+            kana.put("\u30c3\u30d5\u30a9", "ffo");
+            kana.put("\u30c3\u30d6", "bbu");
+            kana.put("\u30c3\u30d7", "ppu");
+            kana.put("\u30c3\u30d8", "hhe");
+            kana.put("\u30c3\u30d9", "bbe");
+            kana.put("\u30c3\u30da", "ppe");
+            kana.put("\u30c3\u30db", "hho");
+            kana.put("\u30c3\u30dc", "bbo");
+            kana.put("\u30c3\u30dd", "ppo");
+            kana.put("\u30c3\u30e4", "yya");
+            kana.put("\u30c3\u30e6", "yyu");
+            kana.put("\u30c3\u30e8", "yyo");
+            kana.put("\u30c3\u30e9", "rra");
+            kana.put("\u30c3\u30ea", "rri");
+            kana.put("\u30c3\u30ea\u30e3", "rrya");
+            kana.put("\u30c3\u30ea\u30e5", "rryu");
+            kana.put("\u30c3\u30ea\u30e7", "rryo");
+            kana.put("\u30c3\u30eb", "rru");
+            kana.put("\u30c3\u30ec", "rre");
+            kana.put("\u30c3\u30ed", "rro");
+            kana.put("\u30c3\u30f4", "vvu");
+            kana.put("\u30c3\u30f4\u30a1", "vva");
+            kana.put("\u30c3\u30f4\u30a3", "vvi");
+            kana.put("\u30c3\u30f4\u30a7", "vve");
+            kana.put("\u30c3\u30f4\u30a9", "vvo");
+            kana.put("\u30c4", "tsu");
+            kana.put("\u30c5", "du");
+            kana.put("\u30c6", "te");
+            kana.put("\u30c7", "de");
+            kana.put("\u30c8", "to");
+            kana.put("\u30c9", "do");
+            kana.put("\u30ca", "na");
+            kana.put("\u30cb", "ni");
+            kana.put("\u30cb\u30e3", "nya");
+            kana.put("\u30cb\u30e5", "nyu");
+            kana.put("\u30cb\u30e7", "nyo");
+            kana.put("\u30cc", "nu");
+            kana.put("\u30cd", "ne");
+            kana.put("\u30ce", "no");
+            kana.put("\u30cf", "ha");
+            kana.put("\u30d0", "ba");
+            kana.put("\u30d1", "pa");
+            kana.put("\u30d2", "hi");
+            kana.put("\u30d2\u30e3", "hya");
+            kana.put("\u30d2\u30e5", "hyu");
+            kana.put("\u30d2\u30e7", "hyo");
+            kana.put("\u30d3", "bi");
+            kana.put("\u30d3\u30e3", "bya");
+            kana.put("\u30d3\u30e5", "byu");
+            kana.put("\u30d3\u30e7", "byo");
+            kana.put("\u30d4", "pi");
+            kana.put("\u30d4\u30e3", "pya");
+            kana.put("\u30d4\u30e5", "pyu");
+            kana.put("\u30d4\u30e7", "pyo");
+            kana.put("\u30d5", "fu");
+            kana.put("\u30d5\u30a1", "fa");
+            kana.put("\u30d5\u30a3", "fi");
+            kana.put("\u30d5\u30a7", "fe");
+            kana.put("\u30d5\u30a9", "fo");
+            kana.put("\u30d6", "bu");
+            kana.put("\u30d7", "pu");
+            kana.put("\u30d8", "he");
+            kana.put("\u30d9", "be");
+            kana.put("\u30da", "pe");
+            kana.put("\u30db", "ho");
+            kana.put("\u30dc", "bo");
+            kana.put("\u30dd", "po");
+            kana.put("\u30de", "ma");
+            kana.put("\u30df", "mi");
+            kana.put("\u30df\u30e3", "mya");
+            kana.put("\u30df\u30e5", "myu");
+            kana.put("\u30df\u30e7", "myo");
+            kana.put("\u30e0", "mu");
+            kana.put("\u30e1", "me");
+            kana.put("\u30e2", "mo");
+            kana.put("\u30e3", "ya");
+            kana.put("\u30e4", "ya");
+            kana.put("\u30e5", "yu");
+            kana.put("\u30e6", "yu");
+            kana.put("\u30e7", "yo");
+            kana.put("\u30e8", "yo");
+            kana.put("\u30e9", "ra");
+            kana.put("\u30ea", "ri");
+            kana.put("\u30ea\u30e3", "rya");
+            kana.put("\u30ea\u30e5", "ryu");
+            kana.put("\u30ea\u30e7", "ryo");
+            kana.put("\u30eb", "ru");
+            kana.put("\u30ec", "re");
+            kana.put("\u30ed", "ro");
+            kana.put("\u30ee", "wa");
+            kana.put("\u30ef", "wa");
+            kana.put("\u30f0", "i");
+            kana.put("\u30f1", "e");
+            kana.put("\u30f2", "wo");
+            kana.put("\u30f3", "n");
+            kana.put("\u30f3\u30a2", "n'a");
+            kana.put("\u30f3\u30a4", "n'i");
+            kana.put("\u30f3\u30a6", "n'u");
+            kana.put("\u30f3\u30a8", "n'e");
+            kana.put("\u30f3\u30aa", "n'o");
+            kana.put("\u30f4", "vu");
+            kana.put("\u30f4\u30a1", "va");
+            kana.put("\u30f4\u30a3", "vi");
+            kana.put("\u30f4\u30a7", "ve");
+            kana.put("\u30f4\u30a9", "vo");
+            kana.put("\u30f5", "ka");
+            kana.put("\u30f6", "ke");
+            kana.put("\u30fc", "^");
+            kana.put("\u3041", "a");
+            kana.put("\u3042", "a");
+            kana.put("\u3043", "i");
+            kana.put("\u3044", "i");
+            kana.put("\u3045", "u");
+            kana.put("\u3046", "u");
+            kana.put("\u3046\u309b", "vu");
+            kana.put("\u3046\u309b\u3041", "va");
+            kana.put("\u3046\u309b\u3043", "vi");
+            kana.put("\u3046\u309b\u3047", "ve");
+            kana.put("\u3046\u309b\u3049", "vo");
+            kana.put("\u3047", "e");
+            kana.put("\u3048", "e");
+            kana.put("\u3049", "o");
+            kana.put("\u304a", "o");
+            kana.put("\u304b", "ka");
+            kana.put("\u304c", "ga");
+            kana.put("\u304d", "ki");
+            kana.put("\u304d\u3083", "kya");
+            kana.put("\u304d\u3085", "kyu");
+            kana.put("\u304d\u3087", "kyo");
+            kana.put("\u304e", "gi");
+            kana.put("\u304e\u3083", "gya");
+            kana.put("\u304e\u3085", "gyu");
+            kana.put("\u304e\u3087", "gyo");
+            kana.put("\u304f", "ku");
+            kana.put("\u3050", "gu");
+            kana.put("\u3051", "ke");
+            kana.put("\u3052", "ge");
+            kana.put("\u3053", "ko");
+            kana.put("\u3054", "go");
+            kana.put("\u3055", "sa");
+            kana.put("\u3056", "za");
+            kana.put("\u3057", "shi");
+            kana.put("\u3057\u3083", "sha");
+            kana.put("\u3057\u3085", "shu");
+            kana.put("\u3057\u3087", "sho");
+            kana.put("\u3058", "ji");
+            kana.put("\u3058\u3083", "ja");
+            kana.put("\u3058\u3085", "ju");
+            kana.put("\u3058\u3087", "jo");
+            kana.put("\u3059", "su");
+            kana.put("\u305a", "zu");
+            kana.put("\u305b", "se");
+            kana.put("\u305c", "ze");
+            kana.put("\u305d", "so");
+            kana.put("\u305e", "zo");
+            kana.put("\u305f", "ta");
+            kana.put("\u3060", "da");
+            kana.put("\u3061", "chi");
+            kana.put("\u3061\u3083", "cha");
+            kana.put("\u3061\u3085", "chu");
+            kana.put("\u3061\u3087", "cho");
+            kana.put("\u3062", "di");
+            kana.put("\u3062\u3083", "dya");
+            kana.put("\u3062\u3085", "dyu");
+            kana.put("\u3062\u3087", "dyo");
+            kana.put("\u3063", "tsu");
+            kana.put("\u3063\u3046\u309b", "vvu");
+            kana.put("\u3063\u3046\u309b\u3041", "vva");
+            kana.put("\u3063\u3046\u309b\u3043", "vvi");
+            kana.put("\u3063\u3046\u309b\u3047", "vve");
+            kana.put("\u3063\u3046\u309b\u3049", "vvo");
+            kana.put("\u3063\u304b", "kka");
+            kana.put("\u3063\u304c", "gga");
+            kana.put("\u3063\u304d", "kki");
+            kana.put("\u3063\u304d\u3083", "kkya");
+            kana.put("\u3063\u304d\u3085", "kkyu");
+            kana.put("\u3063\u304d\u3087", "kkyo");
+            kana.put("\u3063\u304e", "ggi");
+            kana.put("\u3063\u304e\u3083", "ggya");
+            kana.put("\u3063\u304e\u3085", "ggyu");
+            kana.put("\u3063\u304e\u3087", "ggyo");
+            kana.put("\u3063\u304f", "kku");
+            kana.put("\u3063\u3050", "ggu");
+            kana.put("\u3063\u3051", "kke");
+            kana.put("\u3063\u3052", "gge");
+            kana.put("\u3063\u3053", "kko");
+            kana.put("\u3063\u3054", "ggo");
+            kana.put("\u3063\u3055", "ssa");
+            kana.put("\u3063\u3056", "zza");
+            kana.put("\u3063\u3057", "sshi");
+            kana.put("\u3063\u3057\u3083", "ssha");
+            kana.put("\u3063\u3057\u3085", "sshu");
+            kana.put("\u3063\u3057\u3087", "ssho");
+            kana.put("\u3063\u3058", "jji");
+            kana.put("\u3063\u3058\u3083", "jja");
+            kana.put("\u3063\u3058\u3085", "jju");
+            kana.put("\u3063\u3058\u3087", "jjo");
+            kana.put("\u3063\u3059", "ssu");
+            kana.put("\u3063\u305a", "zzu");
+            kana.put("\u3063\u305b", "sse");
+            kana.put("\u3063\u305c", "zze");
+            kana.put("\u3063\u305d", "sso");
+            kana.put("\u3063\u305e", "zzo");
+            kana.put("\u3063\u305f", "tta");
+            kana.put("\u3063\u3060", "dda");
+            kana.put("\u3063\u3061", "cchi");
+            kana.put("\u3063\u3061\u3083", "ccha");
+            kana.put("\u3063\u3061\u3085", "cchu");
+            kana.put("\u3063\u3061\u3087", "ccho");
+            kana.put("\u3063\u3062", "ddi");
+            kana.put("\u3063\u3062\u3083", "ddya");
+            kana.put("\u3063\u3062\u3085", "ddyu");
+            kana.put("\u3063\u3062\u3087", "ddyo");
+            kana.put("\u3063\u3064", "ttsu");
+            kana.put("\u3063\u3065", "ddu");
+            kana.put("\u3063\u3066", "tte");
+            kana.put("\u3063\u3067", "dde");
+            kana.put("\u3063\u3068", "tto");
+            kana.put("\u3063\u3069", "ddo");
+            kana.put("\u3063\u306f", "hha");
+            kana.put("\u3063\u3070", "bba");
+            kana.put("\u3063\u3071", "ppa");
+            kana.put("\u3063\u3072", "hhi");
+            kana.put("\u3063\u3072\u3083", "hhya");
+            kana.put("\u3063\u3072\u3085", "hhyu");
+            kana.put("\u3063\u3072\u3087", "hhyo");
+            kana.put("\u3063\u3073", "bbi");
+            kana.put("\u3063\u3073\u3083", "bbya");
+            kana.put("\u3063\u3073\u3085", "bbyu");
+            kana.put("\u3063\u3073\u3087", "bbyo");
+            kana.put("\u3063\u3074", "ppi");
+            kana.put("\u3063\u3074\u3083", "ppya");
+            kana.put("\u3063\u3074\u3085", "ppyu");
+            kana.put("\u3063\u3074\u3087", "ppyo");
+            kana.put("\u3063\u3075", "ffu");
+            kana.put("\u3063\u3075\u3041", "ffa");
+            kana.put("\u3063\u3075\u3043", "ffi");
+            kana.put("\u3063\u3075\u3047", "ffe");
+            kana.put("\u3063\u3075\u3049", "ffo");
+            kana.put("\u3063\u3076", "bbu");
+            kana.put("\u3063\u3077", "ppu");
+            kana.put("\u3063\u3078", "hhe");
+            kana.put("\u3063\u3079", "bbe");
+            kana.put("\u3063\u307a", "ppe");
+            kana.put("\u3063\u307b", "hho");
+            kana.put("\u3063\u307c", "bbo");
+            kana.put("\u3063\u307d", "ppo");
+            kana.put("\u3063\u3084", "yya");
+            kana.put("\u3063\u3086", "yyu");
+            kana.put("\u3063\u3088", "yyo");
+            kana.put("\u3063\u3089", "rra");
+            kana.put("\u3063\u308a", "rri");
+            kana.put("\u3063\u308a\u3083", "rrya");
+            kana.put("\u3063\u308a\u3085", "rryu");
+            kana.put("\u3063\u308a\u3087", "rryo");
+            kana.put("\u3063\u308b", "rru");
+            kana.put("\u3063\u308c", "rre");
+            kana.put("\u3063\u308d", "rro");
+            kana.put("\u3064", "tsu");
+            kana.put("\u3065", "du");
+            kana.put("\u3066", "te");
+            kana.put("\u3067", "de");
+            kana.put("\u3068", "to");
+            kana.put("\u3069", "do");
+            kana.put("\u306a", "na");
+            kana.put("\u306b", "ni");
+            kana.put("\u306b\u3083", "nya");
+            kana.put("\u306b\u3085", "nyu");
+            kana.put("\u306b\u3087", "nyo");
+            kana.put("\u306c", "nu");
+            kana.put("\u306d", "ne");
+            kana.put("\u306e", "no");
+            kana.put("\u306f", "ha");
+            kana.put("\u3070", "ba");
+            kana.put("\u3071", "pa");
+            kana.put("\u3072", "hi");
+            kana.put("\u3072\u3083", "hya");
+            kana.put("\u3072\u3085", "hyu");
+            kana.put("\u3072\u3087", "hyo");
+            kana.put("\u3073", "bi");
+            kana.put("\u3073\u3083", "bya");
+            kana.put("\u3073\u3085", "byu");
+            kana.put("\u3073\u3087", "byo");
+            kana.put("\u3074", "pi");
+            kana.put("\u3074\u3083", "pya");
+            kana.put("\u3074\u3085", "pyu");
+            kana.put("\u3074\u3087", "pyo");
+            kana.put("\u3075", "fu");
+            kana.put("\u3075\u3041", "fa");
+            kana.put("\u3075\u3043", "fi");
+            kana.put("\u3075\u3047", "fe");
+            kana.put("\u3075\u3049", "fo");
+            kana.put("\u3076", "bu");
+            kana.put("\u3077", "pu");
+            kana.put("\u3078", "he");
+            kana.put("\u3079", "be");
+            kana.put("\u307a", "pe");
+            kana.put("\u307b", "ho");
+            kana.put("\u307c", "bo");
+            kana.put("\u307d", "po");
+            kana.put("\u307e", "ma");
+            kana.put("\u307f", "mi");
+            kana.put("\u307f\u3083", "mya");
+            kana.put("\u307f\u3085", "myu");
+            kana.put("\u307f\u3087", "myo");
+            kana.put("\u3080", "mu");
+            kana.put("\u3081", "me");
+            kana.put("\u3082", "mo");
+            kana.put("\u3083", "ya");
+            kana.put("\u3084", "ya");
+            kana.put("\u3085", "yu");
+            kana.put("\u3086", "yu");
+            kana.put("\u3087", "yo");
+            kana.put("\u3088", "yo");
+            kana.put("\u3089", "ra");
+            kana.put("\u308a", "ri");
+            kana.put("\u308a\u3083", "rya");
+            kana.put("\u308a\u3085", "ryu");
+            kana.put("\u308a\u3087", "ryo");
+            kana.put("\u308b", "ru");
+            kana.put("\u308c", "re");
+            kana.put("\u308d", "ro");
+            kana.put("\u308e", "wa");
+            kana.put("\u308f", "wa");
+            kana.put("\u3090", "i");
+            kana.put("\u3091", "e");
+            kana.put("\u3092", "wo");
+            kana.put("\u3093", "n");
+            kana.put("\u3093\u3042", "n'a");
+            kana.put("\u3093\u3044", "n'i");
+            kana.put("\u3093\u3046", "n'u");
+            kana.put("\u3093\u3048", "n'e");
+            kana.put("\u3093\u304a", "n'o");
+        }
+
+        /**
+         * converts a string of kana into its romanization.
+         * @param s an input of kana.
+         * @return a string of romanized kana.
+         */
+        private String toRomaji(String s) {
+            StringBuilder t = new StringBuilder();
+            for ( int i = 0; i < s.length(); i++ ) {
+                if ( i <= s.length() - 2 )  {
+                    if ( kana.containsKey(s.substring(i,i+2))) {
+                        t.append(kana.get(s.substring(i, i+2)));
+                        i++;
+                    } else if (kana.containsKey(s.substring(i, i+1))) {
+                        t.append(kana.get(s.substring(i, i+1)));
+                    } else if ( s.charAt(i) == 'ッ' || s.charAt(i) == 'っ') {
+                        t.append(kana.get(s.substring(i+1, i+2)).charAt(0));
+                    } else {
+                        t.append(s.charAt(i));
+                    }
+                } else {
+                    if (kana.containsKey(s.substring(i, i+1))) {
+                        t.append(kana.get(s.substring(i, i+1)));
+                    } else {
+                        t.append(s.charAt(i));
+                    }
+                }
+            }
+            return t.toString();
+        }
+
+    }
     /**
      * A class that can facilitate transliteration from Romaji to Hiragana
      * @author Tim Toombs
@@ -587,16 +1102,28 @@ public class DisplayQueryActivity extends AppCompatActivity {
          * returns true if two characters form a digraph.
          * @param first the first of two characters tested.
          * @param second the second of two characters tested.
-         * @return true IFF the characters form a special Digraph.
+         * @return true if and only if the characters form a special Digraph.
          * (see class' Hashmaps)
          */
         boolean specialDigraph(char first, char second) {
             String addition = Character.toString(first) + Character.toString(second);
             return specialDigraphMap.containsKey(addition);
         }
+
+        /**
+         * returns true if the given character is a consonant.
+         * @param character the given character.
+         * @return true if and only if a character is a consonant.
+         */
         boolean isConsonant(char character) {
             return "BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz".indexOf(character) != -1;
         }
+
+        /**
+         * returns true if the given character is a vowel
+         * @param character the given character.
+         * @return true if and only if a character is a vowel.
+         */
         boolean isVowel(char character) {
             return "AEIOUaeiou".indexOf(character) != -1;
         }
