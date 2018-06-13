@@ -94,7 +94,7 @@ public class RadSearchActivity extends AppCompatActivity {
         TableRow row = new TableRow(this);
         int count = 0;
         for (final String rad : allRadicals) {
-            if (count > 6) {
+            if (count > 7) {
                 count = 0;
                 table.addView(row);
                 row = new TableRow(this);

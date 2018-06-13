@@ -2,6 +2,7 @@ package c.example.jisho;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.MainThread;
@@ -219,6 +220,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
                                 LinearLayout.LayoutParams.WRAP_CONTENT));
                 romaji.setText(new KanaToRoma().toRomaji(jpObj.getString("reading")));
                 romaji.setTextSize(24);
+                romaji.setTypeface(null, Typeface.ITALIC);
                 linlay.addView(romaji);
             }
         }

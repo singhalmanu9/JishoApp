@@ -8,6 +8,6 @@
     <string name="JishoLogo">the logo of Jisho.org.</string>
     <string name="plsenter">Please enter a query</string>
     <string name="about1">Developed with love by Abhimanyu Singhal and Tim Toombs, 2018</string>
-    <string name="credits">Made using the Jisho.org API and Jim Breen's RADKFILE</string>
+    <string name="credits">Made using the Jisho.org API and Jim Breen\'s RADKFILE and KANJIDIC2</string>
     <string name="bugreport">To report bugs or other concerns, send an email to phikid0@gmail.com</string>
 </resources>
