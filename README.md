@@ -8,6 +8,8 @@ What's new:
 
 What we're working on:
 * ~~search by radical~~
+* kanji information available on click
+* display romaji along with kana
 * search by handwriting
 * pronounciations for results
 * offline mode
