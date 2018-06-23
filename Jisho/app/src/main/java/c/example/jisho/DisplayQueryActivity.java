@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.MainThread;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,13 +20,16 @@ import org.json.JSONTokener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class DisplayQueryActivity extends AppCompatActivity {
 
     public static final String API = "https://jisho.org/api/v1/search/words?keyword=";
+    public ArrayList<String> kanji = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,7 +194,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
 
             // get pertinent japanese
             JSONArray x =  object.getJSONArray("japanese");
-            JSONObject jpObj = x.getJSONObject(0);
+            final JSONObject jpObj = x.getJSONObject(0);
 
             // make and set several params for TV
             TextView textWord = new TextView(getApplicationContext());
@@ -210,6 +214,13 @@ public class DisplayQueryActivity extends AppCompatActivity {
             try {
                 textWord.setText(jpObj.getString("word"));
                 textWord.setTextSize(48);
+                textWord.setClickable(true);
+                textWord.setOnClickListener(new View.OnClickListener() {
+                                                public void onClick(View view) {
+                                                    try {
+                                                        openKanjiPages(jpObj.getString("word"));
+                                                    } catch (JSONException e) {}
+                                                }});
                 linlay.addView(textWord);
             } catch (JSONException e) {}
             Boolean romanization = getIntent().getBooleanExtra("ROMANIZATION", false);
@@ -335,6 +346,32 @@ public class DisplayQueryActivity extends AppCompatActivity {
             }
             return true;
         }
+    }
+
+    /**
+     * Opens the pertinent kanji pages for each kanji present
+     * in the queried word
+     * @param word
+     */
+    protected void openKanjiPages(String word) {
+        HashSet<String> kana = populateKana();
+        kanji.clear();
+        for (char c: word.toCharArray()) {
+            if (!kana.contains(c + "") && !(c == 'ゃ' || c == 'ょ' || c == 'ゅ')) {
+                kanji.add(c + "");
+            }
+        }
+        Intent i = new Intent(this, KanjiPageActivity.class);
+        i.putExtra("KANJI", kanji.toArray(new String[kanji.size()]));
+        startActivity(i);
+    }
+
+    /**
+     *
+     */
+    protected HashSet<String> populateKana() {
+        KanaToRoma kr = new KanaToRoma();
+        return new HashSet<>(kr.kana.keySet());
     }
 
     /**

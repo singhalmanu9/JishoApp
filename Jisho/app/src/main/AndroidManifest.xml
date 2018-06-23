@@ -22,7 +22,8 @@
             android:name=".DisplayQueryActivity"
             android:parentActivityName=".SearchActivity" />
         <activity android:name=".AboutActivity" />
-        <activity android:name=".RadSearchActivity"></activity>
+        <activity android:name=".RadSearchActivity" />
+        <activity android:name=".KanjiPageActivity"></activity>
     </application>
 
 </manifest>
