@@ -37,42 +37,53 @@ public class KanjiPageActivity extends AppCompatActivity {
         for (String k: kanji) {
             TextView kanjiTV = new TextView(this);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(10, 0, 10, 0);
+            lp.setMargins(10, 10, 10, 0);
             kanjiTV.setLayoutParams(lp);
-            kanjiTV.setText("N" + kanjiInfo.get(k).get("jlpt").get(0) + "　" + k);
-            kanjiTV.setTextSize(48);
-            kanjiTV.setPadding(10, 0, 0, 0);
-            ll.addView(kanjiTV);
+            if (!kanjiInfo.containsKey(k)) {
+                kanjiTV.setText("No information about "+ k +"! :(");
+                kanjiTV.setTextSize(36);
+                kanjiTV.setPadding(10, 0, 0, 0);
+                ll.addView(kanjiTV);
+            } else {
+                if (kanjiInfo.get(k).get("jlpt").get(0) != null) {
+                    kanjiTV.setText("N" + kanjiInfo.get(k).get("jlpt").get(0) + "　" + k);
+                } else {
+                    kanjiTV.setText(" 　　" + k);
+                }
+                kanjiTV.setTextSize(48);
+                kanjiTV.setPadding(10, 0, 0, 0);
+                ll.addView(kanjiTV);
 
-            TextView readingsTV = new TextView(this);
-            readingsTV.setLayoutParams(lp);
-            String read = "Readings: ";
-            for (String s : kanjiInfo.get(k).get("readings"))
-                read += s + ", ";
-            readingsTV.setText(read);
-            readingsTV.setTextSize(24);
-            readingsTV.setPadding(10, 0, 0, 0);
-            ll.addView(readingsTV);
+                TextView readingsTV = new TextView(this);
+                readingsTV.setLayoutParams(lp);
+                String read = "Readings: ";
+                for (String s : kanjiInfo.get(k).get("readings"))
+                    read += s + ", ";
+                readingsTV.setText(read);
+                readingsTV.setTextSize(24);
+                readingsTV.setPadding(10, 0, 0, 0);
+                ll.addView(readingsTV);
 
-            TextView meaningsTV = new TextView(this);
-            meaningsTV.setLayoutParams(lp);
-            String mean = "Meanings: ";
-            for (String s : kanjiInfo.get(k).get("meanings"))
-                mean += s + ", ";
-            meaningsTV.setText(mean);
-            meaningsTV.setTextSize(24);
-            meaningsTV.setPadding(10, 0, 0, 0);
-            ll.addView(meaningsTV);
+                TextView meaningsTV = new TextView(this);
+                meaningsTV.setLayoutParams(lp);
+                String mean = "Meanings: ";
+                for (String s : kanjiInfo.get(k).get("meanings"))
+                    mean += s + ", ";
+                meaningsTV.setText(mean);
+                meaningsTV.setTextSize(24);
+                meaningsTV.setPadding(10, 0, 0, 0);
+                ll.addView(meaningsTV);
 
-            TextView nameTV = new TextView(this);
-            nameTV.setLayoutParams(lp);
-            String names = "Name Readings: ";
-            for (String s : kanjiInfo.get(k).get("nanori"))
-                names += s + ", ";
-            nameTV.setText(names);
-            nameTV.setTextSize(24);
-            nameTV.setPadding(10, 0, 0, 0);
-            ll.addView(nameTV);
+                TextView nameTV = new TextView(this);
+                nameTV.setLayoutParams(lp);
+                String names = "Name Readings: ";
+                for (String s : kanjiInfo.get(k).get("nanori"))
+                    names += s + ", ";
+                nameTV.setText(names);
+                nameTV.setTextSize(24);
+                nameTV.setPadding(10, 0, 0, 0);
+                ll.addView(nameTV);
+            }
         }
     }
 }

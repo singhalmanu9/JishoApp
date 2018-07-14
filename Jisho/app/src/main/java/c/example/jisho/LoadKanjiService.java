@@ -41,8 +41,5 @@ public class LoadKanjiService extends IntentService {
             obj = null;
         }
         KanjiPageActivity.setKanjiInfo(obj);
-        Toast t = Toast.makeText(getApplicationContext(), "Kanji loaded", Toast.LENGTH_SHORT);
-        t.setGravity(Gravity.TOP, 0, 0);
-        t.show();
     }
 }

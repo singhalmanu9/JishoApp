@@ -1,21 +1,31 @@
 package c.example.jisho;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.MainThread;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -37,6 +47,27 @@ public class DisplayQueryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_display_query);
         Intent intent = getIntent();
 
+        SharedPreferences sp = getApplicationContext().getSharedPreferences("myprefs", Context.MODE_PRIVATE);
+        if (!sp.contains("opened")) {
+            SharedPreferences.Editor editor = sp.edit();
+            TextView toastTV = new TextView(this);
+            toastTV.setBackgroundColor(Color.BLACK);
+            toastTV.setTextColor(Color.WHITE);
+            toastTV.setTextSize(30);
+            toastTV.setText("Try tapping on a word with kanji!");
+            toastTV.setPadding(10, 10, 10, 10);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                toastTV.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            }
+            Toast t = new Toast(getApplicationContext());
+            t.setView(toastTV);
+            t.setGravity(Gravity.BOTTOM, 0, 100);
+            t.show();
+
+            editor.putBoolean("opened", true);
+            editor.apply();
+        }
+
         new Search().execute(intent);
     }
 
@@ -52,6 +83,9 @@ public class DisplayQueryActivity extends AppCompatActivity {
                 final TextView queryTV = new TextView(getApplicationContext());
                 queryTV.setText(queryResult);
                 queryTV.setTextSize(18);
+
+
+
                 /* makes Ui thread the only thread to update Ui */
                 runOnUiThread(new Runnable() {
 
@@ -89,7 +123,8 @@ public class DisplayQueryActivity extends AppCompatActivity {
                     JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
                     System.out.println(object.toString(5));
                     textViewCreate(object);
-                } catch (JSONException e) {
+
+                } catch (JSONException js) {
                     errorMessageCreate();
                 }
             }
