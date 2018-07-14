@@ -28,7 +28,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class RadSearchActivity extends AppCompatActivity {
+
     public RadSearchActivity() {}
+
     private static HashMap<Integer, ArrayList<String>> strokeMap;
     private static HashMap<String, ArrayList<String>> radicalMap;
     private static HashSet<String> radicalsSelected;

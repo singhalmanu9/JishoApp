@@ -23,7 +23,11 @@
             android:parentActivityName=".SearchActivity" />
         <activity android:name=".AboutActivity" />
         <activity android:name=".RadSearchActivity" />
-        <activity android:name=".KanjiPageActivity"></activity>
+        <activity android:name=".KanjiPageActivity" />
+
+        <service
+            android:name=".LoadKanjiService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

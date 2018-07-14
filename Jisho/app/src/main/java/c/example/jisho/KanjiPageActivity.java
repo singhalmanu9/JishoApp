@@ -16,7 +16,7 @@ import java.util.HashMap;
 public class KanjiPageActivity extends AppCompatActivity {
 
     public String[] kanji = {};
-    public HashMap<String, HashMap<String, ArrayList<String>>> kanjiInfo = new HashMap<>();
+    public static HashMap<String, HashMap<String, ArrayList<String>>> kanjiInfo = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,8 +24,11 @@ public class KanjiPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_kanji_page);
         Intent i = getIntent();
         kanji = i.getStringArrayExtra("KANJI");
-        kanjiInfo = readStrokeMap();
         createKanjiViews();
+    }
+
+    public static void setKanjiInfo(HashMap<String, HashMap<String, ArrayList<String>>> inf) {
+        kanjiInfo = inf;
     }
 
     protected void createKanjiViews() {
@@ -71,28 +74,5 @@ public class KanjiPageActivity extends AppCompatActivity {
             nameTV.setPadding(10, 0, 0, 0);
             ll.addView(nameTV);
         }
-    }
-
-    /**
-     * reads in the strokeMap from a serialized file of it.
-     * @return the strokeMap from a serialized file.
-     */
-    protected HashMap<String, HashMap<String, ArrayList<String>>> readStrokeMap() {
-        HashMap<String, HashMap<String, ArrayList<String>>> obj;
-        Resources x = getResources();
-        try {
-
-            ObjectInputStream inp =
-                    new ObjectInputStream(x.openRawResource(R.raw.kanjimap));
-            obj = (HashMap<String, HashMap<String, ArrayList<String>>>) inp.readObject();
-            inp.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            obj = null;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            obj = null;
-        }
-        return obj;
     }
 }
