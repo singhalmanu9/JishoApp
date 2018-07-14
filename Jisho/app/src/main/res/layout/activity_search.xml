@@ -16,7 +16,7 @@
         android:layout_height="52dp"
         android:layout_marginTop="40dp"
         android:elevation="24dp"
-        android:onClick="search"
+        android:onClick="openDispQuery"
         android:text="@string/search"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         android:textColorLink="@android:color/background_dark"
@@ -30,6 +30,7 @@
 
     <EditText
         android:id="@+id/searchField"
+        android:imeOptions="actionSearch"
         style="@android:style/Widget.DeviceDefault.EditText"
         android:layout_width="319dp"
         android:layout_height="wrap_content"

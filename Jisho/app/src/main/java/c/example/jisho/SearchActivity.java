@@ -5,10 +5,13 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -28,6 +31,16 @@ public class SearchActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         Intent i = new Intent(this, LoadKanjiService.class);
         startService(i);
+
+        ((EditText) findViewById(R.id.searchField)).setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_SEARCH) {
+                    search();
+                }
+                return false;
+            }
+        });
     }
 
     /**
@@ -58,9 +71,8 @@ public class SearchActivity extends AppCompatActivity {
 
     /**
      * Searches the Jisho.org API given a user-defined query.
-     * @param view not used.
      */
-    public void search(View view) {
+    public void search() {
         Intent i = new Intent(this, DisplayQueryActivity.class);
         EditText editText = findViewById(R.id.searchField);
         String query = editText.getText().toString();
@@ -76,6 +88,10 @@ public class SearchActivity extends AppCompatActivity {
             i.putExtra("ROMANIZATION",ROMANIZATION);
             startActivity(i);
         }
+    }
+
+    public void openDispQuery(View view) {
+        search();
     }
 
     /**

@@ -392,13 +392,17 @@ public class DisplayQueryActivity extends AppCompatActivity {
         HashSet<String> kana = populateKana();
         kanji.clear();
         for (char c: word.toCharArray()) {
-            if (!kana.contains(c + "") && !(c == 'ゃ' || c == 'ょ' || c == 'ゅ')) {
-                kanji.add(c + "");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                if (Character.isIdeographic(c)) {
+                    kanji.add(c + "");
+                }
             }
         }
-        Intent i = new Intent(this, KanjiPageActivity.class);
-        i.putExtra("KANJI", kanji.toArray(new String[kanji.size()]));
-        startActivity(i);
+        if (kanji.size() != 0) {
+            Intent i = new Intent(this, KanjiPageActivity.class);
+            i.putExtra("KANJI", kanji.toArray(new String[kanji.size()]));
+            startActivity(i);
+        }
     }
 
     /**
