@@ -52,6 +52,7 @@ public class KanjiPageActivity extends AppCompatActivity {
                 }
                 kanjiTV.setTextSize(48);
                 kanjiTV.setPadding(10, 0, 0, 0);
+                kanjiTV.setTextIsSelectable(true);
                 ll.addView(kanjiTV);
 
                 TextView readingsTV = new TextView(this);
@@ -62,6 +63,7 @@ public class KanjiPageActivity extends AppCompatActivity {
                 readingsTV.setText(read);
                 readingsTV.setTextSize(24);
                 readingsTV.setPadding(10, 0, 0, 0);
+                readingsTV.setTextIsSelectable(true);
                 ll.addView(readingsTV);
 
                 TextView meaningsTV = new TextView(this);
@@ -72,6 +74,7 @@ public class KanjiPageActivity extends AppCompatActivity {
                 meaningsTV.setText(mean);
                 meaningsTV.setTextSize(24);
                 meaningsTV.setPadding(10, 0, 0, 0);
+                meaningsTV.setTextIsSelectable(true);
                 ll.addView(meaningsTV);
 
                 TextView nameTV = new TextView(this);
@@ -82,6 +85,7 @@ public class KanjiPageActivity extends AppCompatActivity {
                 nameTV.setText(names);
                 nameTV.setTextSize(24);
                 nameTV.setPadding(10, 0, 0, 0);
+                nameTV.setTextIsSelectable(true);
                 ll.addView(nameTV);
             }
         }

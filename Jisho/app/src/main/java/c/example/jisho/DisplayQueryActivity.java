@@ -51,10 +51,10 @@ public class DisplayQueryActivity extends AppCompatActivity {
         if (!sp.contains("opened")) {
             SharedPreferences.Editor editor = sp.edit();
             TextView toastTV = new TextView(this);
-            toastTV.setBackgroundColor(Color.BLACK);
+            toastTV.setBackgroundColor(Color.rgb(80,80,80));
             toastTV.setTextColor(Color.WHITE);
             toastTV.setTextSize(30);
-            toastTV.setText("Try tapping on a word with kanji!");
+            toastTV.setText(R.string.kanjDispHelp);
             toastTV.setPadding(10, 10, 10, 10);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 toastTV.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
@@ -83,8 +83,8 @@ public class DisplayQueryActivity extends AppCompatActivity {
                 final TextView queryTV = new TextView(getApplicationContext());
                 queryTV.setText(queryResult);
                 queryTV.setTextSize(18);
-
-
+                queryTV.setTextColor(Color.rgb(80,80,80));
+                queryTV.setTextIsSelectable(true);
 
                 /* makes Ui thread the only thread to update Ui */
                 runOnUiThread(new Runnable() {
@@ -209,6 +209,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
                     txt.setText("Common");
                     txt.setBackgroundColor(Color.rgb(200, 0, 200));
                     txt.setTextColor(Color.rgb(255, 255, 255));
+                    txt.setTextIsSelectable(true);
                     linlay.addView(txt);
                 }
             } catch (JSONException e) {
@@ -243,12 +244,15 @@ public class DisplayQueryActivity extends AppCompatActivity {
             try {
                 textReading.setText(jpObj.getString("reading"));
                 textReading.setTextSize(24);
+                textReading.setTextColor(Color.rgb(80,80,80));
+                textReading.setTextIsSelectable(true);
                 linlay.addView(textReading);
 
             } catch (JSONException e) {}
             try {
                 textWord.setText(jpObj.getString("word"));
                 textWord.setTextSize(48);
+                textWord.setTextColor(Color.rgb(80,80,80));
                 textWord.setClickable(true);
                 textWord.setOnClickListener(new View.OnClickListener() {
                                                 public void onClick(View view) {
@@ -256,6 +260,7 @@ public class DisplayQueryActivity extends AppCompatActivity {
                                                         openKanjiPages(jpObj.getString("word"));
                                                     } catch (JSONException e) {}
                                                 }});
+                textWord.setTextIsSelectable(true);
                 linlay.addView(textWord);
             } catch (JSONException e) {}
             Boolean romanization = getIntent().getBooleanExtra("ROMANIZATION", false);
@@ -266,7 +271,9 @@ public class DisplayQueryActivity extends AppCompatActivity {
                                 LinearLayout.LayoutParams.WRAP_CONTENT));
                 romaji.setText(new KanaToRoma().toRomaji(jpObj.getString("reading")));
                 romaji.setTextSize(24);
+                romaji.setTextColor(Color.rgb(80,80,80));
                 romaji.setTypeface(null, Typeface.ITALIC);
+                romaji.setTextIsSelectable(true);
                 linlay.addView(romaji);
             }
         }
@@ -305,6 +312,8 @@ public class DisplayQueryActivity extends AppCompatActivity {
             txt.setTextSize(24);
             String definitionLine = defCount + ". " + x.toString();
             txt.setText(definitionLine);
+            txt.setTextColor(Color.rgb(80,80,80));
+            txt.setTextIsSelectable(true);
             linlay.addView(txt);
         }
 
@@ -333,6 +342,8 @@ public class DisplayQueryActivity extends AppCompatActivity {
                 System.err.println("PARTS OF SPEECH PARSING COMPLETE.");
             }
             txt.setText(x.toString());
+            txt.setTextColor(Color.rgb(80,80,80));
+            txt.setTextIsSelectable(true);
             linlay.addView(txt);
         }
 
@@ -396,6 +407,10 @@ public class DisplayQueryActivity extends AppCompatActivity {
                 if (Character.isIdeographic(c)) {
                     kanji.add(c + "");
                 }
+            } else {
+                if (!kana.contains(c + "") && !(c == 'ゃ' || c == 'ょ' || c == 'ゅ')) {
+                    kanji.add(c + "");
+                }
             }
         }
         if (kanji.size() != 0) {
@@ -403,6 +418,31 @@ public class DisplayQueryActivity extends AppCompatActivity {
             i.putExtra("KANJI", kanji.toArray(new String[kanji.size()]));
             startActivity(i);
         }
+    }
+
+    /**
+     * Displays helpful message on the kanji page (double tap
+     * brings up kanji information)
+     */
+    public void displayHelp(View view) {
+        SharedPreferences sp = getApplicationContext().getSharedPreferences("myprefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        TextView toastTV = new TextView(this);
+        toastTV.setBackgroundColor(Color.rgb(80,80,80));
+        toastTV.setTextColor(Color.WHITE);
+        toastTV.setTextSize(30);
+        toastTV.setText(R.string.kanjDispHelp);
+        toastTV.setPadding(10, 10, 10, 10);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            toastTV.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        }
+        Toast t = new Toast(getApplicationContext());
+        t.setView(toastTV);
+        t.setGravity(Gravity.BOTTOM, 0, 100);
+        t.show();
+
+        editor.putBoolean("opened", true);
+        editor.apply();
     }
 
     /**
