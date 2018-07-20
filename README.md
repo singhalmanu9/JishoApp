@@ -6,11 +6,13 @@ What's new:
 * v1.0.0 - Supports E->J and J->E searches
 * v2.0.1 - Supports search by radical
 * v2.1.1 - Tap for more Kanji info
+* v2.1.3 - White text bug fix, text now selectable
 
 What we're working on:
 * ~~search by radical~~
 * ~~kanji information available on click~~
 * ~~display romaji along with kana~~
 * search by handwriting
+* display radicals in kanji page
 * pronounciations for results (on hold)
 * offline mode
