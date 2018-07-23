@@ -133,7 +133,7 @@ class DefinitionWidget {
     List<Widget> subsenses = new List();
     for (int i = 0; i < jsonList.length; i++) {
       subsenses.add(
-        getSubsense(jsonList[i], i),
+        getSubsense(jsonList[i], i + 1),
       );
       subsenses.add(new Text(''));
     }
