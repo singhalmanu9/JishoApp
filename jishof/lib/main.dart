@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
 
 void main() => runApp(new MyApp());
 
@@ -111,14 +114,189 @@ class SearchTextField extends InheritedWidget {
   bool updateShouldNotify(SearchTextField stv) => textField != stv.textField;
 }
 
-class DefaultSearchPage extends StatelessWidget {
+class DefaultSearchPage extends StatefulWidget {
   String searchTextField;
 
   DefaultSearchPage(String searchTextField)
       : this.searchTextField = searchTextField;
 
+  @override
+  _DefaultSearchPageState createState() =>
+      new _DefaultSearchPageState(searchTextField);
+}
+
+class _DefaultSearchPageState extends State<DefaultSearchPage> {
+  List<DefinitionWidget> _defWidgets = <DefinitionWidget>[];
+  String searchTextField;
+
+  _DefaultSearchPageState(String searchTextField)
+      : this.searchTextField = searchTextField;
+
+  @override
   Widget build(BuildContext context) {
-    return new Text(
-        searchTextField); //TODO change this into the search process. dynamically build the list of widgets from thereon.
+    // TODO: implement build
+    List<Widget> defList = new List();
+    for (int i = 0; i < _defWidgets.length; i++) {
+      defList.add(_defWidgets[i].getWidget());
+    }
+    return new Scaffold(
+      body: new ListView(children: defList),
+    );
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    listenForDefinitions();
+  }
+
+  listenForDefinitions() async {
+    var stream = await getJSON();
+    stream.listen((json) => setState(() => _defWidgets.add(json)));
+  }
+
+  Future<Stream<DefinitionWidget>> getJSON() async {
+    final String API = "https://jisho.org/api/v1/search/words?keyword=";
+    var url = API + searchTextField;
+    var client = new http.Client();
+    var streamedRes =
+        await client.send(new http.Request('get', Uri.parse(url)));
+    return streamedRes.stream
+        .transform(UTF8.decoder)
+        .transform(JSON.decoder)
+        .expand((jsonBody) => (jsonBody as Map)['data'])
+        .map((jsonDefinition) => DefinitionWidget.fromJson(
+            jsonDefinition)); //TODO change this into the search process. dynamically build the list of widgets from thereon.
+  }
+}
+
+class DefinitionWidget {
+  final Text isCommon;
+  final Text tags;
+  final Column japanese;
+  final Column senses;
+  final Map attribution;
+
+  var _tags;
+  final Map _japanese;
+  var _sensess;
+  var _attribution;
+
+  Widget getWidget() {
+    if (isCommon != null) {
+      return new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        textDirection: TextDirection.ltr,
+        children: <Widget>[isCommon, tags, japanese, senses],
+      );
+    } else {
+      return new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        textDirection: TextDirection.ltr,
+        children: <Widget>[tags, japanese, senses],
+      );
+    }
+  }
+
+  DefinitionWidget.fromJson(Map jsonMap)
+      : isCommon = jsonMap['is_common'] == true ? new Text('common') : null,
+        _tags = jsonMap['tags'],
+        tags = createTagsWidget(jsonMap['tags']),
+        _japanese = (jsonMap['japanese'] as List).elementAt(0) as Map,
+        japanese = createJapaneseSubwidget(
+            (jsonMap['japanese'] as List).elementAt(0) as Map),
+        //TODO get other forms, (elements 1 and above)
+        senses = createSensesSubwidget(jsonMap['senses']),
+        attribution = jsonMap['attribution'];
+
+  static Column createJapaneseSubwidget(Map jsonMap) {
+    Widget mainFormReading =
+        new Text(jsonMap['reading']); //TODO make this look pretty
+    Widget mainFormWord =
+        new Text(jsonMap['word']); //TODO make this look pretty
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      textDirection: TextDirection.ltr,
+      children: <Widget>[
+        mainFormReading,
+        mainFormWord,
+      ],
+    );
+  }
+
+  static Column createSensesSubwidget(List jsonList) {
+    List<Widget> subsenses = new List();
+    for (int i = 0; i < jsonList.length; i++) {
+      subsenses.add(
+        getSubsense(jsonList[i], i),
+      );
+      subsenses.add(new Text(''));
+    }
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      textDirection: TextDirection.ltr,
+      children: subsenses,
+    );
+  }
+
+  static Widget getSubsense(Map jsonMap, int index) {
+    //TODO QUERY AKUMA AND LOOK FOR TAGS ON API. THIS IS IMPORTANT
+    //TODO eventually add links tags restrictions, see_also, antonyms, source, and info procedures
+    StringBuffer engDefBuffer = new StringBuffer();
+    List engDefs = jsonMap['english_definitions'];
+    for (int i = 0; i < engDefs.length - 1; i++) {
+      engDefBuffer.write(engDefs[i]); //TODO same as above
+      engDefBuffer.write('; ');
+    }
+    if (engDefs.length > 0) {
+      engDefBuffer.write(engDefs[engDefs.length - 1]);
+    }
+    Widget engDefString = new Text(
+        index.toString() + '. ' + engDefBuffer.toString()); //TODO more styling
+
+    StringBuffer partSpeechBuffer = new StringBuffer();
+    List partSpeechMap = jsonMap['parts_of_speech'];
+    for (int i = 0; i < partSpeechMap.length - 1; i++) {
+      partSpeechBuffer.write(partSpeechMap[i]); //TODO same as above
+      partSpeechBuffer.write('; ');
+    }
+    if (partSpeechMap.length > 0) {
+      partSpeechBuffer.write(partSpeechMap[partSpeechMap.length - 1]);
+    }
+    String partSpeech = partSpeechBuffer.toString();
+    Widget partSpeechString =
+        new Text(partSpeechBuffer.toString()); //TODO styling
+    if (partSpeech.length > 0) {
+      return new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          textDirection: TextDirection.ltr,
+          children: <Widget>[partSpeechString, engDefString]);
+    } else {
+      return new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        textDirection: TextDirection.ltr,
+        children: <Widget>[engDefString],
+      );
+    }
+  }
+
+  static Widget createTagsWidget(List jsonList) {
+    StringBuffer tagBuffer = new StringBuffer();
+
+    for (int i = 0; i < jsonList.length - 1; i++) {
+      tagBuffer.write(jsonList[i]); //TODO same as above
+      tagBuffer.write('; ');
+    }
+    if (jsonList.length > 0) {
+      tagBuffer.write(jsonList[jsonList.length - 1]);
+    }
+    return new Text(tagBuffer.toString()); //TODO more styling
   }
 }
