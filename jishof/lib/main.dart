@@ -32,7 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return new Scaffold(//TODO: ABOUT BUTTON, REPOSITION SEARCH BUTTON, RADICAL SEARCH BUTTON, ROMANIZATION CHECKBOX
       body: new Center(
           child: new Padding(padding: new EdgeInsets.fromLTRB(0.0, 90.0, 0.0, 0.0) ,child:new Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -53,7 +53,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   textAlign: TextAlign.left,
                   controller: searchBarController,
                 )),
-          ]))),
+                new Text("To translate E -> J, surround with \"  \".",textAlign: TextAlign.center, textScaleFactor: 1.25,style: new TextStyle(color: Colors.black54),)
+              ]))),
       floatingActionButton: new Builder(builder: (context){return new FloatingActionButton(
         onPressed: ()
     {
