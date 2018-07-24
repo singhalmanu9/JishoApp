@@ -48,7 +48,6 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     listenForDefinitions();
   }
@@ -74,7 +73,6 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
 }
 
 class DefinitionWidget {
-  final bool hasData;
   final Widget isCommon;
   final Widget tags;
   final Column japanese;
