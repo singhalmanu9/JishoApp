@@ -27,11 +27,23 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
     List<Widget> defList = new List();
     for (int i = 0; i < _defWidgets.length; i++) {
       defList.add(_defWidgets[i].getWidget());
-      defList.add(Divider(color: Colors.black45,));
+      defList.add(Divider(
+        color: Colors.black45,
+      ));
     }
-    return new Scaffold(
-      body: new ListView(children: defList),
-    );
+    if (defList.length > 0) {
+      return new Scaffold(
+          body: new Padding(
+        padding: new EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+        child: new ListView(children: defList),
+      ));
+    } else {
+      return new Scaffold(
+          body: new Padding(
+              padding:
+                  new EdgeInsets.symmetric(vertical: 30.0, horizontal: 10.0),
+              child: new Text("Query had no results.")));
+    }
   }
 
   @override
@@ -51,17 +63,18 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
     var url = API + searchTextField;
     var client = new http.Client();
     var streamedRes =
-    await client.send(new http.Request('get', Uri.parse(url)));
+        await client.send(new http.Request('get', Uri.parse(url)));
     return streamedRes.stream
         .transform(UTF8.decoder)
         .transform(JSON.decoder)
         .expand((jsonBody) => (jsonBody as Map)['data'])
         .map((jsonDefinition) => DefinitionWidget.fromJson(
-        jsonDefinition)); //TODO change this into the search process. dynamically build the list of widgets from thereon.
+            jsonDefinition)); //TODO change this into the search process. dynamically build the list of widgets from thereon.
   }
 }
 
 class DefinitionWidget {
+  final bool hasData;
   final Widget isCommon;
   final Widget tags;
   final Column japanese;
@@ -79,7 +92,9 @@ class DefinitionWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         textDirection: TextDirection.ltr,
         children: <Widget>[
-          new Row(children: <Widget>[isCommon, tags]), japanese, senses
+          new Row(children: <Widget>[isCommon, tags]),
+          japanese,
+          senses
         ], //TODO if we can get jlpt info like the site has, it goes in the row
       );
     } else {
@@ -94,30 +109,33 @@ class DefinitionWidget {
 
   DefinitionWidget.fromJson(Map jsonMap)
       : isCommon = jsonMap['is_common'] == true
-      ? new Container(
-    child: new Text('common',
-        style: new TextStyle(
-            color: Colors.white, background: isCommonPaint)),
-    decoration: new BoxDecoration(
-      borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
-      color: new Color(0xff8abc83),
-    ),
-    padding: new EdgeInsets.all(3.0),
-  )
-      : null,
+            ? new Container(
+                child: new Text('common',
+                    style: new TextStyle(
+                        color: Colors.white, background: isCommonPaint)),
+                decoration: new BoxDecoration(
+                  borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
+                  color: new Color(0xff8abc83),
+                ),
+                padding: new EdgeInsets.all(3.0),
+              )
+            : null,
         tags = createTagsWidget(jsonMap['tags']),
         japanese = createJapaneseSubwidget(
-            (jsonMap['japanese'] as List).elementAt(0)
-            as Map),
-  //TODO get other forms, (elements 1 and above)
+            (jsonMap['japanese'] as List).elementAt(0) as Map),
+        //TODO get other forms, (elements 1 and above)
         senses = createSensesSubwidget(jsonMap['senses']),
         attribution = jsonMap['attribution'];
 
   static Column createJapaneseSubwidget(Map jsonMap) {
-    Widget mainFormReading =
-    new Text(jsonMap['reading'],textScaleFactor: 1.5,); //TODO make this look pretty
-    Widget mainFormWord =
-    new Text(jsonMap['word'], textScaleFactor: 3.0, ); //TODO make this look pretty
+    Widget mainFormReading = new Text(
+      jsonMap['reading'],
+      textScaleFactor: 1.5,
+    ); //TODO make this look pretty
+    Widget mainFormWord = new Text(
+      jsonMap['word'],
+      textScaleFactor: 3.0,
+    ); //TODO make this look pretty
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -170,8 +188,11 @@ class DefinitionWidget {
       partSpeechBuffer.write(partSpeechMap[partSpeechMap.length - 1]);
     }
     String partSpeech = partSpeechBuffer.toString();
-    Widget partSpeechString =
-    new Text(partSpeechBuffer.toString(),style: new TextStyle(color: Colors.black45),textScaleFactor: .8,); //TODO styling
+    Widget partSpeechString = new Text(
+      partSpeechBuffer.toString(),
+      style: new TextStyle(color: Colors.black45),
+      textScaleFactor: .8,
+    ); //TODO styling
     if (partSpeech.length > 0) {
       return new Column(
           crossAxisAlignment: CrossAxisAlignment.start,

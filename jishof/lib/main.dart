@@ -27,20 +27,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   static TextEditingController searchBarController =
       new TextEditingController();
-
-  void _search() {
-    Navigator.pushNamed(context, '/defaultSearch');
-  }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       body: new Center(
-          child: new Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+          child: new Padding(padding: new EdgeInsets.fromLTRB(0.0, 90.0, 0.0, 0.0) ,child:new Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
             new Image(
               image: new AssetImage('assets/drawable/download.png'),
@@ -58,12 +53,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   textAlign: TextAlign.left,
                   controller: searchBarController,
                 )),
-          ])),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: _search,
+          ]))),
+      floatingActionButton: new Builder(builder: (context){return new FloatingActionButton(
+        onPressed: ()
+    {
+    if (searchBarController.text.length > 0) {
+    Navigator.pushNamed(context, '/defaultSearch');
+    } else {
+    Scaffold.of(context).showSnackBar(new SnackBar(
+    content: new Text("Please enter in a query before searching.")));
+    }
+    }, //anonymous function deeming whether there is sufficient information to search,
         tooltip: 'Search',
         child: new Icon(Icons.search),
-      ),
+      );}),
     );
   }
 }
