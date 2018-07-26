@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      //TODO: ADD RADICAL SEARCH BUTTON, ROMANIZATION CHECKBOX
+      //TODO:ADD ROMANIZATION CHECKBOX
       body: new Center(
           child: new Padding(
               padding: new EdgeInsets.fromLTRB(0.0, 90.0, 0.0, 0.0),

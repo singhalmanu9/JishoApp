@@ -15,51 +15,58 @@ class DefaultSearchPage extends StatefulWidget {
 }
 
 class _DefaultSearchPageState extends State<DefaultSearchPage> {
-  List<DefinitionWidget> _defWidgets = <DefinitionWidget>[];
+  List<Widget> _defWidgets = <Widget>[];
   String searchTextField;
-
+  bool fullQuery;
   _DefaultSearchPageState(String searchTextField)
       : this.searchTextField = searchTextField;
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    List<Widget> defList = new List();
-    for (int i = 0; i < _defWidgets.length; i++) {
-      defList.add(_defWidgets[i].getWidget());
-      defList.add(Divider(
-        color: Colors.black45,
-      ));
-    }
-    if (defList.length > 0) {
-      return new Scaffold(
-          body: new Padding(
-        padding: new EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
-        child: new ListView(children: defList),
-      ));
+    if (fullQuery) {
+      if (_defWidgets.length > 0) {
+        return new Scaffold(
+            body: new Padding(
+          padding: new EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+          child: new ListView(children: _defWidgets),
+        ));
+      } else {
+        return new Scaffold(
+            body: new Padding(
+          padding: new EdgeInsets.symmetric(vertical: 30.0, horizontal: 10.0),
+          child: new Text("Loading Query"),
+        ));
+      }
     } else {
       return new Scaffold(
           body: new Padding(
               padding:
                   new EdgeInsets.symmetric(vertical: 30.0, horizontal: 10.0),
               child: new Text("Query had no results.")));
-    }
+    } //TODO deadQuery needs to
   }
 
   @override
   void initState() {
     super.initState();
+    fullQuery = true;
     listenForDefinitions();
   }
 
   listenForDefinitions() async {
     var stream = await getJSON();
-    stream.listen((json) => setState(() => _defWidgets.add(json)));
+    stream.listen((json) => setState(() => _defWidgets.add(json.getWidget())));
+    if (_defWidgets.length == 0) {
+      setState(() {
+        fullQuery = false;
+      });
+    }
   }
 
   Future<Stream<DefinitionWidget>> getJSON() async {
-    final String API = "https://jisho.org/api/v1/search/words?keyword=";
-    var url = API + searchTextField;
+    final String api = "https://jisho.org/api/v1/search/words?keyword=";
+    var url = api + searchTextField;
     var client = new http.Client();
     var streamedRes =
         await client.send(new http.Request('get', Uri.parse(url)));
@@ -67,8 +74,7 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
         .transform(UTF8.decoder)
         .transform(JSON.decoder)
         .expand((jsonBody) => (jsonBody as Map)['data'])
-        .map((jsonDefinition) => DefinitionWidget.fromJson(
-            jsonDefinition)); //TODO change this into the search process. dynamically build the list of widgets from thereon.
+        .map((jsonDefinition) => DefinitionWidget.fromJson(jsonDefinition));
   }
 }
 
@@ -100,7 +106,11 @@ class DefinitionWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         textDirection: TextDirection.ltr,
-        children: <Widget>[tags, japanese, senses], //TODO see above block
+        children: <Widget>[
+          tags,
+          japanese,
+          senses
+        ], //TODO see above block on jlpt info
       );
     }
   }
@@ -121,7 +131,7 @@ class DefinitionWidget {
         tags = createTagsWidget(jsonMap['tags']),
         japanese = createJapaneseSubwidget(
             (jsonMap['japanese'] as List).elementAt(0) as Map),
-        //TODO get other forms, (elements 1 and above)
+        //TODO get other forms, (elements 1 and above). these would go at the bottom of the definitionwidget
         senses = createSensesSubwidget(jsonMap['senses']),
         attribution = jsonMap['attribution'];
 
