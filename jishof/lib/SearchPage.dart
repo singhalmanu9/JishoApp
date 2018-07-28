@@ -23,7 +23,6 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     if (fullQuery) {
       if (_defWidgets.length > 0) {
         return new Scaffold(
@@ -44,7 +43,7 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
               padding:
                   new EdgeInsets.symmetric(vertical: 30.0, horizontal: 10.0),
               child: new Text("Query had no results.")));
-    } //TODO deadQuery needs to
+    }
   }
 
   @override
