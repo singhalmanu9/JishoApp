@@ -108,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
             } else {
               Scaffold.of(context).showSnackBar(new SnackBar(
                   content:
-                      new Text("Please enter in a query before searching.")));
+                  new Text("Please enter in a query before searching.")));
             }
           }, //anonymous function deeming whether there is sufficient information to search,
           tooltip: 'Search',

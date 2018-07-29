@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:async';
-
+//TODO get Navigator route added somewhere... google this.
 class RadicalPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -95,7 +95,22 @@ class _RadicalPageState extends State<RadicalPage> {
                 ),
                 children: radicalButtons,
               )
-            ])));
+            ])),
+        floatingActionButton: new Builder(builder: (context) {
+      return new FloatingActionButton(
+        onPressed: () {
+          if (searchBarController.text.length > 0) {
+            Navigator.pushNamed(context, '/defaultSearch');
+          } else {
+            Scaffold.of(context).showSnackBar(new SnackBar(
+                content:
+                new Text("Please enter in a query before searching.")));
+          }
+        }, //anonymous function deeming whether there is sufficient information to search,
+        tooltip: 'Search',
+        child: new Icon(Icons.search),
+      );}
+      ));
   }
 
   void generateRadButtons() {
