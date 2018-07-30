@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:async';
+
 //TODO get Navigator route added somewhere... google this.
 class RadicalPage extends StatefulWidget {
   @override
@@ -25,16 +26,16 @@ class _RadicalPageState extends State<RadicalPage> {
   Map strokeMapJSON;
 
   /// the set of radicals currently selected.
-  Set<String> selectedSet;
+  Set<String> selectedSet = new Set<String>();
 
   ///the set of kanji that contain each radical in selectedSet.
-  Set<String> conditionedKanji;
+  Set<String> conditionedKanji = new Set<String>();
 
   ///the list of kanji that corresponds to conditionedKanji; used to get access to list operations.
-  List<String> condText;
+  List<String> condText = new List<String>();
 
   ///the List of Buttons corresponding to the kanji present in conditionedKanji
-  List<Widget> conditionedButtons;
+  List<Widget> conditionedButtons = new List<Widget>();
 
   ///a List of Buttons of radicals ordered by their strokes
   /// (and buttons with stroke numbers preceeding them)
@@ -48,27 +49,10 @@ class _RadicalPageState extends State<RadicalPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    generateRadButtons();
-    if (selectedSet == null) {
-      setState(() {
-        selectedSet = new Set();
-      });
-    }
-    if (conditionedKanji == null) {
-      setState(() {
-        conditionedKanji = new Set();
-        condText = new List();
-      });
-    }
-    if (conditionedButtons == null) {
-      setState(() {
-        conditionedButtons = new List();
-      });
-    }
     if (strokeMapJSON == null || radicalMapJSON == null) {
       getMaps();
     }
-    Text lengthMessage = new Text(conditionedButtons.length == 0
+    Text lengthMessage = new Text(conditionedButtons.length != 0
         ? "If the desired kanji is not present, refine the search by adding more radicals."
         : "");
     return new Scaffold(
@@ -85,51 +69,84 @@ class _RadicalPageState extends State<RadicalPage> {
                 controller: searchBarController,
               ),
               lengthMessage,
-              new ListView(
+              new Container(height: 100.0, child: new ListView(
                 scrollDirection: Axis.horizontal,
-                children: conditionedButtons,
-              ),
-              new GridView(
-                gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 8,
-                ),
-                children: radicalButtons,
-              )
+                children: getConditionedButtons(),
+              )),
+              new Container(
+                  height: 300.0,
+                  child: new GridView(
+                    gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 8,
+                    ),
+                    children: radicalButtons == null
+                        ? <Widget>[Text("Loading")]
+                        : radicalButtons,
+                  ))
             ])),
         floatingActionButton: new Builder(builder: (context) {
-      return new FloatingActionButton(
-        onPressed: () {
-          if (searchBarController.text.length > 0) {
-            Navigator.pushNamed(context, '/defaultSearch');
-          } else {
-            Scaffold.of(context).showSnackBar(new SnackBar(
-                content:
-                new Text("Please enter in a query before searching.")));
-          }
-        }, //anonymous function deeming whether there is sufficient information to search,
-        tooltip: 'Search',
-        child: new Icon(Icons.search),
-      );}
-      ));
+          return new FloatingActionButton(
+            onPressed: () {
+              if (searchBarController.text.length > 0) {
+                Navigator.pushNamed(context, '/defaultSearch');
+              } else {
+                Scaffold.of(context).showSnackBar(new SnackBar(
+                    content:
+                        new Text("Please enter in a query before searching.")));
+              }
+            }, //anonymous function deeming whether there is sufficient information to search,
+            tooltip: 'Search',
+            child: new Icon(Icons.search),
+          );
+        }));
   }
 
   void generateRadButtons() {
-    List<Widget> _radButtons = new List();
-    for (int i = 1; i < strokeMapJSON.length; i++) {
-      if (i < 15 || i > 16) {
-        //bypass stroke numbers without radicals (and stroke # images)
-        _radButtons.add(new Image(
-            image: new AssetImage(
-                'assets/drawable/stroke' + i.toString() + '.png')));
-        for (int j = 0; j < (strokeMapJSON[i] as List).length; i++) {
-          _radButtons.add(new CheckedPopupMenuItem(
-              child: new Image(
-                  image: new AssetImage('assets/drawable/r' +
-                      (strokeMapJSON[i][j].toString())
-                          .codeUnitAt(
-                              0) //TODO possibly change this if codeUnitAt doesn't give correct unicode
-                          .toString())))); //TODO add visual feedback to checked items (that stays after push)
-        }
+    List<Widget> _radButtons = new List<Widget>();
+    List<String> strokeVals = [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "17"
+    ];
+    for (int i = 0; i < strokeMapJSON.length; i++) {
+      _radButtons.add(new Image(
+          image: new AssetImage(
+              'assets/drawable/stroke' + strokeVals[i] + '.png')));
+      for (int j = 0; j < strokeMapJSON[strokeVals[i]].length; j++) {
+        _radButtons.add(
+          new Container(
+              decoration: new BoxDecoration(
+                image: new DecorationImage(
+                    image: new AssetImage('assets/drawable/r' +
+                        (strokeMapJSON[strokeVals[i]][j].toString())
+                            .codeUnitAt(
+                                0) //TODO gives correct unicode, just base 10
+                            .toRadixString(16) +
+                        '.png'),
+                    fit: BoxFit.fill),
+              ),
+              child: new FlatButton(
+                onPressed: (() {
+                  addOrDeleteRadical(String.fromCharCode(
+                      (strokeMapJSON[strokeVals[i]][j].toString())
+                          .codeUnitAt(0)));
+                }),
+              child: null,)),
+        );
+
+        /// /TODO add visual feedback to checked items (that stays after push)
       }
     }
     setState(() {
@@ -153,6 +170,7 @@ class _RadicalPageState extends State<RadicalPage> {
         .then((strokeMap) {
       setState(() {
         strokeMapJSON = jsonDecode(strokeMap);
+        generateRadButtons();
       });
     });
   }
@@ -160,33 +178,46 @@ class _RadicalPageState extends State<RadicalPage> {
   ///FUNCTIONS FOR SETS
   ///Adds a radical to selectedSet and computes what is to be displayed.
   void addRadical(String rad) {
-    Set radSet = new Set();
-    radSet.addAll(radicalMapJSON[rad]);
-    setState(() {
+    Set radSet = new Set<String>();
+    List<String> aw = radicalMapJSON[rad].cast<String>();
+    radSet.addAll(aw);
+
       //TODO GET THIS OFF OF THE UI THREAD
-      selectedSet.add(rad);
-      if (conditionedKanji.length != 0) {
-        conditionedKanji.intersection(radSet);
-      } else {
-        conditionedKanji = radSet;
-      }
+    selectedSet.add(rad);
+    if (conditionedKanji.length != 0) {
+      conditionedKanji.intersection(radSet);
+    } else {
+      conditionedKanji = radSet;
+    }
+    setState(() {
       conditionedButtons.addAll(makeConditionedButtons());
     });
   }
 
   ///Deletes a radical from selectedSet
   void deleteRadical(String rad) {
-    Iterator selectedIter = selectedSet.iterator;
+    List selectedIter = selectedSet.toList();
     setState(() {
       //TODO GET THIS OFF OF THE UI THREAD
-      selectedSet.remove(rad);
+      print(selectedSet.remove(rad));
+      print(conditionedButtons.length);
       conditionedKanji.clear();
-      conditionedKanji.addAll(selectedIter.current);
     });
-    selectedIter.moveNext();
-    for (int x = 1; x < selectedSet.length; x++) {
-      addRadical(selectedIter.current);
-      selectedIter.moveNext();
+    for (int i = 0; i < selectedSet.length; i++) {
+      addRadical(selectedIter[i]);
+    }
+  }
+
+  void addOrDeleteRadical(String rad) {
+      setState(() {
+        conditionedButtons.clear();
+      });
+
+    if (selectedSet.contains(rad)) {
+      print("cleared conditionedButtons");
+      deleteRadical(rad);
+    } else {
+      addRadical(rad);
     }
   }
 
@@ -195,10 +226,10 @@ class _RadicalPageState extends State<RadicalPage> {
         ? 100
         : conditionedKanji
             .length)); //set max size to 100, for the sake of the UI.
-    setState(() => condText = conditionedKanji.toList(growable: false));
+    condText = conditionedKanji.toList(growable: false);
     //TODO try to find a pragma omp equiv??
     for (int i = 0; i < condButtons.length; i++) {
-      condButtons[i] = new MaterialButton(
+      condButtons[i] = new FlatButton(
         onPressed: () => addToSearchBar(condText[i]),
         child: new Text(condText[i]),
       );
@@ -212,5 +243,8 @@ class _RadicalPageState extends State<RadicalPage> {
     setState(() {
       searchBarController.text = searchBarController.text + kanji;
     });
+  }
+  List<Widget> getConditionedButtons() {
+    return conditionedButtons;
   }
 }
