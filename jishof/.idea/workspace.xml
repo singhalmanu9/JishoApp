@@ -24,8 +24,8 @@
       <file leaf-file-name="RadicalPage.dart" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/RadicalPage.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="548">
-              <caret line="150" column="10" lean-forward="true" selection-start-line="150" selection-start-column="10" selection-end-line="150" selection-end-column="10" />
+            <state relative-caret-position="300">
+              <caret line="140" column="39" lean-forward="false" selection-start-line="140" selection-start-column="39" selection-end-line="140" selection-end-column="39" />
               <folding />
             </state>
           </provider>
@@ -74,8 +74,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>null</find>
-      <find>center</find>
       <find>column</find>
       <find>mainAxisAlignment: MainAxisAlignment.start,</find>
       <find>tagsPain</find>
@@ -104,6 +102,8 @@
       <find>Too man</find>
       <find>makeConditionedButtons</find>
       <find>makeCond</find>
+      <find>6</find>
+      <find>8</find>
     </findStrings>
     <dirStrings>
       <dir>C:\Users\Tim\flutterjisho\jishof\assets\drawable</dir>
@@ -183,7 +183,7 @@
     <property name="settings.editor.selected.configurable" value="flutter.settings" />
     <property name="android.project.structure.last.selected" value="SDK Location" />
     <property name="android.project.structure.proportion" value="0.15" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1533316311964" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1533319745961" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -809,8 +809,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/RadicalPage.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="548">
-          <caret line="150" column="10" lean-forward="true" selection-start-line="150" selection-start-column="10" selection-end-line="150" selection-end-column="10" />
+        <state relative-caret-position="300">
+          <caret line="140" column="39" lean-forward="false" selection-start-line="140" selection-start-column="39" selection-end-line="140" selection-end-column="39" />
           <folding />
         </state>
       </provider>

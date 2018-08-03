@@ -75,16 +75,19 @@ class _RadicalPageState extends State<RadicalPage> {
                     scrollDirection: Axis.horizontal,
                     children: conditionedButtons,
                   )),
-              new Container(
-                  height: 300.0,
-                  child: new GridView(
-                    gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 8,
-                    ),
-                    children: radicalButtons == null
-                        ? <Widget>[Text("Loading")]
-                        : radicalButtons,
-                  ))
+              new Padding(
+                  padding: EdgeInsets.symmetric(horizontal:20.0),
+                  child: Container(
+                      height: 300.0,
+                      child: new GridView(
+                        gridDelegate:
+                            new SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 5,
+                        ),
+                        children: radicalButtons == null
+                            ? <Widget>[Text("Loading")]
+                            : radicalButtons,
+                      )))
             ])),
         floatingActionButton: new Builder(builder: (context) {
           return new FloatingActionButton(
@@ -135,7 +138,7 @@ class _RadicalPageState extends State<RadicalPage> {
                         image: new AssetImage('assets/drawable/r' +
                             (strokeMapJSON[strokeVals[i]][j].toString())
                                 .codeUnitAt(
-                                    0) //TODO gives correct unicode, just base 10
+                                    0) 
                                 .toRadixString(16) +
                             '.png'),
                         fit: BoxFit.fill),
