@@ -58,7 +58,7 @@ class _RadicalPageState extends State<RadicalPage> {
     return new Scaffold(
         body: new Padding(
             padding: EdgeInsets.fromLTRB(
-                20.0, 40.0, 20.0, 25.0), //TODO these are obviously guesstimates
+                20.0, 40.0, 20.0, 5.0), //TODO these are obviously guesstimates
             child: new Column(children: <Widget>[
               new TextField(
                 decoration: const InputDecoration(
@@ -120,7 +120,7 @@ class _RadicalPageState extends State<RadicalPage> {
       "14",
       "17"
     ];
-    for (int i = 0; i < strokeMapJSON.length; i++) {
+    for (int i = 0; i < 15/*strokeMapJSON.length*/; i++) {
       _radButtons.add(new Image(
           image: new AssetImage(
               'assets/drawable/stroke' + strokeVals[i] + '.png')));

@@ -18,4 +18,5 @@ flutter:
   uses-material-design: true
   assets:
      - assets/drawable/
-     - assets/json_files/
+     - assets/json_files/radicalMap
+     - assets/json_files/strokeMap

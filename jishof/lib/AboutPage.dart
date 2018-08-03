@@ -16,7 +16,7 @@ class AboutPage extends StatelessWidget {
         new Padding(
             padding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
             child: new Text(
-                "Made using the Jisho.org API and Jim Brrend's RADKFILE and KANJIDIC2",
+                "Made using the Jisho.org API and Jim Breem's RADKFILE and KANJIDIC2",
                 style: new TextStyle(color: Colors.black54),textScaleFactor: 1.25)),
         new Padding(
             padding: new EdgeInsets.symmetric(vertical: 25.0, horizontal: 20.0),
