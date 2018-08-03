@@ -222,8 +222,8 @@ class _RadicalPageState extends State<RadicalPage> {
   }
 
   List<Widget> makeConditionedButtons() {
-    List<Widget> condButtons = new List<Widget>((100 < conditionedKanji.length
-        ? 100
+    List<Widget> condButtons = new List<Widget>((50 < conditionedKanji.length
+        ? 50
         : conditionedKanji
             .length)); //set max size to 100, for the sake of the UI.
     condText = conditionedKanji.toList(growable: false);
