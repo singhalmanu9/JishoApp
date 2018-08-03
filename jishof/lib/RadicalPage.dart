@@ -69,20 +69,25 @@ class _RadicalPageState extends State<RadicalPage> {
                 controller: searchBarController,
               ),
               lengthMessage,
-              new Container(height: 100.0, child: new ListView(
-                scrollDirection: Axis.horizontal,
-                children: getConditionedButtons(),
-              )),
               new Container(
-                  height: 300.0,
-                  child: new GridView(
-                    gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 8,
-                    ),
-                    children: radicalButtons == null
-                        ? <Widget>[Text("Loading")]
-                        : radicalButtons,
-                  ))
+                  height: 100.0,
+                  child: new ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: conditionedButtons,
+                  )),
+              new Padding(
+                  padding: EdgeInsets.symmetric(horizontal:20.0),
+                  child: Container(
+                      height: 300.0,
+                      child: new GridView(
+                        gridDelegate:
+                            new SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 5,
+                        ),
+                        children: radicalButtons == null
+                            ? <Widget>[Text("Loading")]
+                            : radicalButtons,
+                      )))
             ])),
         floatingActionButton: new Builder(builder: (context) {
           return new FloatingActionButton(
@@ -103,6 +108,7 @@ class _RadicalPageState extends State<RadicalPage> {
 
   void generateRadButtons() {
     List<Widget> _radButtons = new List<Widget>();
+    List<List<PopupMenuItem>> _popupList = new List<List<PopupMenuItem>>();
     List<String> strokeVals = [
       "1",
       "2",
@@ -120,34 +126,41 @@ class _RadicalPageState extends State<RadicalPage> {
       "14",
       "17"
     ];
-    for (int i = 0; i < 15/*strokeMapJSON.length*/; i++) {
-      _radButtons.add(new Image(
-          image: new AssetImage(
-              'assets/drawable/stroke' + strokeVals[i] + '.png')));
+    //generate popupList
+    for (int i = 0; i < 15 /*strokeMapJSON.length*/; i++) {
+      _popupList.add(new List<PopupMenuItem>());
       for (int j = 0; j < strokeMapJSON[strokeVals[i]].length; j++) {
-        _radButtons.add(
-          new Container(
-              decoration: new BoxDecoration(
-                image: new DecorationImage(
-                    image: new AssetImage('assets/drawable/r' +
-                        (strokeMapJSON[strokeVals[i]][j].toString())
-                            .codeUnitAt(
-                                0) //TODO gives correct unicode, just base 10
-                            .toRadixString(16) +
-                        '.png'),
-                    fit: BoxFit.fill),
-              ),
-              child: new FlatButton(
-                onPressed: (() {
-                  addOrDeleteRadical(String.fromCharCode(
-                      (strokeMapJSON[strokeVals[i]][j].toString())
-                          .codeUnitAt(0)));
-                }),
-              child: null,)),
+        _popupList[i].add(
+          new PopupMenuItem(
+              child: new Container(
+                  decoration: new BoxDecoration(
+                    image: new DecorationImage(
+                        image: new AssetImage('assets/drawable/r' +
+                            (strokeMapJSON[strokeVals[i]][j].toString())
+                                .codeUnitAt(
+                                    0) 
+                                .toRadixString(16) +
+                            '.png'),
+                        fit: BoxFit.fill),
+                  ),
+                  child: new FlatButton(
+                    onPressed: (() {
+                      addOrDeleteRadical(String.fromCharCode(
+                          (strokeMapJSON[strokeVals[i]][j].toString())
+                              .codeUnitAt(0)));
+                    }),
+                    child: null,
+                  ))),
         );
-
-        /// /TODO add visual feedback to checked items (that stays after push)
       }
+    }
+    for (int i = 0; i < 15 /*strokeMapJSON.length*/; i++) {
+      _radButtons.add(new PopupMenuButton(
+          itemBuilder: (buildContext) {
+            return _popupList[i];
+          },
+          child: new Image.asset(
+              'assets/drawable/stroke' + strokeVals[i] + '.png')));
     }
     setState(() {
       radicalButtons = _radButtons;
@@ -182,7 +195,7 @@ class _RadicalPageState extends State<RadicalPage> {
     List<String> aw = radicalMapJSON[rad].cast<String>();
     radSet.addAll(aw);
 
-      //TODO GET THIS OFF OF THE UI THREAD
+    //TODO GET THIS OFF OF THE UI THREAD
     selectedSet.add(rad);
     if (conditionedKanji.length != 0) {
       conditionedKanji.intersection(radSet);
@@ -209,9 +222,9 @@ class _RadicalPageState extends State<RadicalPage> {
   }
 
   void addOrDeleteRadical(String rad) {
-      setState(() {
-        conditionedButtons.clear();
-      });
+    setState(() {
+      conditionedButtons.clear();
+    });
 
     if (selectedSet.contains(rad)) {
       print("cleared conditionedButtons");
@@ -227,7 +240,6 @@ class _RadicalPageState extends State<RadicalPage> {
         : conditionedKanji
             .length)); //set max size to 100, for the sake of the UI.
     condText = conditionedKanji.toList(growable: false);
-    //TODO try to find a pragma omp equiv??
     for (int i = 0; i < condButtons.length; i++) {
       condButtons[i] = new FlatButton(
         onPressed: () => addToSearchBar(condText[i]),
@@ -235,6 +247,7 @@ class _RadicalPageState extends State<RadicalPage> {
       );
       //TODO can see this failing to work correctly
     }
+    print(condButtons.length);
     return condButtons;
   }
 
@@ -243,8 +256,5 @@ class _RadicalPageState extends State<RadicalPage> {
     setState(() {
       searchBarController.text = searchBarController.text + kanji;
     });
-  }
-  List<Widget> getConditionedButtons() {
-    return conditionedButtons;
   }
 }
