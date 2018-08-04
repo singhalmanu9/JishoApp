@@ -55,12 +55,13 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
 
   listenForDefinitions() async {
     var stream = await getJSON();
-    stream.listen((json) => setState(() => _defWidgets.add(json.getWidget())));
-    if (_defWidgets.length == 0) {
-      setState(() {
-        fullQuery = false;
-      });
-    }
+    stream.listen((json) => setState(() {
+      _defWidgets.add(json.getWidget());
+      if (_defWidgets.length == 0) {
+        setState(() {
+          fullQuery = false;
+        });
+      }}));
   }
 
   Future<Stream<DefinitionWidget>> getJSON() async {
@@ -136,11 +137,11 @@ class DefinitionWidget {
 
   static Column createJapaneseSubwidget(Map jsonMap) {
     Widget mainFormReading = new Text(
-      jsonMap['reading'],
+      jsonMap['reading'] != null ? jsonMap['reading'] : ' ',
       textScaleFactor: 1.5,
     ); //TODO make this look pretty
     Widget mainFormWord = new Text(
-      jsonMap['word'],
+      jsonMap['word']== null ? ' ' : jsonMap['word'],
       textScaleFactor: 3.0,
     ); //TODO make this look pretty
     return new Column(

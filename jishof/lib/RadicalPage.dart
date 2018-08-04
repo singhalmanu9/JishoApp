@@ -13,6 +13,10 @@ class RadicalPage extends StatefulWidget {
   State<StatefulWidget> createState() {
     return new _RadicalPageState();
   }
+  static TextEditingController getSearchBarController() {
+    var x = _RadicalPageState.searchBarController;
+    return x;
+  }
 }
 
 class _RadicalPageState extends State<RadicalPage> {
@@ -103,7 +107,7 @@ class _RadicalPageState extends State<RadicalPage> {
               new Padding(
                 padding: EdgeInsets.symmetric(horizontal:10.0),
                 child: Container(
-                    height: 300.0,
+                    height: 250.0,
                     child: new GridView(
                       gridDelegate:
                           new SliverGridDelegateWithFixedCrossAxisCount(
@@ -120,7 +124,7 @@ class _RadicalPageState extends State<RadicalPage> {
           return new FloatingActionButton(
             onPressed: () {
               if (searchBarController.text.length > 0) {
-                Navigator.pushNamed(context, '/defaultSearch');
+                Navigator.pushNamed(context, '/radical/defaultSearch');
               } else {
                 Scaffold.of(context).showSnackBar(new SnackBar(
                     content:

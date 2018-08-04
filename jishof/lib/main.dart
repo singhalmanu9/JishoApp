@@ -12,14 +12,40 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
         title: 'JishoF',
         theme: new ThemeData(
-          primarySwatch: Colors.lightGreen,
+          primarySwatch: MaterialColor(
+              0xFF56d926,
+              new Map.fromIterables([
+                50,
+                100,
+                200,
+                300,
+                400,
+                500,
+                600,
+                700,
+                800,
+                900
+              ], [
+                Color(0xFFedfbe8),
+                Color(0xFFd3f5c5),
+                Color(0xFFb4ee9e),
+                Color(0xFF93e673),
+                Color(0xFF75e050),
+                Color(0xFF56d926),
+                Color(0xFF44c81d),
+                Color(0xFF22b310),
+                Color(0xFF009f00),
+                Color(0xFF007c00)
+              ])),
         ),
         home: new MyHomePage(),
         routes: <String, WidgetBuilder>{
           '/defaultSearch': (BuildContext context) =>
               new DefaultSearchPage(_MyHomePageState.searchBarController.text),
           '/about': (BuildContext context) => new AboutPage(),
-          '/radical': (BuildContext context) => new RadicalPage()
+          '/radical': (BuildContext context) => new RadicalPage(),
+          '/radical/defaultSearch': (BuildContext context) =>
+              new DefaultSearchPage(RadicalPage.getSearchBarController().text),
         });
   }
 }
@@ -108,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
             } else {
               Scaffold.of(context).showSnackBar(new SnackBar(
                   content:
-                  new Text("Please enter in a query before searching.")));
+                      new Text("Please enter in a query before searching.")));
             }
           }, //anonymous function deeming whether there is sufficient information to search,
           tooltip: 'Search',
