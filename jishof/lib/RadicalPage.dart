@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:async';
 
@@ -10,7 +11,6 @@ import 'dart:async';
 class RadicalPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return new _RadicalPageState();
   }
 }
@@ -52,17 +52,15 @@ class _RadicalPageState extends State<RadicalPage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     if (strokeMapJSON == null || radicalMapJSON == null) {
       getMaps();
     }
-    Text lengthMessage = new Text(conditionedButtons.length != 0
-        ? "If the desired kanji is not present, refine the search by adding more radicals."
-        : "");
+    Text lengthMessage = new Text(selectedSet.length != 0 ?
+      'current radicals: ' + selectedSet.toString().substring(1, selectedSet.toString().length-1) : 'Input some radicals!');
     return new Scaffold(
         body: new Padding(
             padding: EdgeInsets.fromLTRB(
-                20.0, 40.0, 20.0, 5.0), //TODO these are obviously guesstimates
+                20.0, 40.0, 20.0, 5.0),
             child: new Column(children: <Widget>[
               new TextField(
                 decoration: const InputDecoration(
@@ -72,39 +70,51 @@ class _RadicalPageState extends State<RadicalPage> {
                 textAlign: TextAlign.left,
                 controller: searchBarController,
               ),
-              lengthMessage,
-              new Container(
-                  height: 100.0,
-                  child: new ListView(
+              new Padding(
+                padding : EdgeInsets.all(10.0),
+                child: lengthMessage
+              ),
+              new Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                child: new Container(
+                  height: 50.0,
+                  child: new ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    children: conditionedButtons,
-                  )),
+                    itemBuilder: (BuildContext context, int index) {
+                      return index < conditionedButtons.length ? conditionedButtons[index] : null;
+                    }
+                  ))
+              ),
               new Padding(
-                  padding: EdgeInsets.symmetric(horizontal:20.0),
-                  child: Container(
-                      height: 250.0,
-                      child: new GridView(
-                        gridDelegate:
-                            new SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 5,
-                        ),
-                        children: radicalButtons == null
-                            ? <Widget>[Text("Loading")]
-                            : radicalButtons,
-                      ))),
-              new Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
                 child: Container(
                   height: 200.0,
                   child: currRadicals == null ?
-                  new Text("Select radicals to be displayed") :
-                  new GridView(
+                    new Text("Select radicals to be displayed") :
+                    new GridView(
                       gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 8),
-                    children: currRadicals,
+                        crossAxisCount: 6,
+                        mainAxisSpacing: 0.0
+                      ),
+                      children: currRadicals,
                   ),
                 )
-              )
+              ),
+              new Padding(
+                padding: EdgeInsets.symmetric(horizontal:10.0),
+                child: Container(
+                    height: 300.0,
+                    child: new GridView(
+                      gridDelegate:
+                          new SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 5,
+                            mainAxisSpacing: 0.0
+                          ),
+                      children: radicalButtons == null
+                          ? <Widget>[Text("Loading")]
+                          : radicalButtons,
+                    ))),
+
             ])),
         floatingActionButton: new Builder(builder: (context) {
           return new FloatingActionButton(
@@ -131,34 +141,32 @@ class _RadicalPageState extends State<RadicalPage> {
       currRadStroke = strokeNum;
       currRadicals = new List<Widget>();
       for (int i = 0; i < strokeMapJSON[strokeNum].length; i++) {
-        try {
-          String c = strokeMapJSON[strokeNum.toString()][i].toString().codeUnitAt(0).toRadixString(16).toLowerCase();
-          if (bads.contains(c)) {
-            currRadicals.add(new GridTile(
-//              child: new Text(strokeMapJSON[strokeNum.toString()][i].toString(),
-//                style: new TextStyle(fontSize: 32.0),
-//              ),
-            child: new Image.asset('assets/drawable/r' +
-                c +
-                '.png'),
-            ));
-          } else {
-            currRadicals.add(new GridTile(
-              child: new Text(strokeMapJSON[strokeNum.toString()][i].toString(),
-                style: new TextStyle(fontSize: 36.0),
+        String c = strokeMapJSON[strokeNum.toString()][i].toString().codeUnitAt(0).toRadixString(16).toLowerCase();
+        if (bads.contains(c)) {
+          currRadicals.add(new GridTile(
+            child: new RaisedButton(
+              color: selectedSet.contains(strokeMapJSON[strokeNum.toString()][i].toString()) ? Colors.green : Colors.white,
+              onPressed: () {
+                setState(() => addOrDeleteRadical(strokeMapJSON[strokeNum.toString()][i].toString()));
+              },
+              child: new Image.asset(
+                'assets/drawable/r' + c + '.png',
+                fit: BoxFit.contain,
               ),
-//              child: new Image.asset('assets/drawable/r' +
-//                  c +
-//                  '.png'),
-            ));
-          }
-        } catch (e) {
-//          currRadicals.add(new GridTile(
-//            child: new Text(strokeMapJSON[strokeNum.toString()][i].toString(),
-//              style: new TextStyle(fontSize: 32.0),
-//            ),
-//          ));
-          print(e.toString());
+            ),
+          ));
+        } else {
+          currRadicals.add(new GridTile(
+              child: new RaisedButton(
+                color: selectedSet.contains(strokeMapJSON[strokeNum.toString()][i].toString()) ? Colors.green : Colors.white,
+                onPressed: () {
+                  setState(() => addOrDeleteRadical(strokeMapJSON[strokeNum.toString()][i].toString()));
+                },
+                child: new Text(strokeMapJSON[strokeNum.toString()][i].toString(),
+                  style: new TextStyle(fontSize: 28.0),
+                ),
+              )
+          ));
         }
       }
     } else {
@@ -187,12 +195,11 @@ class _RadicalPageState extends State<RadicalPage> {
       "17"
     ];
     for (int i = 0; i < 15 /*strokeMapJSON.length*/; i++) {
-      _radButtons.add(new FlatButton(
+      _radButtons.add(new RaisedButton(
         onPressed: () {
           setState(() => setCurrentRadical(strokeVals[i]));
         },
-        child: new Image.asset(
-            'assets/drawable/stroke' + strokeVals[i] + '.png')));
+        child: new Text(strokeVals[i], style: new TextStyle(fontSize: 28.0, color: Colors.black))));
     }
     setState(() {
       radicalButtons = _radButtons;
@@ -230,7 +237,7 @@ class _RadicalPageState extends State<RadicalPage> {
     //TODO GET THIS OFF OF THE UI THREAD
     selectedSet.add(rad);
     if (conditionedKanji.length != 0) {
-      conditionedKanji.intersection(radSet);
+      conditionedKanji = conditionedKanji.intersection(radSet);
     } else {
       conditionedKanji = radSet;
     }
@@ -244,8 +251,7 @@ class _RadicalPageState extends State<RadicalPage> {
     List selectedIter = selectedSet.toList();
     setState(() {
       //TODO GET THIS OFF OF THE UI THREAD
-      print(selectedSet.remove(rad));
-      print(conditionedButtons.length);
+      selectedSet.remove(rad);
       conditionedKanji.clear();
     });
     for (int i = 0; i < selectedSet.length; i++) {
@@ -259,7 +265,6 @@ class _RadicalPageState extends State<RadicalPage> {
     });
 
     if (selectedSet.contains(rad)) {
-      print("cleared conditionedButtons");
       deleteRadical(rad);
     } else {
       addRadical(rad);
@@ -267,24 +272,19 @@ class _RadicalPageState extends State<RadicalPage> {
   }
 
   List<Widget> makeConditionedButtons() {
-    List<Widget> condButtons = new List<Widget>((50 < conditionedKanji.length
-        ? 50
-        : conditionedKanji
-            .length)); //set max size to 100, for the sake of the UI.
-    condText = conditionedKanji.toList(growable: false);
+    List<Widget> condButtons = new List<Widget>(math.min(50, conditionedKanji.length)); //set max size to 50, for the sake of the UI.
+    condText = conditionedKanji.toList();
     for (int i = 0; i < condButtons.length; i++) {
-      condButtons[i] = new FlatButton(
-        onPressed: () => addToSearchBar(condText[i]),
-        child: new Text(condText[i]),
+      condButtons[i] = new RaisedButton(
+        onPressed: () => setState(() => addToSearchBar(condText[i])),
+        color: Theme.of(context).accentColor,
+        child: new Text(condText[i], style: TextStyle(fontSize: 24.0)),
       );
-      //TODO can see this failing to work correctly
     }
-    print(condButtons.length);
     return condButtons;
   }
 
   void addToSearchBar(String kanji) {
-    //TODO works in theory, may not work in practice. we'll see.
     setState(() {
       searchBarController.text = searchBarController.text + kanji;
     });
