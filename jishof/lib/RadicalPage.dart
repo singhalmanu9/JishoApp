@@ -3,7 +3,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'dart:async';
+
 
 //TODO get Navigator route added somewhere... google this.
 class RadicalPage extends StatefulWidget {
@@ -41,6 +43,9 @@ class _RadicalPageState extends State<RadicalPage> {
   /// (and buttons with stroke numbers preceeding them)
   List<Widget> radicalButtons;
 
+  List<Widget> currRadicals;
+  String currRadStroke = "0";
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +54,7 @@ class _RadicalPageState extends State<RadicalPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    CacheManager.maxNrOfCacheObjects = 0;
     if (strokeMapJSON == null || radicalMapJSON == null) {
       getMaps();
     }
@@ -87,7 +93,20 @@ class _RadicalPageState extends State<RadicalPage> {
                         children: radicalButtons == null
                             ? <Widget>[Text("Loading")]
                             : radicalButtons,
-                      )))
+                      ))),
+              new Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: Container(
+                  height: 200.0,
+                  child: currRadicals == null ?
+                  new Text("Select radicals to be displayed") :
+                  new GridView(
+                      gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 8),
+                    children: currRadicals,
+                  ),
+                )
+              )
             ])),
         floatingActionButton: new Builder(builder: (context) {
           return new FloatingActionButton(
@@ -106,9 +125,35 @@ class _RadicalPageState extends State<RadicalPage> {
         }));
   }
 
+  void setCurrentRadical(String strokeNum) {
+    if (currRadStroke == "0" || currRadStroke != strokeNum) {
+      currRadStroke = strokeNum;
+      currRadicals = new List<Widget>();
+      int l = (strokeMapJSON[strokeNum].length);
+      for (int i = 0; i < strokeMapJSON[strokeNum].length; i++) {
+        try {
+
+          String c = strokeMapJSON[strokeNum.toString()][i].toString().codeUnitAt(0).toRadixString(16).toLowerCase();
+          currRadicals.add(new GridTile(
+//            child: new Text(strokeMapJSON[strokeNum.toString()][i].toString(),
+//              style: new TextStyle(fontSize: 32.0),
+//            ),
+            child: new Image.asset('assets/drawable/r' +
+                c +
+                '.png'),
+          ));
+        } catch (e) {
+          print(e.toString());
+        }
+      }
+    } else {
+      currRadicals = null;
+      currRadStroke = "0";
+    }
+  }
+
   void generateRadButtons() {
     List<Widget> _radButtons = new List<Widget>();
-    List<List<PopupMenuItem>> _popupList = new List<List<PopupMenuItem>>();
     List<String> strokeVals = [
       "1",
       "2",
@@ -126,41 +171,13 @@ class _RadicalPageState extends State<RadicalPage> {
       "14",
       "17"
     ];
-    //generate popupList
     for (int i = 0; i < 15 /*strokeMapJSON.length*/; i++) {
-      _popupList.add(new List<PopupMenuItem>());
-      for (int j = 0; j < strokeMapJSON[strokeVals[i]].length; j++) {
-        _popupList[i].add(
-          new PopupMenuItem(
-              child: new Container(
-                  decoration: new BoxDecoration(
-                    image: new DecorationImage(
-                        image: new AssetImage('assets/drawable/r' +
-                            (strokeMapJSON[strokeVals[i]][j].toString())
-                                .codeUnitAt(
-                                    0) 
-                                .toRadixString(16) +
-                            '.png'),
-                        fit: BoxFit.fill),
-                  ),
-                  child: new FlatButton(
-                    onPressed: (() {
-                      addOrDeleteRadical(String.fromCharCode(
-                          (strokeMapJSON[strokeVals[i]][j].toString())
-                              .codeUnitAt(0)));
-                    }),
-                    child: null,
-                  ))),
-        );
-      }
-    }
-    for (int i = 0; i < 15 /*strokeMapJSON.length*/; i++) {
-      _radButtons.add(new PopupMenuButton(
-          itemBuilder: (buildContext) {
-            return _popupList[i];
-          },
-          child: new Image.asset(
-              'assets/drawable/stroke' + strokeVals[i] + '.png')));
+      _radButtons.add(new FlatButton(
+        onPressed: () {
+          setState(() => setCurrentRadical(strokeVals[i]));
+        },
+        child: new Image.asset(
+            'assets/drawable/stroke' + strokeVals[i] + '.png')));
     }
     setState(() {
       radicalButtons = _radButtons;
