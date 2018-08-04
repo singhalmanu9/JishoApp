@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'dart:async';
 
 
@@ -54,7 +53,6 @@ class _RadicalPageState extends State<RadicalPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    CacheManager.maxNrOfCacheObjects = 0;
     if (strokeMapJSON == null || radicalMapJSON == null) {
       getMaps();
     }
@@ -126,23 +124,40 @@ class _RadicalPageState extends State<RadicalPage> {
   }
 
   void setCurrentRadical(String strokeNum) {
+    List<String> bads = ['5316', '4e2a', '5e76', '5208', '4e5e', '8fbc', '5c1a',
+      '5fd9', '624e', '6c41', '72af', '827e', '90a6', '9621', '8001', '6770',
+      '793c', '521d', '7594', '6ef4'];
     if (currRadStroke == "0" || currRadStroke != strokeNum) {
       currRadStroke = strokeNum;
       currRadicals = new List<Widget>();
-      int l = (strokeMapJSON[strokeNum].length);
       for (int i = 0; i < strokeMapJSON[strokeNum].length; i++) {
         try {
-
           String c = strokeMapJSON[strokeNum.toString()][i].toString().codeUnitAt(0).toRadixString(16).toLowerCase();
-          currRadicals.add(new GridTile(
-//            child: new Text(strokeMapJSON[strokeNum.toString()][i].toString(),
-//              style: new TextStyle(fontSize: 32.0),
-//            ),
+          if (bads.contains(c)) {
+            currRadicals.add(new GridTile(
+//              child: new Text(strokeMapJSON[strokeNum.toString()][i].toString(),
+//                style: new TextStyle(fontSize: 32.0),
+//              ),
             child: new Image.asset('assets/drawable/r' +
                 c +
                 '.png'),
-          ));
+            ));
+          } else {
+            currRadicals.add(new GridTile(
+              child: new Text(strokeMapJSON[strokeNum.toString()][i].toString(),
+                style: new TextStyle(fontSize: 36.0),
+              ),
+//              child: new Image.asset('assets/drawable/r' +
+//                  c +
+//                  '.png'),
+            ));
+          }
         } catch (e) {
+//          currRadicals.add(new GridTile(
+//            child: new Text(strokeMapJSON[strokeNum.toString()][i].toString(),
+//              style: new TextStyle(fontSize: 32.0),
+//            ),
+//          ));
           print(e.toString());
         }
       }
