@@ -82,7 +82,7 @@ class _RadicalPageState extends State<RadicalPage> {
               new Padding(
                   padding: EdgeInsets.symmetric(horizontal:20.0),
                   child: Container(
-                      height: 300.0,
+                      height: 250.0,
                       child: new GridView(
                         gridDelegate:
                             new SliverGridDelegateWithFixedCrossAxisCount(
