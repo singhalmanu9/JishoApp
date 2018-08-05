@@ -9,6 +9,7 @@ import 'dart:async';
 
 //TODO get Navigator route added somewhere... google this.
 class RadicalPage extends StatefulWidget {
+
   @override
   State<StatefulWidget> createState() {
     return new _RadicalPageState();

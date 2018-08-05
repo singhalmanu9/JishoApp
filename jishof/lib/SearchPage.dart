@@ -2,24 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'romanizer.dart' as romanizer;
 
 class DefaultSearchPage extends StatefulWidget {
   String searchTextField;
+  bool romajiOn = false;
 
-  DefaultSearchPage(String searchTextField)
-      : this.searchTextField = searchTextField;
+  DefaultSearchPage(String searchTextField, bool romajiOn) {
+    this.searchTextField = searchTextField;
+    this.romajiOn = romajiOn;
+  }
 
   @override
   _DefaultSearchPageState createState() =>
-      new _DefaultSearchPageState(searchTextField);
+      new _DefaultSearchPageState(searchTextField, romajiOn);
 }
 
 class _DefaultSearchPageState extends State<DefaultSearchPage> {
   List<Widget> _defWidgets = <Widget>[];
   String searchTextField;
   bool fullQuery;
-  _DefaultSearchPageState(String searchTextField)
-      : this.searchTextField = searchTextField;
+  bool romajiOn;
+
+  _DefaultSearchPageState(String searchTextField, bool romajiOn) {
+    this.searchTextField = searchTextField;
+    this.romajiOn = romajiOn;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,13 +82,14 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
         .transform(UTF8.decoder)
         .transform(JSON.decoder)
         .expand((jsonBody) => (jsonBody as Map)['data'])
-        .map((jsonDefinition) => DefinitionWidget.fromJson(jsonDefinition));
+        .map((jsonDefinition) => DefinitionWidget.fromJson(jsonDefinition, romajiOn));
   }
 }
 
 class DefinitionWidget {
   final Widget isCommon;
   final Widget tags;
+  final Widget romaji;
   final Column japanese;
   final Column senses;
   final Map attribution;
@@ -91,32 +100,40 @@ class DefinitionWidget {
     isCommonPaint.color = new Color(0x8abc83);
     tagsPaint.color = new Color(0x909dc0);
     if (isCommon != null) {
-      return new Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        textDirection: TextDirection.ltr,
-        children: <Widget>[
-          new Row(children: <Widget>[isCommon, tags]),
-          japanese,
-          senses
-        ], //TODO if we can get jlpt info like the site has, it goes in the row
+      return new Padding(
+        padding: EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 10.0),
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          textDirection: TextDirection.ltr,
+          children: <Widget>[
+            new Row(children: <Widget>[isCommon, tags]),
+            japanese,
+            romaji,
+            senses
+          ], //TODO if we can get jlpt info like the site has, it goes in the row
+        )
       );
     } else {
-      return new Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        textDirection: TextDirection.ltr,
-        children: <Widget>[
-          tags,
-          japanese,
-          senses
-        ], //TODO see above block on jlpt info
+      return new Padding(
+          padding: EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 10.0),
+          child: new Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            textDirection: TextDirection.ltr,
+            children: <Widget>[
+              tags,
+              japanese,
+              romaji,
+              senses
+            ],
+          )
       );
     }
   }
 
-  DefinitionWidget.fromJson(Map jsonMap)
-      : isCommon = jsonMap['is_common'] == true
+  DefinitionWidget.fromJson(Map jsonMap, bool romajiOn)
+     : isCommon = jsonMap['is_common'] == true
             ? new Container(
                 child: new Text('common',
                     style: new TextStyle(
@@ -131,9 +148,13 @@ class DefinitionWidget {
         tags = createTagsWidget(jsonMap['tags']),
         japanese = createJapaneseSubwidget(
             (jsonMap['japanese'] as List).elementAt(0) as Map),
+        romaji = romajiOn ? Text(romanizer.romanize((
+            (jsonMap['japanese'] as List).elementAt(0) as Map)['reading']),
+          textScaleFactor: 1.5) : new Text(''),
         //TODO get other forms, (elements 1 and above). these would go at the bottom of the definitionwidget
         senses = createSensesSubwidget(jsonMap['senses']),
         attribution = jsonMap['attribution'];
+
 
   static Column createJapaneseSubwidget(Map jsonMap) {
     Widget mainFormReading = new Text(

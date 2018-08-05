@@ -41,11 +41,11 @@ class MyApp extends StatelessWidget {
         home: new MyHomePage(),
         routes: <String, WidgetBuilder>{
           '/defaultSearch': (BuildContext context) =>
-              new DefaultSearchPage(_MyHomePageState.searchBarController.text),
+              new DefaultSearchPage(_MyHomePageState.searchBarController.text.toLowerCase(), _MyHomePageState.romajiOn),
           '/about': (BuildContext context) => new AboutPage(),
           '/radical': (BuildContext context) => new RadicalPage(),
           '/radical/defaultSearch': (BuildContext context) =>
-              new DefaultSearchPage(RadicalPage.getSearchBarController().text),
+              new DefaultSearchPage(RadicalPage.getSearchBarController().text, _MyHomePageState.romajiOn),
         });
   }
 }
@@ -57,13 +57,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  static bool romajiOn = false;
   static TextEditingController searchBarController =
       new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      //TODO:ADD ROMANIZATION CHECKBOX
       body: new Center(
           child: new Padding(
               padding: new EdgeInsets.fromLTRB(0.0, 90.0, 0.0, 0.0),
@@ -87,6 +87,14 @@ class _MyHomePageState extends State<MyHomePage> {
                           textAlign: TextAlign.left,
                           controller: searchBarController,
                         )),
+                    new Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 100.0),
+                        child: new CheckboxListTile(
+                            title: new Text('Click for romaji results: '),
+                            value: _MyHomePageState.romajiOn,
+                            onChanged: (bool value) => setState((){_MyHomePageState.romajiOn = value;})
+                        )
+                    ),
                     new Text(
                       "To translate E -> J, surround with \"  \".",
                       textAlign: TextAlign.center,
