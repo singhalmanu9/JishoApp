@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -23,7 +24,8 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
   String searchTextField;
   bool fullQuery;
   bool romajiOn;
-
+  static Key scaffold;
+  static BuildContext _context;
   _DefaultSearchPageState(String searchTextField, bool romajiOn) {
     this.searchTextField = searchTextField;
     this.romajiOn = romajiOn;
@@ -33,11 +35,12 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
   Widget build(BuildContext context) {
     if (fullQuery) {
       if (_defWidgets.length > 0) {
-        return new Scaffold(
-            body: new Padding(
-          padding: new EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
-          child: new ListView(children: _defWidgets),
-        ));
+        return new Scaffold(body: new Builder(builder: (BuildContext context) {
+          _context = context;
+          return new Padding(
+              padding: new EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+              child: new ListView(children: _defWidgets));
+        }));
       } else {
         return new Scaffold(
             body: new Padding(
@@ -61,15 +64,23 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
     listenForDefinitions();
   }
 
+  static copyDialogue(String copiedWord) {
+    var context = _context;
+    print(context);
+    Scaffold.of(_context).showSnackBar(new SnackBar(
+        content: new Text("copied \"" + copiedWord + "\" to clipboard")));
+  }
+
   listenForDefinitions() async {
     var stream = await getJSON();
     stream.listen((json) => setState(() {
-      _defWidgets.add(json.getWidget());
-      if (_defWidgets.length == 0) {
-        setState(() {
-          fullQuery = false;
-        });
-      }}));
+          _defWidgets.add(json.getWidget());
+          if (_defWidgets.length == 0) {
+            setState(() {
+              fullQuery = false;
+            });
+          }
+        }));
   }
 
   Future<Stream<DefinitionWidget>> getJSON() async {
@@ -82,11 +93,12 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
         .transform(UTF8.decoder)
         .transform(JSON.decoder)
         .expand((jsonBody) => (jsonBody as Map)['data'])
-        .map((jsonDefinition) => DefinitionWidget.fromJson(jsonDefinition, romajiOn));
+        .map((jsonDefinition) =>
+            DefinitionWidget.fromJson(jsonDefinition, romajiOn));
   }
 }
 
-class DefinitionWidget {
+class DefinitionWidget extends StatelessWidget {
   final Widget isCommon;
   final Widget tags;
   final Widget romaji;
@@ -96,25 +108,12 @@ class DefinitionWidget {
   static Paint isCommonPaint = new Paint();
   static Paint tagsPaint = new Paint();
 
+  build(BuildContext context) {}
+
   Widget getWidget() {
     isCommonPaint.color = new Color(0x8abc83);
     tagsPaint.color = new Color(0x909dc0);
     if (isCommon != null) {
-      return new Padding(
-        padding: EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 10.0),
-        child: new Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          textDirection: TextDirection.ltr,
-          children: <Widget>[
-            new Row(children: <Widget>[isCommon, tags]),
-            japanese,
-            romaji,
-            senses
-          ], //TODO if we can get jlpt info like the site has, it goes in the row
-        )
-      );
-    } else {
       return new Padding(
           padding: EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 10.0),
           child: new Column(
@@ -122,18 +121,26 @@ class DefinitionWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             textDirection: TextDirection.ltr,
             children: <Widget>[
-              tags,
+              new Row(children: <Widget>[isCommon, tags]),
               japanese,
               romaji,
               senses
-            ],
-          )
-      );
+            ], //TODO if we can get jlpt info like the site has, it goes in the row
+          ));
+    } else {
+      return new Padding(
+          padding: EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 10.0),
+          child: new Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            textDirection: TextDirection.ltr,
+            children: <Widget>[tags, japanese, romaji, senses],
+          ));
     }
   }
 
   DefinitionWidget.fromJson(Map jsonMap, bool romajiOn)
-     : isCommon = jsonMap['is_common'] == true
+      : isCommon = jsonMap['is_common'] == true
             ? new Container(
                 child: new Text('common',
                     style: new TextStyle(
@@ -148,23 +155,49 @@ class DefinitionWidget {
         tags = createTagsWidget(jsonMap['tags']),
         japanese = createJapaneseSubwidget(
             (jsonMap['japanese'] as List).elementAt(0) as Map),
-        romaji = romajiOn ? Text(romanizer.romanize((
-            (jsonMap['japanese'] as List).elementAt(0) as Map)['reading']),
-          textScaleFactor: 1.5) : new Text(''),
+        romaji = romajiOn
+            ? new InkWell(
+                onLongPress: () {
+                  var x = romanizer.romanize(((jsonMap['japanese'] as List)
+                      .elementAt(0) as Map)['reading']);
+                  Clipboard.setData(ClipboardData(
+                      text: x));
+                  _DefaultSearchPageState.copyDialogue(x);
+                },
+                child: Text(
+                    romanizer.romanize(((jsonMap['japanese'] as List)
+                        .elementAt(0) as Map)['reading']),
+                    textScaleFactor: 1.5))
+            : new Text(''),
         //TODO get other forms, (elements 1 and above). these would go at the bottom of the definitionwidget
         senses = createSensesSubwidget(jsonMap['senses']),
         attribution = jsonMap['attribution'];
 
-
   static Column createJapaneseSubwidget(Map jsonMap) {
-    Widget mainFormReading = new Text(
+    Widget mainFormReadingText = new Text(
       jsonMap['reading'] != null ? jsonMap['reading'] : ' ',
       textScaleFactor: 1.5,
-    ); //TODO make this look pretty
-    Widget mainFormWord = new Text(
-      jsonMap['word']== null ? ' ' : jsonMap['word'],
+    );
+    Widget mainFormReading = new InkWell(
+        onLongPress: () {
+          Clipboard.setData(ClipboardData(
+              text: jsonMap['reading'] == null ? ' ' : jsonMap['reading']));
+          _DefaultSearchPageState.copyDialogue(
+              jsonMap['reading'] == null ? ' ' : jsonMap['reading']);
+        },
+        child: mainFormReadingText);
+    Widget mainFormWordText = new Text(
+      jsonMap['word'] == null ? ' ' : jsonMap['word'],
       textScaleFactor: 3.0,
-    ); //TODO make this look pretty
+    );
+    Widget mainFormWord = new InkWell(
+        onLongPress: () {
+          Clipboard.setData(ClipboardData(
+              text: jsonMap['word'] == null ? ' ' : jsonMap['word']));
+          _DefaultSearchPageState
+              .copyDialogue(jsonMap['word'] == null ? ' ' : jsonMap['word']);
+        },
+        child: mainFormWordText); //TODO make this look pretty
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
