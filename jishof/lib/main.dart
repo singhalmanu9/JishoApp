@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
         home: new MyHomePage(),
         routes: <String, WidgetBuilder>{
           '/defaultSearch': (BuildContext context) =>
-              new DefaultSearchPage(_MyHomePageState.searchBarController.text.toLowerCase(), _MyHomePageState.romajiOn),
+              new DefaultSearchPage(_MyHomePageState.searchBarController.text, _MyHomePageState.romajiOn),
           '/about': (BuildContext context) => new AboutPage(),
           '/radical': (BuildContext context) => new RadicalPage(),
           '/radical/defaultSearch': (BuildContext context) =>
