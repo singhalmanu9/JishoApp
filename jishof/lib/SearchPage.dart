@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'romanizer.dart' as romanizer;
+import 'KanjiPage.dart';
 
 class DefaultSearchPage extends StatefulWidget {
   String searchTextField;
@@ -26,6 +27,7 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
   bool romajiOn;
   static Key scaffold;
   static BuildContext _context;
+
   _DefaultSearchPageState(String searchTextField, bool romajiOn) {
     this.searchTextField = searchTextField;
     this.romajiOn = romajiOn;
@@ -33,6 +35,7 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    DefinitionWidget.context = context;
     if (fullQuery) {
       if (_defWidgets.length > 0) {
         return new Scaffold(body: new Builder(builder: (BuildContext context) {
@@ -107,6 +110,8 @@ class DefinitionWidget extends StatelessWidget {
   final Map attribution;
   static Paint isCommonPaint = new Paint();
   static Paint tagsPaint = new Paint();
+
+  static BuildContext context;
 
   build(BuildContext context) {}
 
@@ -191,6 +196,15 @@ class DefinitionWidget extends StatelessWidget {
       textScaleFactor: 3.0,
     );
     Widget mainFormWord = new InkWell(
+        onTap: () {
+          List<String> searchKanji = <String>[];
+          for (String c in jsonMap['word'].split('')) {
+            if (!romanizer.kanaToRomaji.containsKey(c)) {
+              searchKanji.add(c);
+            }
+          }
+          Navigator.push(context, MaterialPageRoute(builder: (context) => KanjiPage(searchKanji)));
+        },
         onLongPress: () {
           Clipboard.setData(ClipboardData(
               text: jsonMap['word'] == null ? ' ' : jsonMap['word']));

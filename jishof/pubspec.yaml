@@ -21,3 +21,4 @@ flutter:
      - assets/drawable/
      - assets/json_files/radicalMap
      - assets/json_files/strokeMap
+     - assets/json_files/kdic2
