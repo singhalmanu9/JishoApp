@@ -78,12 +78,13 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
     var stream = await getJSON();
     stream.listen((json) => setState(() {
           _defWidgets.add(json.getWidget());
-          if (_defWidgets.length == 0) {
-            setState(() {
-              fullQuery = false;
-            });
-          }
+          fullQuery = true;
         }));
+    if (_defWidgets.length == 0) {
+      setState(() {
+        fullQuery = false;
+      });
+    }
   }
 
   Future<Stream<DefinitionWidget>> getJSON() async {
