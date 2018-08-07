@@ -13,43 +13,58 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-        title: 'Jisho',
-        theme: new ThemeData(
-          primarySwatch: MaterialColor(
-              0xFF56d926,
-              new Map.fromIterables([
-                50,
-                100,
-                200,
-                300,
-                400,
-                500,
-                600,
-                700,
-                800,
-                900
-              ], [
-                Color(0xFFedfbe8),
-                Color(0xFFd3f5c5),
-                Color(0xFFb4ee9e),
-                Color(0xFF93e673),
-                Color(0xFF75e050),
-                Color(0xFF56d926),
-                Color(0xFF44c81d),
-                Color(0xFF22b310),
-                Color(0xFF009f00),
-                Color(0xFF007c00)
-              ])),
-        ),
-        home: new MyHomePage(),
-        routes: <String, WidgetBuilder>{
-          '/defaultSearch': (BuildContext context) =>
-              new DefaultSearchPage(_MyHomePageState.searchBarController.text, _MyHomePageState.romajiOn),
-          '/about': (BuildContext context) => new AboutPage(),
-          '/radical': (BuildContext context) => new RadicalPage(),
-          '/radical/defaultSearch': (BuildContext context) =>
-              new DefaultSearchPage(RadicalPage.getSearchBarController().text, _MyHomePageState.romajiOn),
-        });
+      title: 'Jisho',
+      theme: new ThemeData(
+        primarySwatch: MaterialColor(
+            0xFF56d926,
+            new Map.fromIterables([
+              50,
+              100,
+              200,
+              300,
+              400,
+              500,
+              600,
+              700,
+              800,
+              900
+            ], [
+              Color(0xFFedfbe8),
+              Color(0xFFd3f5c5),
+              Color(0xFFb4ee9e),
+              Color(0xFF93e673),
+              Color(0xFF75e050),
+              Color(0xFF56d926),
+              Color(0xFF44c81d),
+              Color(0xFF22b310),
+              Color(0xFF009f00),
+              Color(0xFF007c00)
+            ])),
+      ),
+      home: new MyHomePage(),
+      onGenerateRoute: (RouteSettings settings) {
+        switch (settings.name) {
+          case '/':
+            return new CustomRoute(
+                builder: (_) => new MyHomePage(), settings: settings);
+          case '/defaultSearch':
+            return new CustomRoute(
+                builder: (_) => new DefaultSearchPage(
+                    _MyHomePageState.searchBarController.text,
+                    _MyHomePageState.romajiOn), settings: settings);
+          case '/about':
+            return new CustomRoute(builder: (_) => new AboutPage(), settings: settings);
+          case '/radical':
+            return new CustomRoute(builder: (_) => new RadicalPage(), settings: settings);
+          case '/radical/defaultSearch':
+            return new CustomRoute(
+                builder: (_) => new DefaultSearchPage(
+                    RadicalPage.getSearchBarController().text,
+                    _MyHomePageState.romajiOn), settings: settings);
+        }
+      },
+
+    );
   }
 }
 
@@ -106,9 +121,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: new CheckboxListTile(
                             title: new Text('Click for romaji results: '),
                             value: _MyHomePageState.romajiOn,
-                            onChanged: (bool value) => setState((){_MyHomePageState.romajiOn = value;})
-                        )
-                    ),
+                            onChanged: (bool value) => setState(() {
+                                  _MyHomePageState.romajiOn = value;
+                                }))),
                     new Text(
                       "To translate E -> J, surround with \"  \".",
                       textAlign: TextAlign.center,
@@ -169,6 +184,24 @@ class _MyHomePageState extends State<MyHomePage> {
           child: new Icon(Icons.search),
         );
       }),
+    );
+  }
+}
+
+class CustomRoute<T> extends MaterialPageRoute<T> {
+  CustomRoute({WidgetBuilder builder, RouteSettings settings})
+      : super(builder: builder, settings: settings);
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    if (settings.isInitialRoute) {
+      return child;
+    }
+    return new SlideTransition(
+      position:
+          new Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero)
+              .animate(animation),
+      child: child,
     );
   }
 }
