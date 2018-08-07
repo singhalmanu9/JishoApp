@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 
 class KanjiPage extends StatefulWidget {
 
@@ -24,12 +23,6 @@ class _KanjiPageState extends State<KanjiPage> {
 
   @override
   Widget build(BuildContext context) {
-    DefaultAssetBundle
-        .of(context)
-        .loadString('assets/json_files/kdic2')
-        .then((kdic2) {
-          KanjiPage.kdic = json.decode(kdic2);
-    });
     for (String k in _kanji) {
       _kanjiWidgets.add(KanjiInfoWidget.fromJSONObj(k, KanjiPage.kdic[k]).makeWidget());
     }

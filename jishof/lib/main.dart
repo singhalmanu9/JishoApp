@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/SearchPage.dart';
 import 'package:flutter_app/AboutPage.dart';
 import 'package:flutter_app/RadicalPage.dart';
+import 'package:flutter_app/KanjiPage.dart';
+import 'dart:convert';
 
 void main() => runApp(new MyApp());
 
@@ -61,9 +63,20 @@ class _MyHomePageState extends State<MyHomePage> {
   static bool romajiOn = false;
   static TextEditingController searchBarController =
       new TextEditingController();
+  static bool kdicLoaded = false;
 
   @override
   Widget build(BuildContext context) {
+    if (!kdicLoaded) {
+      DefaultAssetBundle
+          .of(context)
+          .loadString('assets/json_files/kdic2')
+          .then((kdic2) {
+        KanjiPage.kdic = json.decode(kdic2);
+      });
+      kdicLoaded = true;
+      print('loaded kanjidic2');
+    }
     return new Scaffold(
       body: new Center(
           child: new Padding(
@@ -98,6 +111,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     new Text(
                       "To translate E -> J, surround with \"  \".",
+                      textAlign: TextAlign.center,
+                      textScaleFactor: 1.25,
+                      style: new TextStyle(color: Colors.black54),
+                    ),
+                    new Text(
+                      "Queries are case-sensitive!",
                       textAlign: TextAlign.center,
                       textScaleFactor: 1.25,
                       style: new TextStyle(color: Colors.black54),
