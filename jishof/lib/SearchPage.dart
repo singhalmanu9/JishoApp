@@ -9,12 +9,19 @@ import 'KanjiPage.dart';
 class DefaultSearchPage extends StatefulWidget {
   String searchTextField;
   bool romajiOn = false;
-
+  static List<String> _searchKanji;
   DefaultSearchPage(String searchTextField, bool romajiOn) {
     this.searchTextField = searchTextField;
     this.romajiOn = romajiOn;
   }
 
+  static void setKanji(List<String> kanjiList) {
+    _searchKanji = kanjiList;
+  }
+
+  static List<String> getKanjiList() {
+    return _searchKanji;
+  }
   @override
   _DefaultSearchPageState createState() =>
       new _DefaultSearchPageState(searchTextField, romajiOn);
@@ -28,8 +35,10 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
   static Key scaffold;
   static BuildContext _context;
 
+
   _DefaultSearchPageState(String searchTextField, bool romajiOn) {
     this.searchTextField = searchTextField;
+    this.romajiOn = romajiOn;
     this.romajiOn = romajiOn;
   }
 
@@ -113,7 +122,6 @@ class DefinitionWidget extends StatelessWidget {
   static Paint tagsPaint = new Paint();
 
   static BuildContext context;
-
   build(BuildContext context) {}
 
   Widget getWidget() {
@@ -164,11 +172,11 @@ class DefinitionWidget extends StatelessWidget {
         romaji = romajiOn
             ? new InkWell(
                 onLongPress: () {
-                  var x = romanizer.romanize(((jsonMap['japanese'] as List)
+                  var text = romanizer.romanize(((jsonMap['japanese'] as List)
                       .elementAt(0) as Map)['reading']);
                   Clipboard.setData(ClipboardData(
-                      text: x));
-                  _DefaultSearchPageState.copyDialogue(x);
+                      text: text));
+                  _DefaultSearchPageState.copyDialogue(text);
                 },
                 child: Text(
                     romanizer.romanize(((jsonMap['japanese'] as List)
@@ -204,7 +212,8 @@ class DefinitionWidget extends StatelessWidget {
               searchKanji.add(c);
             }
           }
-          Navigator.push(context, MaterialPageRoute(builder: (context) => KanjiPage(searchKanji)));
+          DefaultSearchPage.setKanji(searchKanji);
+          Navigator.pushNamed(context, '/defaultSearch/kanjiInfo');
         },
         onLongPress: () {
           Clipboard.setData(ClipboardData(
