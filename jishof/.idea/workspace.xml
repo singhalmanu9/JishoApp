@@ -25,10 +25,12 @@
       <file leaf-file-name="main.dart" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/main.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1479">
-              <caret line="120" column="43" lean-forward="false" selection-start-line="120" selection-start-column="43" selection-end-line="120" selection-end-column="43" />
+            <state relative-caret-position="1768">
+              <caret line="137" column="43" lean-forward="false" selection-start-line="137" selection-start-column="43" selection-end-line="137" selection-end-column="43" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
+                <marker date="1533743337252" expanded="true" signature="320:458" ph="{...}" />
+                <marker date="1533743337252" expanded="true" signature="422:458" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -47,27 +49,19 @@
       <file leaf-file-name="SearchPage.dart" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/SearchPage.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="428">
-              <caret line="96" column="32" lean-forward="false" selection-start-line="96" selection-start-column="32" selection-end-line="96" selection-end-column="32" />
+            <state relative-caret-position="581">
+              <caret line="105" column="32" lean-forward="false" selection-start-line="105" selection-start-column="32" selection-end-line="105" selection-end-column="32" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
-                <marker date="1533667455371" expanded="true" signature="653:3024" ph="{...}" />
-                <marker date="1533667455371" expanded="true" signature="2211:2476" ph="{...}" />
-                <marker date="1533667455371" expanded="true" signature="2529:3022" ph="{...}" />
-                <marker date="1533667455371" expanded="true" signature="3389:4421" ph="{...}" />
-                <marker date="1533667455371" expanded="true" signature="3809:3817" ph="&lt;~&gt;" />
-                <marker date="1533667455371" expanded="true" signature="3851:3859" ph="&lt;~&gt;" />
-                <marker date="1533667455371" expanded="true" signature="4356:4364" ph="&lt;~&gt;" />
-                <marker date="1533667455371" expanded="true" signature="6032:7633" ph="{...}" />
-                <marker date="1533667455371" expanded="true" signature="6730:6738" ph="&lt;~&gt;" />
-                <marker date="1533667455371" expanded="true" signature="6753:6761" ph="&lt;~&gt;" />
-                <marker date="1533667455371" expanded="true" signature="7344:7633" ph="{...}" />
-                <marker date="1533667455371" expanded="true" signature="7557:7565" ph="&lt;~&gt;" />
-                <marker date="1533667455371" expanded="true" signature="7688:8093" ph="{...}" />
-                <marker date="1533667455371" expanded="true" signature="8147:9913" ph="{...}" />
-                <marker date="1533667455371" expanded="true" signature="8153:8314" ph="//..." />
-                <marker date="1533667455371" expanded="true" signature="9624:9632" ph="&lt;~&gt;" />
-                <marker date="1533667455371" expanded="true" signature="9871:9879" ph="&lt;~&gt;" />
+                <marker date="1533743337116" expanded="true" signature="276:329" ph="{...}" />
+                <marker date="1533743337116" expanded="true" signature="7281:7878" ph="{...}" />
+                <marker date="1533743337116" expanded="true" signature="7589:7878" ph="{...}" />
+                <marker date="1533743337116" expanded="true" signature="7802:7810" ph="&lt;~&gt;" />
+                <marker date="1533743337116" expanded="true" signature="7933:8338" ph="{...}" />
+                <marker date="1533743337116" expanded="true" signature="8392:10158" ph="{...}" />
+                <marker date="1533743337116" expanded="true" signature="8398:8559" ph="//..." />
+                <marker date="1533743337116" expanded="true" signature="9869:9877" ph="&lt;~&gt;" />
+                <marker date="1533743337116" expanded="true" signature="10116:10124" ph="&lt;~&gt;" />
               </folding>
             </state>
           </provider>
@@ -410,7 +404,7 @@
       <option name="ACTIVITY_CLASS" value="" />
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1533668245581" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1533744052142" />
       </method>
     </configuration>
     <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests">
@@ -458,7 +452,7 @@
       </Profilers>
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1533668245581" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1533744052142" />
       </method>
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -1019,37 +1013,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/SearchPage.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="428">
-          <caret line="96" column="32" lean-forward="false" selection-start-line="96" selection-start-column="32" selection-end-line="96" selection-end-column="32" />
+        <state relative-caret-position="581">
+          <caret line="105" column="32" lean-forward="false" selection-start-line="105" selection-start-column="32" selection-end-line="105" selection-end-column="32" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
-            <marker date="1533667455371" expanded="true" signature="653:3024" ph="{...}" />
-            <marker date="1533667455371" expanded="true" signature="2211:2476" ph="{...}" />
-            <marker date="1533667455371" expanded="true" signature="2529:3022" ph="{...}" />
-            <marker date="1533667455371" expanded="true" signature="3389:4421" ph="{...}" />
-            <marker date="1533667455371" expanded="true" signature="3809:3817" ph="&lt;~&gt;" />
-            <marker date="1533667455371" expanded="true" signature="3851:3859" ph="&lt;~&gt;" />
-            <marker date="1533667455371" expanded="true" signature="4356:4364" ph="&lt;~&gt;" />
-            <marker date="1533667455371" expanded="true" signature="6032:7633" ph="{...}" />
-            <marker date="1533667455371" expanded="true" signature="6730:6738" ph="&lt;~&gt;" />
-            <marker date="1533667455371" expanded="true" signature="6753:6761" ph="&lt;~&gt;" />
-            <marker date="1533667455371" expanded="true" signature="7344:7633" ph="{...}" />
-            <marker date="1533667455371" expanded="true" signature="7557:7565" ph="&lt;~&gt;" />
-            <marker date="1533667455371" expanded="true" signature="7688:8093" ph="{...}" />
-            <marker date="1533667455371" expanded="true" signature="8147:9913" ph="{...}" />
-            <marker date="1533667455371" expanded="true" signature="8153:8314" ph="//..." />
-            <marker date="1533667455371" expanded="true" signature="9624:9632" ph="&lt;~&gt;" />
-            <marker date="1533667455371" expanded="true" signature="9871:9879" ph="&lt;~&gt;" />
+            <marker date="1533743337116" expanded="true" signature="276:329" ph="{...}" />
+            <marker date="1533743337116" expanded="true" signature="7281:7878" ph="{...}" />
+            <marker date="1533743337116" expanded="true" signature="7589:7878" ph="{...}" />
+            <marker date="1533743337116" expanded="true" signature="7802:7810" ph="&lt;~&gt;" />
+            <marker date="1533743337116" expanded="true" signature="7933:8338" ph="{...}" />
+            <marker date="1533743337116" expanded="true" signature="8392:10158" ph="{...}" />
+            <marker date="1533743337116" expanded="true" signature="8398:8559" ph="//..." />
+            <marker date="1533743337116" expanded="true" signature="9869:9877" ph="&lt;~&gt;" />
+            <marker date="1533743337116" expanded="true" signature="10116:10124" ph="&lt;~&gt;" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/main.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1479">
-          <caret line="120" column="43" lean-forward="false" selection-start-line="120" selection-start-column="43" selection-end-line="120" selection-end-column="43" />
+        <state relative-caret-position="1768">
+          <caret line="137" column="43" lean-forward="false" selection-start-line="137" selection-start-column="43" selection-end-line="137" selection-end-column="43" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
+            <marker date="1533743337252" expanded="true" signature="320:458" ph="{...}" />
+            <marker date="1533743337252" expanded="true" signature="422:458" ph="{...}" />
           </folding>
         </state>
       </provider>
