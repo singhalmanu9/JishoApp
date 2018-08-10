@@ -1,0 +1,24 @@
+name: flutter_app
+description: A new Flutter application.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.11.3
+  flutter_cache_manager: ^0.1.1
+
+  cupertino_icons: ^0.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+
+  uses-material-design: true
+  assets:
+     - assets/drawable/
+     - assets/json_files/radicalMap
+     - assets/json_files/strokeMap
+     - assets/json_files/kdic2
