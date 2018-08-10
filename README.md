@@ -9,6 +9,7 @@ What's new:
 * v2.0.1 - Supports search by radical
 * v2.1.1 - Tap for more Kanji info
 * v2.1.3 - White text bug fix, text now selectable
+* v3.0.0 - App moved to Flutter, began testing
 
 What we're working on:
 * ~~search by radical~~
