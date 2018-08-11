@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 class KanjiPage extends StatefulWidget {
 
   static Map kdic;
-  List<String> kanji;
+  Set<String> kanji;
 
-  KanjiPage(List<String> kanji) {
+  KanjiPage(Set<String> kanji) {
     this.kanji = kanji;
   }
 
@@ -14,17 +14,20 @@ class KanjiPage extends StatefulWidget {
 
 class _KanjiPageState extends State<KanjiPage> {
 
-  List<String> _kanji;
+  Set<String> _kanji;
   List<Widget> _kanjiWidgets = <Widget>[];
 
-  _KanjiPageState(List<String> kanji) {
+  _KanjiPageState(Set<String> kanji) {
     _kanji = kanji;
   }
 
   @override
   Widget build(BuildContext context) {
     for (String k in _kanji) {
-      _kanjiWidgets.add(KanjiInfoWidget.fromJSONObj(k, KanjiPage.kdic[k]).makeWidget());
+      if (KanjiPage.kdic[k] != null) {
+        _kanjiWidgets.add(
+            KanjiInfoWidget.fromJSONObj(k, KanjiPage.kdic[k]).makeWidget());
+      }
     }
     return new Scaffold(body: new Padding(
           padding: new EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),

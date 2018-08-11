@@ -4,22 +4,21 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'romanizer.dart' as romanizer;
-import 'KanjiPage.dart';
 
 class DefaultSearchPage extends StatefulWidget {
   String searchTextField;
   bool romajiOn = false;
-  static List<String> _searchKanji;
+  static Set<String> _searchKanji;
   DefaultSearchPage(String searchTextField, bool romajiOn) {
     this.searchTextField = searchTextField;
     this.romajiOn = romajiOn;
   }
 
-  static void setKanji(List<String> kanjiList) {
+  static void setKanji(Set<String> kanjiList) {
     _searchKanji = kanjiList;
   }
 
-  static List<String> getKanjiList() {
+  static Set<String> getKanjiList() {
     return _searchKanji;
   }
   @override
@@ -206,7 +205,7 @@ class DefinitionWidget extends StatelessWidget {
     );
     Widget mainFormWord = new InkWell(
         onTap: () {
-          List<String> searchKanji = <String>[];
+          Set<String> searchKanji = new Set();
           for (String c in jsonMap['word'].split('')) {
             if (!romanizer.kanaToRomaji.containsKey(c)) {
               searchKanji.add(c);
