@@ -1,0 +1,7 @@
+#Internal package file, do not edit.
+#Tue Jul 17 23:31:05 EDT 2018
+0.baseType=DIRECTORY
+0.base=C\:\\Users\\Manu\\AndroidStudioProjects\\JishoApp\\Jisho\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\59
+0.path=classes.dex
+0.set=DEX
+count=1
