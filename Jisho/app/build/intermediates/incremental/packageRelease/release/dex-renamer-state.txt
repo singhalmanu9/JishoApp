@@ -1,4 +1,0 @@
-#Tue Mar 06 01:05:07 PST 2018
-base.0=C\:\\Users\\Manu\\AndroidStudioProjects\\JishoApp\\Jisho\\app\\build\\intermediates\\transforms\\dex\\release\\0
-path.0=classes.dex
-renamed.0=classes.dex

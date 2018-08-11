@@ -1,4 +1,0 @@
-#Tue Jul 17 23:02:25 EDT 2018
-base.0=C\:\\Users\\Manu\\AndroidStudioProjects\\JishoApp\\Jisho\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\50
-path.0=classes.dex
-renamed.0=classes.dex
