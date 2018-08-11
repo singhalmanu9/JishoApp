@@ -1,8 +1,6 @@
 # Jisho
 
-This fork is dedicated to making the application cross-platform instead of Android-exclusive.
-
-A minimalistic app used to access the vast jisho.org from your mobile device. 
+A minimalistic, cross-platform mobile application used to access the vast jisho.org from your mobile device. 
 
 What's new:
 * v1.0.0 - Supports E->J and J->E searches
