@@ -1,4 +1,5 @@
 ./JishoApp/JishoApp/.gradle/4.1/taskHistory/
 ./JishoApp/JishoApp/.gradle/4.1/fileHashes/
 .JishoApp/JishoApp/.idea/workspace.xml
-./jishokeystore.jks
+./jishof/jishokeystore.jks
+./jishof/android/key.properties
