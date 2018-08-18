@@ -48,7 +48,7 @@ String romanize(String kanaIn) {
         smallTsu = true;
       } else {
         if (rom.length == 3) {
-          if (result.length > 2 && (result.substring(result.length - 3) == 'shi' ||result.substring(result.length - 3) == 'chi')) {
+          if (result.length > 2 && (result.substring(result.length - 3) == 'shi' || result.substring(result.length - 3) == 'chi' ||result.substring(result.length - 3) == 'ji')) {
             result = result.substring(0, result.length - 1);
             result += rom.substring(2);
           } else {
