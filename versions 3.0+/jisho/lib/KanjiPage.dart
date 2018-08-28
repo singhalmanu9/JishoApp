@@ -29,7 +29,7 @@ class _KanjiPageState extends State<KanjiPage> {
             KanjiInfoWidget.fromJSONObj(k, KanjiPage.kdic[k]).makeWidget());
       }
     }
-    return new Scaffold(body: new Padding(
+    return new Scaffold(appBar: new AppBar(title: new Text("Kanji Information"),),body: new Padding(
           padding: new EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
           child: new ListView(children: _kanjiWidgets))
     );

@@ -62,7 +62,7 @@ class _RadicalPageState extends State<RadicalPage> {
     }
     Text lengthMessage = new Text(selectedSet.length != 0 ?
       'current radicals: ' + selectedSet.toString().substring(1, selectedSet.toString().length-1) : 'Input some radicals!');
-    return new Scaffold(
+    return new Scaffold(appBar: new AppBar(title: new Text("Search Results")),
         body: new Padding(
             padding: EdgeInsets.fromLTRB(
                 20.0, 40.0, 20.0, 5.0),
@@ -93,7 +93,7 @@ class _RadicalPageState extends State<RadicalPage> {
               new Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.0),
                 child: Container(
-                  height: 200.0,
+                  height: 150.0,
                   child: currRadicals == null ?
                     new Text("Select radicals to be displayed") :
                     new GridView(
@@ -108,7 +108,7 @@ class _RadicalPageState extends State<RadicalPage> {
               new Padding(
                 padding: EdgeInsets.symmetric(horizontal:10.0),
                 child: Container(
-                    height: 250.0,
+                    height: 200.0,
                     child: new GridView(
                       gridDelegate:
                           new SliverGridDelegateWithFixedCrossAxisCount(

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AboutPage extends StatelessWidget {
   @override
   build(BuildContext context) {
-    return new Scaffold(
+    return new Scaffold(appBar: new AppBar(title: new Text("About"),),
         body: new ListView(
       children: <Widget>[
         new Padding(

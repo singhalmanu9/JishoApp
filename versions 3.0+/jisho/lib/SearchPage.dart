@@ -46,21 +46,21 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
     DefinitionWidget.context = context;
     if (fullQuery) {
       if (_defWidgets.length > 0) {
-        return new Scaffold(body: new Builder(builder: (BuildContext context) {
+        return new Scaffold(appBar: new AppBar(title: new Text("Search Results")),body: new Builder(builder: (BuildContext context) {
           _context = context;
           return new Padding(
               padding: new EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
               child: new ListView(children: _defWidgets));
         }));
       } else {
-        return new Scaffold(
+        return new Scaffold(appBar: new AppBar(title: new Text("Search Results")),
             body: new Padding(
           padding: new EdgeInsets.symmetric(vertical: 30.0, horizontal: 10.0),
           child: new Text("Loading Query"),
         ));
       }
     } else {
-      return new Scaffold(
+      return new Scaffold(appBar: new AppBar(title: new Text("Search Results")),
           body: new Padding(
               padding:
                   new EdgeInsets.symmetric(vertical: 30.0, horizontal: 10.0),
