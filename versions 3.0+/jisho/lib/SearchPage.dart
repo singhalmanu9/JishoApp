@@ -102,8 +102,8 @@ class _DefaultSearchPageState extends State<DefaultSearchPage> {
     var streamedRes =
         await client.send(new http.Request('get', Uri.parse(url)));
     return streamedRes.stream
-        .transform(UTF8.decoder)
-        .transform(JSON.decoder)
+        .transform(utf8.decoder)
+        .transform(json.decoder)
         .expand((jsonBody) => (jsonBody as Map)['data'])
         .map((jsonDefinition) =>
             DefinitionWidget.fromJson(jsonDefinition, romajiOn));
