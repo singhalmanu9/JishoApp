@@ -61,9 +61,11 @@ class MyApp extends StatelessWidget {
                 builder: (_) => new DefaultSearchPage(
                     RadicalPage.getSearchBarController().text,
                     _MyHomePageState.romajiOn), settings: settings);
+          // ignore: missing_return
           case '/defaultSearch/kanjiInfo' :
             return new CustomRoute(builder: (_) => new KanjiPage(DefaultSearchPage.getKanjiList()), settings: settings);
         }
+        return null;
       },
 
     );

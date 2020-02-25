@@ -1,6 +1,12 @@
+import 'dart:convert';
+
 import 'Answer.dart';
 import 'Trie.dart';
 import 'package:tuple/tuple.dart';
+import 'dart:async' show Future;
+import 'package:flutter/services.dart' show rootBundle;
+
+
 class OfflineModeUtils {
   /// Gives the Answer corresponding the ID from the answerMap
   /// This is public for no reason I can currently think of. Might make it
@@ -67,5 +73,39 @@ class OfflineModeUtils {
       });
       return ret;
     }
+  }
+
+
+  static Future<String> loadAsset() async {
+    return await rootBundle.loadString('assets/config.json');
+  }
+
+
+  static Trie loadJPTrie() {
+    String jsonString;
+    rootBundle.loadString('assets/json_files/JPTrie.json').then( (val) {
+      jsonString = val;
+    });
+    var jsonMap = jsonDecode(jsonString);
+    Trie root = Trie()..fromMap(jsonMap);
+    return root;
+  }
+
+  static Trie loadENTrie() {
+    String jsonString;
+    rootBundle.loadString('assets/json_files/ENTrie.json').then( (val) {
+      jsonString = val;
+    });
+    var jsonMap = jsonDecode(jsonString);
+    Trie root = Trie()..fromMap(jsonMap);
+    return root;
+  }
+
+  static Map getAnswerMap() {
+    String jsonString;
+    rootBundle.loadString('assets/json_files/answerMap.json').then( (val) {
+      jsonString = val;
+    });
+    return jsonDecode(jsonString);
   }
 }
