@@ -7,23 +7,27 @@ part of 'Trie.dart';
 // **************************************************************************
 
 abstract class _$TrieSerializable extends SerializableMap {
-  String get value;
-  List<int> get terminalDefinitions;
-  Map<String, Trie> get children;
-  set value(String v);
-  set terminalDefinitions(List<int> v);
-  set children(Map<String, Trie> v);
+  int get id;
+  String get v;
+  List<int> get t;
+  Map<dynamic, dynamic> get c;
+  set id(int v);
+  set v(String v);
+  set t(List<int> v);
+  set c(Map<dynamic, dynamic> v);
   void insertTerminal(int term);
   void insertString(String vals, int terminal);
 
   operator [](Object __key) {
     switch (__key) {
-      case 'value':
-        return value;
-      case 'terminalDefinitions':
-        return terminalDefinitions;
-      case 'children':
-        return children;
+      case 'id':
+        return id;
+      case 'v':
+        return v;
+      case 't':
+        return t;
+      case 'c':
+        return c;
       case 'insertTerminal':
         return insertTerminal;
       case 'insertString':
@@ -34,20 +38,21 @@ abstract class _$TrieSerializable extends SerializableMap {
 
   operator []=(Object __key, __value) {
     switch (__key) {
-      case 'value':
-        value = __value;
+      case 'id':
+        id = __value;
         return;
-      case 'terminalDefinitions':
-        terminalDefinitions = fromSerialized(__value, () => List<int>());
+      case 'v':
+        v = __value;
         return;
-      case 'children':
-        children = fromSerialized(
-            __value, [() => Map<String, Trie>(), null, () => Trie()]);
+      case 't':
+        t = fromSerialized(__value, () => List<int>());
+        return;
+      case 'c':
+        c = fromSerialized(__value, () => Map<dynamic, dynamic>());
         return;
     }
     throwFieldNotFoundException(__key, 'Trie');
   }
 
-  Iterable<String> get keys =>
-      const ['value', 'terminalDefinitions', 'children'];
+  Iterable<String> get keys => const ['id', 'v', 't', 'c'];
 }

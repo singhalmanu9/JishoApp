@@ -1,11 +1,42 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_app/OfflineModeUtils.dart';
+import 'package:flutter_app/OfflineSearchPage.dart';
 import 'package:flutter_app/SearchPage.dart';
 import 'package:flutter_app/AboutPage.dart';
 import 'package:flutter_app/RadicalPage.dart';
 import 'package:flutter_app/KanjiPage.dart';
 import 'dart:convert';
+import 'package:flutter_app/Trie.dart';
+import 'dart:typed_data';
 
 void main() => runApp(new MyApp());
+
+void loadJPRoot()async{
+  String jsonString;
+  print("entering loading JPRoot");
+  final ByteData data = await rootBundle.load('assets/json_files/JPTrie/root');
+  jsonString = utf8.decode(data.buffer.asUint8List());
+
+  print(jsonString.length);
+  var jsonMap = jsonDecode(jsonString);
+  Trie root = Trie()..fromMap(jsonMap);
+  OfflineSearchPage.JPRoot = root;
+  print("loaded JPRoot");
+}
+void loadENRoot() async {
+  String jsonString;
+  print("entering loading ENRoot");
+  final ByteData data = await rootBundle.load('assets/json_files/ENTrie/root');
+  jsonString = utf8.decode(data.buffer.asUint8List());
+  var jsonMap = jsonDecode(jsonString);
+  Trie root = Trie()..fromMap(jsonMap);
+  OfflineSearchPage.ENRoot = root;
+  print("loaded ENRoot");
+  print(root.toMap());
+}
+
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -51,29 +82,55 @@ class MyApp extends StatelessWidget {
             return new CustomRoute(
                 builder: (_) => new DefaultSearchPage(
                     _MyHomePageState.searchBarController.text,
-                    _MyHomePageState.romajiOn), settings: settings);
+                    _MyHomePageState.romajiOn),
+                settings: settings);
+          case '/offlineSearch':
+            return new CustomRoute(
+                builder: (_) => new OfflineSearchPage(
+                    _MyHomePageState.searchBarController.text,
+                    _MyHomePageState.romajiOn),
+                settings: settings);
           case '/about':
-            return new CustomRoute(builder: (_) => new AboutPage(), settings: settings);
+            return new CustomRoute(
+                builder: (_) => new AboutPage(), settings: settings);
           case '/radical':
-            return new CustomRoute(builder: (_) => new RadicalPage(), settings: settings);
+            return new CustomRoute(
+                builder: (_) => new RadicalPage(), settings: settings);
           case '/radical/defaultSearch':
             return new CustomRoute(
                 builder: (_) => new DefaultSearchPage(
                     RadicalPage.getSearchBarController().text,
-                    _MyHomePageState.romajiOn), settings: settings);
+                    _MyHomePageState.romajiOn),
+                settings: settings);
+          case '/radical/offlineSearch':
+            return new CustomRoute(
+                builder: (_) => new OfflineSearchPage(
+                    RadicalPage.getSearchBarController().text,
+                    _MyHomePageState.romajiOn),
+                settings: settings);
           // ignore: missing_return
-          case '/defaultSearch/kanjiInfo' :
-            return new CustomRoute(builder: (_) => new KanjiPage(DefaultSearchPage.getKanjiList()), settings: settings);
+          case '/defaultSearch/kanjiInfo':
+            return new CustomRoute(
+                builder: (_) => new KanjiPage(DefaultSearchPage.getKanjiList()),
+                settings: settings);
+          case '/offlineSearch/kanjiInfo':
+            return new CustomRoute(
+                builder: (_) => new KanjiPage(OfflineSearchPage.getKanjiList()),
+                settings: settings);
         }
         return null;
       },
-
     );
+  }
+
+  static bool OfflineModeOn() {
+    return _MyHomePageState.offlineModeOn;
   }
 }
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key}) : super(key: key);
+
   @override
   _MyHomePageState createState() => new _MyHomePageState();
 }
@@ -83,19 +140,42 @@ class _MyHomePageState extends State<MyHomePage> {
   static TextEditingController searchBarController =
       new TextEditingController();
   static bool kdicLoaded = false;
+  static bool offlineModeOn = false;
+  static bool answerMapLoaded = false;
+  static bool ENRootLoaded = false;
+  static bool JPRootLoaded = false;
+
+
+  static void _loadAnswerMap(BuildContext context) async{
+//TODO something breaks here and causes this to be null;
+    String jsonString;
+    final ByteData data = await rootBundle.load('assets/json_files/answerMap.json');
+    jsonString = utf8.decode(data.buffer.asUint8List());
+    OfflineSearchPage.answerMap = jsonDecode(jsonString);
+    print("loaded answerMap");
+    answerMapLoaded = true;
+  }
+
+  static void _loadkDic(BuildContext context) async{
+    final ByteData data = await rootBundle.load('assets/json_files/kdic2');
+    String jsonString = utf8.decode(data.buffer.asUint8List());
+    KanjiPage.kdic = jsonDecode(jsonString);
+    print('loaded kanjidic2');
+
+    kdicLoaded = true;
+  }
+  static void _loadENRoot(BuildContext context)async {
+    loadENRoot();
+    ENRootLoaded = true;
+  }
+  static void _loadJPRoot(BuildContext context)async {
+    loadJPRoot();
+    JPRootLoaded = true;
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (!kdicLoaded) {
-      DefaultAssetBundle
-          .of(context)
-          .loadString('assets/json_files/kdic2')
-          .then((kdic2) {
-        KanjiPage.kdic = json.decode(kdic2);
-      });
-      kdicLoaded = true;
-      print('loaded kanjidic2');
-    }
+    _loadkDic(context);
     return new Scaffold(
       body: new Center(
           child: new Padding(
@@ -110,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     new Padding(
                         padding: new EdgeInsets.symmetric(
-                            vertical: 20.0, horizontal: 40.0),
+                            vertical: 8.0, horizontal: 40.0),
                         child: new TextField(
                           decoration: const InputDecoration(
                               border: const OutlineInputBorder(
@@ -142,11 +222,31 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     new Padding(
                         padding: EdgeInsets.symmetric(
-                            vertical: 20.0, horizontal: 0.0),
+                            vertical: 5.0, horizontal: 100.0),
+                        child: new CheckboxListTile(
+                          title: Text("OfflineMode"), //    <-- label
+                          value: offlineModeOn,
+                          onChanged: (newValue) {
+                            setState(() {
+
+                              offlineModeOn = newValue;
+                            });
+                            if (newValue && !answerMapLoaded) {
+
+                              if (!answerMapLoaded) {
+                                _loadAnswerMap(context);
+                              }
+
+                            }
+                          },
+                        )),
+                    new Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 0.0),
                         child: new Container(
                           child: new FlatButton(
-                              onPressed: () =>
-                                  Navigator.pushNamed(context, '/radical'),
+                              onPressed: () {
+                                  Navigator.pushNamed(context, '/radical');},
                               child: new Text(
                                 "Radical Search",
                                 textDirection: TextDirection.ltr,
@@ -158,7 +258,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         )),
                     new Padding(
                         padding: EdgeInsets.symmetric(
-                            vertical: 35.0, horizontal: 0.0),
+                            vertical: 15.0, horizontal: 0.0),
                         child: new Container(
                           child: new FlatButton(
                               onPressed: () =>
@@ -171,19 +271,32 @@ class _MyHomePageState extends State<MyHomePage> {
                             color: Colors.black12,
                           ),
                           padding: new EdgeInsets.all(3.0),
-                        ))
+                        )),
                   ]))),
       floatingActionButton: new Builder(builder: (context) {
         return new FloatingActionButton(
           onPressed: () {
             if (searchBarController.text.length > 0) {
-              Navigator.pushNamed(context, '/defaultSearch');
+              if (!offlineModeOn) {
+                Navigator.pushNamed(context, '/defaultSearch');
+              } else {
+                //TODO change to if query is not kanaizable
+                if (!ENRootLoaded) {
+                  _loadENRoot(context);
+                }
+//
+//                if (!JPRootLoaded) {
+//                  _loadJPRoot(context);
+//                }
+                Navigator.pushNamed(context, '/offlineSearch');
+              }
             } else {
               Scaffold.of(context).showSnackBar(new SnackBar(
                   content:
                       new Text("Please enter in a query before searching.")));
             }
-          }, //anonymous function deeming whether there is sufficient information to search,
+          },
+          //anonymous function deeming whether there is sufficient information to search,
           tooltip: 'Search',
           child: new Icon(Icons.search),
         );
@@ -195,6 +308,7 @@ class _MyHomePageState extends State<MyHomePage> {
 class CustomRoute<T> extends MaterialPageRoute<T> {
   CustomRoute({WidgetBuilder builder, RouteSettings settings})
       : super(builder: builder, settings: settings);
+
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {

@@ -9,11 +9,13 @@ class Answer extends _$AnswerSerializable{
   String kanjiStr;
   String kanaStr;
   List<Map> defs;
+  bool common;
   Answer() ;
   Answer.fromJSON(Map jsonMap){
     this.id = (jsonMap['num_id']);
     this.kanjiStr = jsonMap['kanjistr'];
     this.kanaStr = jsonMap['kanastr'];
+    this.common = jsonMap['common'];
     List<Map> defPairs = List();
     jsonMap['en_defs'].forEach(( mapStr) =>{
       defPairs.add(json.decode(mapStr))

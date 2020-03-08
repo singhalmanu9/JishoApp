@@ -1,32 +1,87 @@
+import 'dart:collection';
+
 import 'Trie.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'Answer.dart';
+
 void main(){
   Trie JapaneseTrie = Trie.root();
-  Trie EnglishTrie = Trie.root();
+
   print(Directory.current);
   Map JSONAnswers = jsonDecode( File('assets/json_files/answerMap.json').readAsStringSync());
 
   buildJapaneseTrie(JapaneseTrie,JSONAnswers);
-  print("done with JP");
+  print("done with JP" + JapaneseTrie.id.toString());
+
+  resetGlobalID();
+
+  Trie EnglishTrie = Trie.root();
 
   buildEnglishTrie(EnglishTrie,JSONAnswers);
-  print("done with EN");
+  print("done with EN" + EnglishTrie.id.toString());
 
-  Map jpTrieMap = JapaneseTrie.toMap();
-  var jpString = jsonEncode(jpTrieMap);
-  File jpFile = new File('assets/json_files/JPTrie.json');
-  jpFile.writeAsStringSync(jpString);
+  splitTrie(JapaneseTrie,'assets/json_files/JPTrie/');
   print("done with JP json serialization. File saved.");
 
-  Map enTrieMap = EnglishTrie.toMap();
-  var enString = jsonEncode(enTrieMap);
-  File enFile = new File('assets/json_files/ENTrie.json');
-  enFile.writeAsStringSync(enString);
+  splitTrie(EnglishTrie,'assets/json_files/ENTrie/');
   print("done with EN json serialization. File saved.");
 
 }
+
+////TODO split the root into lists of nodes of length 1000 or less.
+// save ids of nodes in map that tells which file it's in.
+
+void splitTrie(Trie root, String initpath) {
+  Queue cur = Queue();
+  cur.add(root);
+  int cur_ct = 1;
+  Map<String,Trie> cur_map = Map();
+  Map<String,int> id_location = Map();
+
+  while (cur.isNotEmpty) {
+    if (cur_ct %1000 == 0 ) {
+      String path = initpath + (cur_ct~/1000).toString();
+      if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound) {
+        File destFile = new File(path);
+        destFile.writeAsStringSync(jsonEncode(cur_map));
+      }
+      cur_map.forEach((str,trie) {
+        id_location[trie.id.toString()] = cur_ct~/1000;
+      });
+      cur_map = Map();
+    }
+
+    Trie val = cur.removeFirst();
+
+    Map updated_c = Map();
+    val.c.forEach((key, child) {
+      if (child is Trie)
+      updated_c[key] = child.id;
+      cur.add(child);
+    });
+    val.c = updated_c;
+    cur_map[val.id.toString()] = val;
+
+    cur_ct += 1;
+  }
+  if (cur_ct %1000 != 0 ) {
+    String path = initpath + (cur_ct~/1000).toString();
+    if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound) {
+      File destFile = new File(path);
+      destFile.writeAsStringSync(jsonEncode(cur_map));
+    }
+    cur_map.forEach((str,trie) {
+      id_location[trie.id.toString()] = cur_ct~/1000;
+    });
+    cur_map = Map();
+  }
+  File rootFile = new File(initpath + 'root');
+  rootFile.writeAsStringSync(jsonEncode(root..toMap()));
+  File idMap = new File(initpath + "idMap");
+  idMap.writeAsStringSync(jsonEncode(id_location));
+}
+
 
 void buildJapaneseTrie(Trie root, Map answers) {
   answers.forEach((key, answerMap)  {

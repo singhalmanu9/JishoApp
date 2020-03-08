@@ -11,10 +11,12 @@ abstract class _$AnswerSerializable extends SerializableMap {
   String get kanjiStr;
   String get kanaStr;
   List<Map<dynamic, dynamic>> get defs;
+  bool get common;
   set id(int v);
   set kanjiStr(String v);
   set kanaStr(String v);
   set defs(List<Map<dynamic, dynamic>> v);
+  set common(bool v);
   String toString();
 
   operator [](Object __key) {
@@ -27,6 +29,8 @@ abstract class _$AnswerSerializable extends SerializableMap {
         return kanaStr;
       case 'defs':
         return defs;
+      case 'common':
+        return common;
       case 'toString':
         return toString;
     }
@@ -50,9 +54,13 @@ abstract class _$AnswerSerializable extends SerializableMap {
           () => Map<dynamic, dynamic>()
         ]);
         return;
+      case 'common':
+        common = __value;
+        return;
     }
     throwFieldNotFoundException(__key, 'Answer');
   }
 
-  Iterable<String> get keys => const ['id', 'kanjiStr', 'kanaStr', 'defs'];
+  Iterable<String> get keys =>
+      const ['id', 'kanjiStr', 'kanaStr', 'defs', 'common'];
 }

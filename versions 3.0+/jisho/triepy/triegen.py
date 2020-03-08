@@ -18,7 +18,102 @@ for g in x[1:]:
 
 
 defnums = ["(" + str(i) + ")" for i in range(1,30)]
-readingInfo = {"gikun": "gikun (meaning) reading",
+fieldUsage = {
+"anat" :	"anatomical term",
+"archit" :	"architecture term",
+"astron" 	:"astronomy, etc. term",
+"baseb" :	"baseball term", 
+"biol" :	"biology term", 
+"bot" :	'botany term', 	
+'Buddh' :	'Buddhist term', 	
+'bus' :	'business term', 
+'chem' :	'chemistry term' ,	
+'Christn' :	'Christian term' ,	
+'comp' :	'computing term' 	,
+'econ' :	'economics term' ,
+'engr' :	'engineering term' ,	
+'finc' :	'finance term' 	,
+'food' :	'food term' ,
+'geol' :	'geology, etc. term' ,	
+'geom' :	'geometry term' 	,
+'law' :	'law, etc. term' 	,
+'ling' :	'linguistics term' ,	
+'MA' :	'martial arts term' ,	
+'mahj': 	'mahjong term' 	,
+'math' :	'mathematics term' ,	
+'med' :	'medicine, etc. term' ,	
+'mil' :	'military term' 	,
+'music': 	'music term' 	,
+'physics': 	'physics term' ,	
+'Shinto' :	'Shinto term' ,	
+'shogi' :	'shogi term' 	,
+'sports' :	'sports term ',	
+'sumo' :	'sumo term' ,
+'zool' :	'zoology term'
+}
+
+dialectInfo = {'hob' :	'Hokkaidou-ben', 	
+'ksb' 	:'Kansai-ben' ,	
+'ktb' :	'Kantou-ben' ,
+'kyb' :	'Kyoto-ben', 	
+'kyu' :	'Kyuushuu-ben' ,	
+'nab' :	'Nagano-ben' ,	
+'osb' 	:'Osaka-ben' ,	
+'rkb' :	'Ryuukyuu-ben' ,	
+'std' :	'Tokyo-ben (std)' ,	
+'thb' 	:'Touhoku-ben' 	,
+'tsb' 	:'Tosa-ben' 	,
+'tsug' :	'Tsugaru-ben'
+}
+
+miscInfo = {
+	'abbr': 	'abbreviation' 	,
+'aphorism' :	'aphorism (pithy saying)', 	
+'arch' :	'archaism' 	,
+'chn '	:"children's language "	,
+'col' :	'colloquialism' 	,
+'company' :	'company name' 	,
+'dated' :	'dated term' 	,
+'derog' :	'derogatory' 	,
+'eK' 	:'exclusively kanji' ,	
+'fam' :	'familiar language' ,	
+'fem' :	'female term, language, or name', 	
+'given' :	'given name or forename, gender not specified',
+'hist': 	'historical term' ,
+'hon' 	:'honorific or respectful (sonkeigo) language' 	,
+'hum' :	'humble (kenjougo) language' 	,
+'id' :	'idiomatic expression' ,
+'joc' 	:'jocular, humorous term' ,
+'litf' :	'literary or formal term', 	
+'m-sl' :	'manga slang' ,	
+'male' :	'male term, language, or name' 	,
+'net-sl' 	:'Internet slang', 	
+'obs' :	'obsolete term' 	,
+'obsc' :	'obscure term' ,	
+'on-mim' :	'onomatopoeic or mimetic word' 	,
+'organization' :	'organization name' ,	
+'person' :	'full name of a particular person' 	,
+'place' :	'place name' 	,
+'poet' 	:'poetical term' 	,
+'pol': 	'polite (teineigo) language',
+'product' :	'product name' 	,
+'proverb' :	'proverb' ,	
+'quote' :	'quotation', 	
+'rare': 	'rare' 	,
+'sens': 	'sensitive' ,
+'sl' 	:'slang' 	,
+'station' :	'railway station' ,	
+'surname' :	'family or surname' ,	
+'uk' :	'word usually written using kana alone' 	,
+'unclass' :	'unclassified name' 	,
+'vulg' :	'vulgar expression or word' ,	
+'work' :	'work of art, literature, music, etc. name' ,	
+'X' :	'rude or X-rated term (not displayed in educational software)' 	,
+'yoji' :	'yojijukugo' 	
+}
+
+readingInfo = {
+"gikun": "gikun (meaning) reading",
 	"go":"on-yomi, go",
 	"ik":"word contains irregular kana usage",
 	"jouyou":"jouyou",
@@ -42,17 +137,17 @@ kanjiInfo = {"ateji":"ateji(phonetic) reading",
 }
 partOfSpeech ={
 	"adj-f":"noun or verb acting prenominally",
-	"adj-i":"i-adjective (keiyoushi)",
-	"adj-ix":"yoi/ii i-adjective",
+	"adj-i":"i-adjective",
+	"adj-ix":"i-adjective (yoi/ii class)",
 	"adj-kari":"kari adjective (archaic)",
 	"adj-ku" :"ku adjective (archaic)",
-	"adj-na":"na-adjective (keyodoshi)",
-	"adj-nari":"archaic form of na-adjective",
+	"adj-na":"na-adjective",
+	"adj-nari":"Archaic/formal form of na-adjective",
 	"adj-no":"no-adjective",
-	"adj-pn":"pre-noun adjectival (rentaishi)",
+	"adj-pn":"pre-noun adjectival",
 	"adj-shiku":"shiku adjective (archaic)",
 	"adj-t":"'taru' adjective",
-	"adv":"adverb (fukushi)",
+	"adv":"adverb",
 	"adv-to":"adverb aking the 'to' particle",
 	"aux":"auxilliary",
 	"aux-adj":"auxilliary adjective",
@@ -60,15 +155,15 @@ partOfSpeech ={
 	"conj": "conjunction",
 	"cop":"copula",
 	"ctr":"counter",
-	"exp":"Expressions (phrases,clauses,etc.)",
-	"int":"interjection (kandoushi)",
-	"n":"noun (common) (futsuumeishi)",
-	"n-adv":"adverbial noun (fukushitekimeishi)",
+	"exp":"Expressions",
+	"int":"interjection",
+	"n":"noun",
+	"n-adv":"adverbial noun",
 	"n-pr":"proper noun",
 	"n-pref":"noun, used as a prefix",
 	"n-suf":"noun, used as a suffix",
-	"n-t":"noun (temporal) (jisoumeishi)",
-	"num":"pn",
+	"n-t":"noun (temporal)",
+	"num":"numeric",
 	"pn":"pronoun",
 	"pref":"prefix",
 	"prt":"particle",
@@ -135,27 +230,37 @@ archaics = {"v2a-s":"Nidan verb with 'u' ending (archaic)",
 	"v4s": "Yodan verb with su ending (archaic)",
 	"v4t":"Yodan verb with tsu ending (archaic)"}
 def remove_artifacts(cur_def):
-	while True: #remove formatting artifacts caused from removing archaics
-		rem = None
-		rem2 = None
-		for j in range(1,len(cur_def)):
-			lastaa = cur_def[j-1]
-			curaa = cur_def[j]
-			if lastaa == '(' and curaa == ',':
-				rem = j
-				break;
-			if lastaa == ',' and curaa == ')':
-				rem = j - 1
-				break;
-			if lastaa == '(' and curaa == ')':
-				rem = j- 1
-				rem2 = j
-				break;
-		if rem and rem2:
-			cur_def = cur_def[:rem] + cur_def[rem2 + 1:]
-		elif rem:
-			cur_def= cur_def[:rem] + cur_def[rem + 1:]
-		else:
+	# while True: #remove formatting artifacts caused from removing archaics
+	# 	rem = None
+	# 	rem2 = None
+	# 	for j in range(1,len(cur_def) - 1):
+	# 		lastaa = cur_def[j]
+	# 		curaa = cur_def[j+1]
+	# 		if lastaa == '(' and curaa == ',':
+	# 			rem = j + 1
+	# 			break;
+	# 		if lastaa == ',' and curaa == ')':
+	# 			rem = j
+	# 			break;
+	# 		if lastaa == '(' and curaa == ')':
+	# 			rem = j
+	# 			rem2 = j + 1
+	# 			break;
+	# 	if rem and rem2:
+	# 		cur_def = cur_def[:rem] + cur_def[rem2 + 1:]
+	# 	elif rem:
+	# 		cur_def= cur_def[:rem] + cur_def[rem + 1:]
+	# 	else:
+	# 		break
+	while True:
+		oldLen = len(cur_def)
+		cur_def = cur_def.lstrip('()')
+		cur_def = cur_def.lstrip('(')
+		cur_def=cur_def.lstrip(',')
+		cur_def = cur_def.lstrip(')')
+		cur_def = cur_def.lstrip('/')
+		cur_def = cur_def.strip()
+		if oldLen == len(cur_def):
 			break
 	return cur_def
 
@@ -166,9 +271,12 @@ def create_from_line(line):
 		:num_id: integer, unique identifier for a word
 		:kanjistr:string, the kanji/special character representation of the word/symbol
 		:kanastr: string, the kana representation of the word/symbol
-		:en_defs: list[dictionary], a list of {"pos":[--,--],"definition":----} dictionaries. "pos" may be present as an empty list.
-			"definition" should always be present
+		:en_defs: list[dictionary], a list of {"pos":[--,--],"definition":----, "rInfo":[--,--]} dictionaries. "pos" may be present as an empty list.
+			"definition" should always be present, "rInfo" is reading information,
+			 "misc" is miscellaneous info, "dial" is dialectical info
+		:is_common: whether this line represents a common word
 	"""
+	is_common = False
 	global num_id
 	num_id += 1
 	i = 0
@@ -206,32 +314,57 @@ def create_from_line(line):
 					if arch in cur_def:
 						cur_def = cur_def[:cur_def.index(arch)] + cur_def[cur_def.index(arch) + len(arch):]
 
-				cur_def = remove_artifacts(cur_def)
+
 				if cur_def:
 					en_defs.append(cur_def)
 				cur_def = ""
 				continue
-			if line[i] == "\n":#end of line, last step
+			if line[i] == "\n":
 				continue
 			cur_def += line[i]
-	en_defs_revised = [{"pos":[]} for _ in en_defs]
+	en_defs_revised = [{"pos":[], "rInfo":[]} for _ in en_defs]
 	for i in range(len(en_defs)):
-		d = en_defs[i]
+		if '(P)' in en_defs[i]:
+			is_common = True
+			continue
 		for pos in partOfSpeech.keys():
 			regexstr = '\((.*,)?' + pos + '(,.*)?\)' #starts with (, possibly has stuff before it, then has the part of speech. Possibly has stuff after it, definitely ends with a )
-			if re.search(regexstr,d):
+			if re.search(regexstr,en_defs[i]):
 				en_defs[i] = en_defs[i][:en_defs[i].index(pos)] + en_defs[i][en_defs[i].index(pos) + len(pos):]
-				en_defs_revised[i]['pos'].append(partOfSpeech[pos])
-				d = en_defs[i]
+				en_defs_revised[i]['pos'].append(pos)
+
+		for field in fieldUsage.keys():
+			regexstr = '\((.*,)?' + field + '(,.*)?\)'
+			if re.search(regexstr,en_defs[i]):
+				en_defs[i] = en_defs[i][:en_defs[i].index(field)] + en_defs[i][en_defs[i].index(field) + len(field):]
+				en_defs_revised[i]['field']= fieldUsage[field]
+
+		for misc in miscInfo.keys():
+			regexstr = '\((.*,)?' + misc + '(,.*)?\)'
+			if re.search(misc,en_defs[i]):
+				en_defs[i] = en_defs[i][:en_defs[i].index(misc)] + en_defs[i][en_defs[i].index(misc) + len(misc):]
+				en_defs_revised[i]['misc']= miscInfo[misc]
+
+		for rInfo in readingInfo.keys():
+			regexstr = '\((.*,)?' + rInfo + '(,.*)?\)'
+			if re.search(regexstr,en_defs[i]):
+				en_defs[i] = en_defs[i][:en_defs[i].index(rInfo)] + en_defs[i][en_defs[i].index(rInfo) + len(rInfo):]
+				en_defs_revised[i]['rInfo'].append(rInfo)
+
+		for dialInfo in dialectInfo.keys():
+			regexstr = '\((.*,)?' + dialInfo + '(,.*)?\)'
+			if re.search(regexstr,en_defs[i]):
+				en_defs[i] = en_defs[i][:en_defs[i].index(dialInfo)] + en_defs[i][en_defs[i].index(dialInfo) + len(dialInfo):]
+				en_defs_revised[i]['dialInfo'] = dialInfo
+
+		
+		
+
 		removed = remove_artifacts(en_defs[i])
-		if removed[0] == '/':
-			removed = removed[1:]
-		if removed[0] == ' ':
-			removed = removed[1:]
 		en_defs_revised[i]['definition'] = removed
 	en_defs = en_defs_revised
-	#todo for each def in line, change def into pos and def
-	return num_id,kanjistr,kanastr,en_defs
+
+	return num_id,kanjistr,kanastr,en_defs,is_common
 res = {}
 
 for m in lines:
@@ -239,10 +372,19 @@ for m in lines:
 		continue
 	if "(arch)" in m:
 		continue
-	num,kstr,kanastr,endf = create_from_line(m)
+	num,kstr,kanastr,endf,is_common = create_from_line(m)
 	endf = [json.dumps(m) for m in endf]
-	res[num]=json.dumps({"num_id":num,"kanjistr":kstr,"kanastr":kanastr,"en_defs":endf})
+	res[num]=json.dumps({"num_id":num,"kanjistr":kstr,"kanastr":kanastr,"en_defs":endf,"common":is_common})
 x = json.dumps(res)
 with open("definitions.json",'w') as f:
 	f.write(x)
+with open("fieldUsage.json",'w') as f:
+	f.write(json.dumps(fieldUsage))
+with open("readingInfo.json",'w') as f:
+	f.write(json.dumps(readingInfo))
+with open("dialectInfo.json",'w') as f:
+	f.write(json.dumps(dialectInfo))
+with open("miscInfo.json",'w') as f:
+	f.write(json.dumps(miscInfo))
+
 print(len(x))

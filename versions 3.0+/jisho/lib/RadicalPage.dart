@@ -6,6 +6,8 @@ import 'dart:math' as math;
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:async';
 
+import 'package:flutter_app/main.dart';
+
 
 //TODO get Navigator route added somewhere... google this.
 class RadicalPage extends StatefulWidget {
@@ -125,7 +127,11 @@ class _RadicalPageState extends State<RadicalPage> {
           return new FloatingActionButton(
             onPressed: () {
               if (searchBarController.text.length > 0) {
-                Navigator.pushNamed(context, '/radical/defaultSearch');
+                if(!MyApp.OfflineModeOn()) {
+                  Navigator.pushNamed(context, '/radical/defaultSearch');
+                } else {
+                  Navigator.pushNamed(context, '/radical/offlineSearch');
+                }
               } else {
                 Scaffold.of(context).showSnackBar(new SnackBar(
                     content:
