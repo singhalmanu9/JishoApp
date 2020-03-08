@@ -288,6 +288,7 @@ def create_from_line(line):
 	cur_pos = ""
 	en_defs = []
 	cur_def = ""
+	entered = False
 	for i in range(len(line)):
 		if kanji and line[i]== ' ': #end of kanji in line
 			kanji = False
@@ -295,9 +296,7 @@ def create_from_line(line):
 			continue
 		elif kanji: #parsing kanji from line
 			kanjistr += line[i]
-		elif kana: #parsing kana from line
-			if line[i] == '[':#beginning of kana
-				continue
+		elif kana and entered:
 			if line[i] == ']':#end of kana
 				continue
 			if line[i] == ' ':#transition from kana to english definitions
@@ -305,7 +304,16 @@ def create_from_line(line):
 				en = True
 				continue
 			kanastr += line[i]
-		elif en:#parsing english from line
+		elif kana: #parsing kana from line
+			if line[i] == '[':#beginning of kana
+				entered = True
+				continue
+			if line[i] == '/':#no kana present
+				entered = False
+				kana = False
+				en = True
+
+		if en:#parsing english from line
 			if line[i] == '/' and cur_def:
 				for defnum in defnums: #remove the definition numbers from lines in the current defintion
 					if defnum in cur_def:

@@ -14,8 +14,9 @@ class OfflineSearchPage extends StatefulWidget {
   bool romajiOn = false;
   static Trie JPRoot;
   static Trie ENRoot;
-  static Map answerMap;
+
   static Set<String> _searchKanji;
+
   OfflineSearchPage(String searchTextField, bool romajiOn) {
     this.searchTextField = searchTextField;
     this.romajiOn = romajiOn;
@@ -35,8 +36,6 @@ class OfflineSearchPage extends StatefulWidget {
       new _OfflineSearchPageState(searchTextField, romajiOn);
 
 
-
-
 }
 
 class _OfflineSearchPageState extends State<OfflineSearchPage> {
@@ -53,6 +52,7 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
     Scaffold.of(_context).showSnackBar(new SnackBar(
         content: new Text("copied \"" + copiedWord + "\" to clipboard")));
   }
+
   _OfflineSearchPageState(String searchTextField, bool romajiOn) {
     this.searchTextField = searchTextField;
     this.romajiOn = romajiOn;
@@ -61,20 +61,22 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-
     if (fullQuery) {
-
       if (_defWidgets.length > 0) {
-        return new Scaffold(appBar: new AppBar(title: new Text("Search Results")),body: new Builder(builder: (BuildContext context) {
-          _context = context;
-          return new Padding(
-              padding: new EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
-              child: new ListView(children: _defWidgets));
-        }));
+        return new Scaffold(
+            appBar: new AppBar(title: new Text("Search Results")),
+            body: new Builder(builder: (BuildContext context) {
+              _context = context;
+              return new Padding(
+                  padding: new EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+                  child: new ListView(children: _defWidgets));
+            }));
       } else {
-        return new Scaffold(appBar: new AppBar(title: new Text("Search Results")),
+        return new Scaffold(
+            appBar: new AppBar(title: new Text("Search Results")),
             body: new Padding(
-              padding: new EdgeInsets.symmetric(vertical: 30.0, horizontal: 10.0),
+              padding: new EdgeInsets.symmetric(
+                  vertical: 30.0, horizontal: 10.0),
               child: new Text("Loading Query"),
             ));
       }
@@ -93,13 +95,12 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
     super.initState();
     fullQuery = true;
     loadInDefinitions();
-
   }
-  void loadInDefinitions() async{
+
+  void loadInDefinitions() async {
     String mode;
-    Map answerMap = OfflineSearchPage.answerMap;
     Trie root;
-    if(romajiOn) { //TODO this isn't right. need to test the input string to see of it's kana-izable or if it has quotes
+    if (romajiOn) { //TODO this isn't right. need to test the input string to see of it's kana-izable or if it has quotes
       mode = "JP";
       if (OfflineSearchPage.JPRoot == null) {
         print("ASDF:LK");
@@ -115,17 +116,23 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
       }
       root = OfflineSearchPage.ENRoot;
     }
-    List<Answer> answers = await OfflineModeUtils.searchTrie(searchTextField, root, mode, answerMap);
+    List<Answer> answers = await OfflineModeUtils.searchTrie(
+        searchTextField, root, mode);
     //TODO build widgets based off of answers...
     //Make text look nice
     //Link up Kanji when possible.
     answers.forEach((Answer a) {
       Column JPSubWidget = getJapaneseSubWidget(a);
       Column ENSubWidget = getEnglishSubWidget(a);
+      Widget CommonWidget = getCommonWidget(a);
       setState(() {
-        _defWidgets.add(JPSubWidget);
-        _defWidgets.add(ENSubWidget);
-        fullQuery = true;
+        if(CommonWidget != null){
+          _defWidgets.add(CommonWidget);
+          }
+          _defWidgets.add(JPSubWidget);
+          _defWidgets.add(ENSubWidget);
+          fullQuery = true;
+
       });
       //set state
     });
@@ -135,45 +142,63 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
       });
     }
   }
+  Widget getCommonWidget(Answer a) {
+    Paint isCommonPaint = new Paint(); //TODO refactor out of both search pages and put as static somewhere else.
+    isCommonPaint.color = new Color(0x8abc83);
+    if (a.common) {
+      return new Container(
+        child: new Text('common',
+            style: new TextStyle(
+                color: Colors.white, background: isCommonPaint)),
+        decoration: new BoxDecoration(
+          borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
+          color: new Color(0xff8abc83),
+        ),
+        padding: new EdgeInsets.all(3.0),
+      );
+    }
+    return null;
+  }
   Column getEnglishSubWidget(Answer a) {
     List<Widget> structuredDefs = List();
     a.defs.forEach((Map m) {
       if (m.containsKey('pos'))
-        if(m['pos'].length > 0) {
-        List<Widget> PoSRow = List();
-        if (m['pos'].length != 0) {
-          m['pos'].forEach(( s) {
-            PoSRow.add(
-                Text(s, textScaleFactor: .6,)); //TODO double check scale factor
-                print(s);
-          });
+        if (m['pos'].length > 0) {
+          List<Widget> PoSRow = List();
+          if (m['pos'].length != 0) {
+            m['pos'].forEach((s) {
+              PoSRow.add(
+                  Text(
+                    s, textScaleFactor: .8,)); //TODO double check scale factor
+
+            });
+          }
+          structuredDefs.add(
+              new Row(crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                textDirection: TextDirection.ltr,
+                children: PoSRow,));
         }
-        structuredDefs.add(new Row(crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          textDirection: TextDirection.ltr,
-          children: PoSRow,));
-      }
-      if (m.containsKey('definition')){
+      if (m.containsKey('definition')) {
         structuredDefs.add(new Text(m['definition']));
       }
     });
     return new Column(crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         textDirection: TextDirection.ltr,
-        children:structuredDefs);
+        children: structuredDefs);
   }
 
-   Column getJapaneseSubWidget(Answer a) {
+  Column getJapaneseSubWidget(Answer a) {
     Widget mainFormReadingText = new Text(
       a.kanaStr,
-      textScaleFactor: 1.5,
+      textScaleFactor: 1.2,
     );
-
     Widget mainFormReading = new InkWell(
         onLongPress: () {
           Clipboard.setData(ClipboardData(
               text: a.kanaStr));
-              _OfflineSearchPageState.copyDialogue(
+          _OfflineSearchPageState.copyDialogue(
               a.kanaStr);
         },
         child: mainFormReadingText);
@@ -199,16 +224,26 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
               .copyDialogue(a.kanjiStr);
         },
         child: mainFormWordText); //TODO make this look pretty
+    if (a.kanaStr.compareTo("") != 0) {
+      return new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        textDirection: TextDirection.ltr,
+        children: <Widget>[
+          mainFormReading,
+          mainFormWord,
+        ],
+      );
+    }
 
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       textDirection: TextDirection.ltr,
       children: <Widget>[
-        mainFormReading,
-        mainFormWord,      ],
+        mainFormWord,
+      ],
     );
   }
-
 
 }

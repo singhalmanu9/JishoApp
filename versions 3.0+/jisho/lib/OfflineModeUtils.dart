@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/OfflineSearchPage.dart';
 
 import 'Answer.dart';
+import 'AnswerMapChunker.dart';
 import 'Trie.dart';
 import 'package:tuple/tuple.dart';
 import 'dart:async' show Future;
@@ -15,11 +16,17 @@ class OfflineModeUtils {
   /// Gives the Answer corresponding the ID from the answerMap
   /// This is public for no reason I can currently think of. Might make it
   /// private later who knows ;)))
-  static Answer getAnswerFromID(int id, Map answerMap) {
-    if (answerMap.containsKey(id.toString())) {
-      return Answer()..fromMap(answerMap[id.toString()]);
+  static Future<Answer> getAnswerFromID(int id)async {
+    int answerChunk = id ~/ LISTSIZE;
+    String chunkPath = "assets/json_files/answerMap/" + answerChunk.toString();
+
+    String chunkJSON = await rootBundle.loadString(chunkPath);
+    if (chunkJSON.length == 0 ) {
+      return null;
     }
-    return null;
+    List chunkList =  jsonDecode(chunkJSON);
+    int answerIndex = id % LISTSIZE;
+    return Answer()..fromMap(chunkList[answerIndex]);
   }
 
   ///Performs the search for a given query on a Trie node. Ideally, this is only
@@ -47,8 +54,11 @@ class OfflineModeUtils {
       String val = await rootBundle.loadString(assetPath + Chunk.toString());
       Map newChunk = jsonDecode(val);
       loadedChunks[Chunk] = newChunk;
+      return Trie()..fromMap(loadedChunks[Chunk][id.toString()]);
+    } else {
+      return Trie()
+        ..fromMap(loadedChunks[Chunk][id.toString()]);
     }
-    return Trie()..fromMap(loadedChunks[Chunk][id.toString()]);
   }
 
   ///Searches the Trie for a query given its respective mode:
@@ -60,20 +70,19 @@ class OfflineModeUtils {
   ///length to its full query. The query is also searched for in its entirety.
   ///All search results are then sorted based on score (in reverse order) and
   ///are output.
-  static Future<List<Answer>> searchTrie(String query, Trie root, String mode,
-      Map answerMap) async{
-
+  static Future<List<Answer>> searchTrie(String query, Trie root, String mode) async{
+    List<Answer> ret = List();
     if (mode == "JP") {
       Trie cur = root;
       String assetPath = 'assets/json_files/JPTrie/';
       Map idMap= jsonDecode(await rootBundle.loadString(assetPath + 'idMap'));
 
       List<int> idList = await _getIdsForQuery(assetPath,query, cur,idMap,Map());
-      List<Answer> ret = List();
-      idList.forEach((int id) {
-        ret.add(getAnswerFromID(id, answerMap));
+
+      await idList.forEach((int id) async{
+        ret.add(await getAnswerFromID(id));
       });
-      return ret;
+
     } else {
       Trie cur = root;
       String assetPath = 'assets/json_files/ENTrie/';
@@ -82,7 +91,7 @@ class OfflineModeUtils {
       Map loadedChunks = Map();
       List<String> individualWords = query.split(' ');
       List<Tuple2<int, double>> idsToScores = List();
-      individualWords.forEach((String word)async {
+      await individualWords.forEach((String word)async {
         double score = word.length / query.length;
         List<int> queries =await _getIdsForQuery(assetPath,word, cur,idMap,loadedChunks);
         queries.forEach((id) {
@@ -96,15 +105,21 @@ class OfflineModeUtils {
       idsToScores.sort((tupA, tupB) {
         return tupB.item2.compareTo(tupA.item2);
       });
-      List<Answer> ret = List();
       Set seenID = Set();
-      idsToScores.forEach((tup) {
+      await idsToScores.forEach((tup)async {
         if (!seenID.contains(tup.item1)){
-          ret.add(getAnswerFromID(tup.item1, answerMap));
+          ret.add(await getAnswerFromID(tup.item1));
           seenID.add(tup.item1);
         }
       });
-      return ret;
+
     }
+
+    ret.sort((a,b) {
+      int x = a.common ? -1:0;
+      int y = b.common ? 1:0;
+      return x + y;
+    });
+    return ret;
   }
 }

@@ -26,4 +26,11 @@ flutter:
      - assets/drawable/
      - assets/json_files/ENTrie/
      - assets/json_files/JPTrie/
-     - assets/json_files/
+     - assets/json_files/answerMap/
+     - assets/json_files/dialectInfo.json
+     - assets/json_files/fieldUsage.json
+     - assets/json_files/kdic2
+     - assets/json_files/miscInfo.json
+     - assets/json_files/radicalMap
+     - assets/json_files/readingInfo.json
+     - assets/json_files/strokeMap

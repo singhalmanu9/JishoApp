@@ -141,20 +141,12 @@ class _MyHomePageState extends State<MyHomePage> {
       new TextEditingController();
   static bool kdicLoaded = false;
   static bool offlineModeOn = false;
-  static bool answerMapLoaded = false;
+
   static bool ENRootLoaded = false;
   static bool JPRootLoaded = false;
 
 
-  static void _loadAnswerMap(BuildContext context) async{
-//TODO something breaks here and causes this to be null;
-    String jsonString;
-    final ByteData data = await rootBundle.load('assets/json_files/answerMap.json');
-    jsonString = utf8.decode(data.buffer.asUint8List());
-    OfflineSearchPage.answerMap = jsonDecode(jsonString);
-    print("loaded answerMap");
-    answerMapLoaded = true;
-  }
+
 
   static void _loadkDic(BuildContext context) async{
     final ByteData data = await rootBundle.load('assets/json_files/kdic2');
@@ -175,135 +167,132 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    _loadkDic(context);
-    return new Scaffold(
-      body: new Center(
-          child: new Padding(
-              padding: new EdgeInsets.fromLTRB(0.0, 90.0, 0.0, 0.0),
-              child: new Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    new Image(
-                      image: new AssetImage('assets/drawable/download.png'),
-                      width: 264.0,
-                      height: 128.0,
-                    ),
-                    new Padding(
-                        padding: new EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 40.0),
-                        child: new TextField(
-                          decoration: const InputDecoration(
-                              border: const OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Color(0x00000000))),
-                              labelText: "Type your query here:"),
-                          textAlign: TextAlign.left,
-                          controller: searchBarController,
-                        )),
-                    new Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 100.0),
-                        child: new CheckboxListTile(
-                            title: new Text('Click for romaji results: '),
-                            value: _MyHomePageState.romajiOn,
-                            onChanged: (bool value) => setState(() {
-                                  _MyHomePageState.romajiOn = value;
-                                }))),
-                    new Text(
-                      "To translate E -> J, surround with \"  \".",
-                      textAlign: TextAlign.center,
-                      textScaleFactor: 1.25,
-                      style: new TextStyle(color: Colors.black54),
-                    ),
-                    new Text(
-                      "Queries are case-sensitive!",
-                      textAlign: TextAlign.center,
-                      textScaleFactor: 1.25,
-                      style: new TextStyle(color: Colors.black54),
-                    ),
-                    new Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 5.0, horizontal: 100.0),
-                        child: new CheckboxListTile(
-                          title: Text("OfflineMode"), //    <-- label
-                          value: offlineModeOn,
-                          onChanged: (newValue) {
-                            setState(() {
+    if(!kdicLoaded) {
+      _loadkDic(context);
+      kdicLoaded= true;
+    }
+      return new Scaffold(
+        body: new Center(
+            child: new Padding(
+                padding: new EdgeInsets.fromLTRB(0.0, 90.0, 0.0, 0.0),
+                child: new Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      new Image(
+                        image: new AssetImage('assets/drawable/download.png'),
+                        width: 264.0,
+                        height: 128.0,
+                      ),
+                      new Padding(
+                          padding: new EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 40.0),
+                          child: new TextField(
+                            decoration: const InputDecoration(
+                                border: const OutlineInputBorder(
+                                    borderSide:
+                                    BorderSide(color: Color(0x00000000))),
+                                labelText: "Type your query here:"),
+                            textAlign: TextAlign.left,
+                            controller: searchBarController,
+                          )),
+                      new Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 100.0),
+                          child: new CheckboxListTile(
+                              title: new Text('Click for romaji results: '),
+                              value: _MyHomePageState.romajiOn,
+                              onChanged: (bool value) => setState(() {
+                                _MyHomePageState.romajiOn = value;
+                              }))),
+                      new Text(
+                        "To translate E -> J, surround with \"  \".",
+                        textAlign: TextAlign.center,
+                        textScaleFactor: 1.25,
+                        style: new TextStyle(color: Colors.black54),
+                      ),
+                      new Text(
+                        "Queries are case-sensitive!",
+                        textAlign: TextAlign.center,
+                        textScaleFactor: 1.25,
+                        style: new TextStyle(color: Colors.black54),
+                      ),
+                      new Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 5.0, horizontal: 100.0),
+                          child: new CheckboxListTile(
+                            title: Text("OfflineMode"), //    <-- label
+                            value: offlineModeOn,
+                            onChanged: (newValue) {
+                              setState(() {
 
-                              offlineModeOn = newValue;
-                            });
-                            if (newValue && !answerMapLoaded) {
+                                offlineModeOn = newValue;
+                              });
 
-                              if (!answerMapLoaded) {
-                                _loadAnswerMap(context);
-                              }
-
-                            }
-                          },
-                        )),
-                    new Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 0.0),
-                        child: new Container(
-                          child: new FlatButton(
-                              onPressed: () {
+                            },
+                          )),
+                      new Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 0.0),
+                          child: new Container(
+                            child: new FlatButton(
+                                onPressed: () {
                                   Navigator.pushNamed(context, '/radical');},
-                              child: new Text(
-                                "Radical Search",
-                                textDirection: TextDirection.ltr,
-                              )),
-                          decoration: new BoxDecoration(
-                            color: Colors.black12,
-                          ),
-                          padding: new EdgeInsets.all(3.0),
-                        )),
-                    new Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 15.0, horizontal: 0.0),
-                        child: new Container(
-                          child: new FlatButton(
-                              onPressed: () =>
-                                  Navigator.pushNamed(context, '/about'),
-                              child: new Text(
-                                "About",
-                                textDirection: TextDirection.ltr,
-                              )),
-                          decoration: new BoxDecoration(
-                            color: Colors.black12,
-                          ),
-                          padding: new EdgeInsets.all(3.0),
-                        )),
-                  ]))),
-      floatingActionButton: new Builder(builder: (context) {
-        return new FloatingActionButton(
-          onPressed: () {
-            if (searchBarController.text.length > 0) {
-              if (!offlineModeOn) {
-                Navigator.pushNamed(context, '/defaultSearch');
-              } else {
-                //TODO change to if query is not kanaizable
-                if (!ENRootLoaded) {
-                  _loadENRoot(context);
-                }
+                                child: new Text(
+                                  "Radical Search",
+                                  textDirection: TextDirection.ltr,
+                                )),
+                            decoration: new BoxDecoration(
+                              color: Colors.black12,
+                            ),
+                            padding: new EdgeInsets.all(3.0),
+                          )),
+                      new Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 15.0, horizontal: 0.0),
+                          child: new Container(
+                            child: new FlatButton(
+                                onPressed: () =>
+                                    Navigator.pushNamed(context, '/about'),
+                                child: new Text(
+                                  "About",
+                                  textDirection: TextDirection.ltr,
+                                )),
+                            decoration: new BoxDecoration(
+                              color: Colors.black12,
+                            ),
+                            padding: new EdgeInsets.all(3.0),
+                          )),
+                    ]))),
+        floatingActionButton: new Builder(builder: (context) {
+          return new FloatingActionButton(
+            onPressed: () {
+              if (searchBarController.text.length > 0) {
+                if (!offlineModeOn) {
+                  Navigator.pushNamed(context, '/defaultSearch');
+                } else {
+                  //TODO change to if query is not kanaizable
+                  if (!ENRootLoaded) {
+                    _loadENRoot(context);
+                  }
 //
 //                if (!JPRootLoaded) {
 //                  _loadJPRoot(context);
 //                }
-                Navigator.pushNamed(context, '/offlineSearch');
+                  Navigator.pushNamed(context, '/offlineSearch');
+                }
+              } else {
+                Scaffold.of(context).showSnackBar(new SnackBar(
+                    content:
+                    new Text("Please enter in a query before searching.")));
               }
-            } else {
-              Scaffold.of(context).showSnackBar(new SnackBar(
-                  content:
-                      new Text("Please enter in a query before searching.")));
-            }
-          },
-          //anonymous function deeming whether there is sufficient information to search,
-          tooltip: 'Search',
-          child: new Icon(Icons.search),
-        );
-      }),
-    );
+            },
+            //anonymous function deeming whether there is sufficient information to search,
+            tooltip: 'Search',
+            child: new Icon(Icons.search),
+          );
+        }),
+      );
+    }
   }
-}
 
 class CustomRoute<T> extends MaterialPageRoute<T> {
   CustomRoute({WidgetBuilder builder, RouteSettings settings})

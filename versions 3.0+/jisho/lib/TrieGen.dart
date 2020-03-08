@@ -29,7 +29,7 @@ void main(){
 
 }
 
-////TODO split the root into lists of nodes of length 1000 or less.
+////TODO split the root into lists of nodes of length MAPSIZE or less.
 // save ids of nodes in map that tells which file it's in.
 
 void splitTrie(Trie root, String initpath) {
@@ -39,15 +39,16 @@ void splitTrie(Trie root, String initpath) {
   Map<String,Trie> cur_map = Map();
   Map<String,int> id_location = Map();
 
+  final MAPSIZE = 850;
   while (cur.isNotEmpty) {
-    if (cur_ct %1000 == 0 ) {
-      String path = initpath + (cur_ct~/1000).toString();
+    if (cur_ct % MAPSIZE == 0 ) {
+      String path = initpath + (cur_ct~/ MAPSIZE).toString();
       if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound) {
         File destFile = new File(path);
         destFile.writeAsStringSync(jsonEncode(cur_map));
       }
       cur_map.forEach((str,trie) {
-        id_location[trie.id.toString()] = cur_ct~/1000;
+        id_location[trie.id.toString()] = cur_ct~/ MAPSIZE;
       });
       cur_map = Map();
     }
@@ -65,14 +66,14 @@ void splitTrie(Trie root, String initpath) {
 
     cur_ct += 1;
   }
-  if (cur_ct %1000 != 0 ) {
-    String path = initpath + (cur_ct~/1000).toString();
+  if (cur_ct % MAPSIZE != 0 ) {
+    String path = initpath + (cur_ct~/ MAPSIZE).toString();
     if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound) {
       File destFile = new File(path);
       destFile.writeAsStringSync(jsonEncode(cur_map));
     }
     cur_map.forEach((str,trie) {
-      id_location[trie.id.toString()] = cur_ct~/1000;
+      id_location[trie.id.toString()] = cur_ct~/ MAPSIZE;
     });
     cur_map = Map();
   }
