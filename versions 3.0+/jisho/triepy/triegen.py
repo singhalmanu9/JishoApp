@@ -137,18 +137,21 @@ kanjiInfo = {"ateji":"ateji(phonetic) reading",
 }
 partOfSpeech ={
 	"adj-f":"noun or verb acting prenominally",
-	"adj-i":"i-adjective",
 	"adj-ix":"i-adjective (yoi/ii class)",
+	"adj-i":"i-adjective",
+	
 	"adj-kari":"kari adjective (archaic)",
 	"adj-ku" :"ku adjective (archaic)",
-	"adj-na":"na-adjective",
 	"adj-nari":"Archaic/formal form of na-adjective",
+	"adj-na":"na-adjective",
+	
 	"adj-no":"no-adjective",
 	"adj-pn":"pre-noun adjectival",
 	"adj-shiku":"shiku adjective (archaic)",
 	"adj-t":"'taru' adjective",
-	"adv":"adverb",
 	"adv-to":"adverb aking the 'to' particle",
+	"adv":"adverb",
+
 	"aux":"auxilliary",
 	"aux-adj":"auxilliary adjective",
 	"aux-v": "auxilliary verb",
@@ -157,43 +160,49 @@ partOfSpeech ={
 	"ctr":"counter",
 	"exp":"Expressions",
 	"int":"interjection",
-	"n":"noun",
 	"n-adv":"adverbial noun",
 	"n-pr":"proper noun",
 	"n-pref":"noun, used as a prefix",
 	"n-suf":"noun, used as a suffix",
 	"n-t":"noun (temporal)",
 	"num":"numeric",
+	"n":"noun",
+	
 	"pn":"pronoun",
 	"pref":"prefix",
 	"prt":"particle",
 	"suf":"suffix",
 	"unc":"unclassified",
 	"v-unspec":"verb unspecified",
-	"v1":"Ichidan verb",
 	"v1-s":"Ichidan verb - kureru special class",
+	"v1":"Ichidan verb",
+	
 	"v5aru": "Godan verb- -aru special class",
 	"v5b": "Godan verb with 'bu' ending",
 	"v5g": "Godan verb with 'gu' ending",
-	"v5k":"Godan verb with 'ku' ending",
 	"v5k-s":"Godan verb - Iku/Yuku special class",
+	"v5k":"Godan verb with 'ku' ending",
+	
 	"v5m":"Godan verb with 'mu' ending",
 	"v5n":"Godan verb with 'nu' ending",
-	"v5r":"Godan verb with 'ru' ending",
 	"v5r-i":"Godan verb with 'ru' ending (irregular verb)",
+	"v5r":"Godan verb with 'ru' ending",
+	
 	"v5s":"Godan verb with 'su' ending",
 	"v5t":"Godan verb with 'tsu' ending",
-	"v5u":"Godan verb with 'u' ending",
 	"v5u-s":"godan verb with 'u' ending (special class)",
 	"v5uru":"Godan verb -Uru old class verb (old form of Eru)",
+	"v5u":"Godan verb with 'u' ending",
+	
 	"vi" :"intransitive verb",
 	"vk" :"Kuru verb - special class",
 	"vn": "irregular nu verb",
 	"vr": "irregular ru verb, plain form ends with -ri",
-	"vs":"noun or participle which takes the aux. verb suru",
 	"vs-c":"su verb - precursor to the modern suru",
 	"vs-i":"suru verb - irregular",
 	"vs-s":"suru verb - special class",
+	"vs":"noun or participle which takes the aux. verb suru",
+	
 	"vt":"transitive verb",
 	"vz":"Ichidan verb - zuru verb (alternative for of -jiru verbs)"
 }
@@ -252,6 +261,10 @@ def remove_artifacts(cur_def):
 	# 		cur_def= cur_def[:rem] + cur_def[rem + 1:]
 	# 	else:
 	# 		break
+	while '(' in cur_def and ')' in cur_def:
+		if cur_def.index('(') > cur_def.index(')'):
+			break
+		cur_def = cur_def[:cur_def.index('(')] + cur_def[cur_def.index(')') + 1:]
 	while True:
 		oldLen = len(cur_def)
 		cur_def = cur_def.lstrip('()')
@@ -262,6 +275,8 @@ def remove_artifacts(cur_def):
 		cur_def = cur_def.strip()
 		if oldLen == len(cur_def):
 			break
+	
+	
 	return cur_def
 
 def create_from_line(line):
@@ -360,13 +375,15 @@ def create_from_line(line):
 				en_defs_revised[i]['rInfo'].append(rInfo)
 
 		for dialInfo in dialectInfo.keys():
-			regexstr = '\((.*,)?' + dialInfo + '(,.*)?\)'
+			regexstr = '\((.*,)?' + dialInfo+ ':' + '(,.*)?\)'
 			if re.search(regexstr,en_defs[i]):
 				en_defs[i] = en_defs[i][:en_defs[i].index(dialInfo)] + en_defs[i][en_defs[i].index(dialInfo) + len(dialInfo):]
 				en_defs_revised[i]['dialInfo'] = dialInfo
+		for kInfo in kanjiInfo.keys():
+			regexstr = '\((.*,)?' + kInfo + '(,.*)?\)'
+			if re.search(regexstr,en_defs[i]):
+				en_defs[i] = en_defs[i][:en_defs[i].index(kInfo)] + en_defs[i][en_defs[i].index(kInfo) + len(kInfo):]
 
-		
-		
 
 		removed = remove_artifacts(en_defs[i])
 		en_defs_revised[i]['definition'] = removed
@@ -394,5 +411,7 @@ with open("dialectInfo.json",'w') as f:
 	f.write(json.dumps(dialectInfo))
 with open("miscInfo.json",'w') as f:
 	f.write(json.dumps(miscInfo))
+with open("partOfSpeech.json",'w') as f:
+	f.write(json.dumps(partOfSpeech))
 
 print(len(x))

@@ -34,3 +34,4 @@ flutter:
      - assets/json_files/radicalMap
      - assets/json_files/readingInfo.json
      - assets/json_files/strokeMap
+     - assets/json_files/partOfSpeech.json
