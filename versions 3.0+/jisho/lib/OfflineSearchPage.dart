@@ -211,7 +211,7 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
     List<Widget> structuredDefs = List();
     int def_ct = 1;
     a.defs.forEach((Map m) {
-      if (m.containsKey('pos')) if (m['pos'].length > 0) {
+      if (m.containsKey('pos') && m['pos'] != null && m['pos'].length > 0) {
         List<Widget> PoSRow = List();
         if (m['pos'].length != 0) {
           //TODO get the long form
@@ -232,29 +232,32 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
       //field,misc,rInfo,dialInfo
       List<TextSpan> defChildren = List();
 
-      if (m.containsKey('definition')) {
+      if (m.containsKey('definition') && m['definition'] != null) {
         defChildren.add(new TextSpan(
             text: def_ct.toString() + ". " + m['definition'],
             style: new TextStyle(color: Colors.black)));
       }
-      if (m.containsKey('rInfo') && m['rInfo'].length > 0) {
+      if (m.containsKey('rInfo') &&m['rInfo'] != null && m['rInfo'].length > 0) {
         m['rInfo'].forEach((t) {
           defChildren.add(new TextSpan(
               text: ' ' + OfflineSearchPage.rInf[t] + ".",
               style: new TextStyle(color: Colors.black54)));
         });
       }
-      if (m.containsKey('misc')) {
+      if (m.containsKey('misc') && m['misc'] != null) {
+        print(m['misc']);
+        print(OfflineSearchPage.misc);
+        print(OfflineSearchPage.misc[m['misc']]);
         defChildren.add(new TextSpan(
-            text: ' ' + OfflineSearchPage.misc[m['misc']] + ".",
+            text: " " + OfflineSearchPage.misc[m['misc']] + ".",
             style: new TextStyle(color: Colors.black54)));
       }
-      if (m.containsKey('field')) {
+      if (m.containsKey('field') &&m['field'] != null) {
         defChildren.add(new TextSpan(
             text: ' ' + OfflineSearchPage.fields[m['field']] + ".",
             style: new TextStyle(color: Colors.black54)));
       }
-      if (m.containsKey('dialInfo')) {
+      if (m.containsKey('dialInfo') &&m['dialInfo'] != null) {
         defChildren.add(new TextSpan(
             text: ' ' + OfflineSearchPage.dialects[m['dialInfo']] + ".",
             style: new TextStyle(color: Colors.black54)));

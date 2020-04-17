@@ -360,13 +360,13 @@ def create_from_line(line):
 			regexstr = '\((.*,)?' + field + '(,.*)?\)'
 			if re.search(regexstr,en_defs[i]):
 				en_defs[i] = en_defs[i][:en_defs[i].index(field)] + en_defs[i][en_defs[i].index(field) + len(field):]
-				en_defs_revised[i]['field']= fieldUsage[field]
+				en_defs_revised[i]['field']= field
 
 		for misc in miscInfo.keys():
 			regexstr = '\((.*,)?' + misc + '(,.*)?\)'
 			if re.search(misc,en_defs[i]):
 				en_defs[i] = en_defs[i][:en_defs[i].index(misc)] + en_defs[i][en_defs[i].index(misc) + len(misc):]
-				en_defs_revised[i]['misc']= miscInfo[misc]
+				en_defs_revised[i]['misc']= misc
 
 		for rInfo in readingInfo.keys():
 			regexstr = '\((.*,)?' + rInfo + '(,.*)?\)'

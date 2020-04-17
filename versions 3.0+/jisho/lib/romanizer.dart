@@ -72,3 +72,18 @@ String romanize(String kanaIn) {
   }
   return result;
 }
+
+/// A method to test whether a string has kana present within.
+/// param: inputStr - the string that is going to be tested for the
+/// presence of kana.
+/// ret: bool: True iff kana is present in the inputStr.
+bool kanaPresent(String inputStr) {
+  bool ret = false;
+  kanaToRomaji.forEach((key,val) {
+    if(inputStr.indexOf(key) != -1) {
+      ret = true;
+    }
+  });
+  return ret;
+}
+
