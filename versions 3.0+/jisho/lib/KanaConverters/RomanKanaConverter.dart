@@ -124,6 +124,89 @@ Map<String, String> unifiedRomaji = {
   'ryo': 'りょ'
 };
 String smallTsu = 'っ';
+Set presentKana = {
+  'っ',
+  'あ',
+  'い',
+  'う',
+  'え',
+  'お',
+  'か',
+  'き',
+  'く',
+  'け',
+  'こ',
+  'が',
+  'ぎ',
+  'ぐ',
+  'げ',
+  'ご',
+  'さ',
+  'し',
+  'す',
+  'せ',
+  'そ',
+  'し',
+  'ざ',
+  'じ',
+  'ず',
+  'ぜ',
+  'ぞ',
+  'じ',
+  'た',
+  'ち',
+  'つ',
+  'て',
+  'と',
+  'ち',
+  'つ',
+  'だ',
+  'で',
+  'ど',
+  'ぢ',
+  'づ',
+  'な',
+  'に',
+  'ぬ',
+  'ね',
+  'の',
+  'は',
+  'ひ',
+  'ふ',
+  'へ',
+  'ほ',
+  'ふ',
+  'ば',
+  'び',
+  'ぶ',
+  'べ',
+  'べ',
+  'ぱ',
+  'ぴ',
+  'ぷ',
+  'ぺ',
+  'ぽ',
+  'ま',
+  'み',
+  'む',
+  'め',
+  'も',
+  'や',
+  'ゆ',
+  'よ',
+  'ら',
+  'り',
+  'る',
+  'れ',
+  'ろ',
+  'わ',
+  'を',
+  'ん',
+  'ん',
+  'ゃ',
+  'ゅ',
+  'ょ',
+};
 
 /// non-destructively removes any tokens present within the input string.
 /// param: romaji - the inputstring of romanized characters
@@ -138,13 +221,13 @@ String transliterate(String romaji) {
     c = String.fromCharCode(codes[i]);
     cur += c;
     while (true) {
-
       if (unifiedRomaji.containsKey(cur)) {
         ret += unifiedRomaji[cur];
         cur = "";
         break;
       }
-      if (cur.length == 1) {//CASE OF CONSONANTS
+      if (cur.length == 1) {
+        //CASE OF CONSONANTS
         break;
       }
       if (cur.length == 2) {
@@ -172,7 +255,6 @@ String transliterate(String romaji) {
   }
   //Tail case
   while (cur.length != 0) {
-
     if (cur.length == 1) {
       if (cur.substring(0, 1) == 'n' || cur.substring(0, 1) == 'm') {
         ret += unifiedRomaji["n'"];
@@ -199,4 +281,17 @@ String transliterate(String romaji) {
     }
   }
   return ret;
+}
+
+///returns whether a string was cleanly transliterated
+bool cleanTransliteration(String transliterated) {
+  List<int> codes = transliterated.codeUnits;
+  String c;
+  for (int i = 0; i < codes.length; i++) {
+    c = String.fromCharCode(codes[i]);
+    if (!presentKana.contains(c)) {
+      return false;
+    }
+  }
+  return true;
 }

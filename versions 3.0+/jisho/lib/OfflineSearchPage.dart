@@ -8,6 +8,7 @@ import 'romanizer.dart' as romanizer;
 import 'package:flutter_app/OfflineModeUtils.dart';
 import 'Trie.dart';
 import 'Answer.dart';
+import 'package:flutter_app/KanaConverters/RomanKanaConverter.dart' as convert;
 
 class OfflineSearchPage extends StatefulWidget {
   String searchTextField;
@@ -146,13 +147,14 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
     String mode;
     Trie root;
     loadInAuxMaps();
+    String transliteration = convert.transliterate(searchTextField);
 
-    if (romajiOn) {
-      //TODO this isn't right. need to test the input string to see of it's kana-izable or if it has quotes
+    if (convert.cleanTransliteration(transliteration)) {
       mode = "JP";
       if (OfflineSearchPage.JPRoot == null) {
         await loadJPRoot();
       }
+      searchTextField = transliteration;
       root = OfflineSearchPage.JPRoot;
     } else {
       mode = "EN";
