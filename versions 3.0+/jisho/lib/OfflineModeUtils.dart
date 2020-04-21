@@ -79,7 +79,7 @@ class OfflineModeUtils {
 
       List<int> idList = await _getIdsForQuery(assetPath,query, cur,idMap,Map());
 
-      await idList.forEach((int id) async{
+      await Future.forEach(idList, (int id) async {
         ret.add(await getAnswerFromID(id));
       });
 
@@ -91,7 +91,7 @@ class OfflineModeUtils {
       Map loadedChunks = Map();
       List<String> individualWords = query.split(' ');
       List<Tuple2<int, double>> idsToScores = List();
-      await individualWords.forEach((String word)async {
+      await Future.forEach(individualWords,(String word)async {
         double score = word.length / query.length;
         List<int> queries =await _getIdsForQuery(assetPath,word, cur,idMap,loadedChunks);
         queries.forEach((id) {
@@ -99,14 +99,14 @@ class OfflineModeUtils {
         });
       });
       List<int> idList =await _getIdsForQuery(assetPath,query, cur,idMap,loadedChunks);
-      idList.forEach((id) {
+      await Future.forEach(idList,(id) {
         idsToScores.add(Tuple2(id, 1.0));
       });
       idsToScores.sort((tupA, tupB) {
         return tupB.item2.compareTo(tupA.item2);
       });
       Set seenID = Set();
-      await idsToScores.forEach((tup)async {
+      await Future.forEach(idsToScores,(tup)async {
         if (!seenID.contains(tup.item1)){
           ret.add(await getAnswerFromID(tup.item1));
           seenID.add(tup.item1);

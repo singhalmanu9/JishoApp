@@ -22,7 +22,7 @@ void loadJPRoot()async{
   print(jsonString.length);
   var jsonMap = jsonDecode(jsonString);
   Trie root = Trie()..fromMap(jsonMap);
-  OfflineSearchPage.JPRoot = root;
+  OfflineSearchPage.jpRoot = root;
   print("loaded JPRoot");
 }
 void loadENRoot() async {
@@ -32,7 +32,7 @@ void loadENRoot() async {
   jsonString = utf8.decode(data.buffer.asUint8List());
   var jsonMap = jsonDecode(jsonString);
   Trie root = Trie()..fromMap(jsonMap);
-  OfflineSearchPage.ENRoot = root;
+  OfflineSearchPage.enRoot = root;
   print("loaded ENRoot");
   print(root.toMap());
 }

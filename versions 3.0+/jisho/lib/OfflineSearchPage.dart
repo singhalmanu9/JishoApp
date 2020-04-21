@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/OfflineModeUtils.dart';
 import 'package:flutter_app/main.dart';
-import 'dart:async';
+
 import 'dart:convert';
 import 'romanizer.dart' as romanizer;
-import 'package:flutter_app/OfflineModeUtils.dart';
+
 import 'Trie.dart';
 import 'Answer.dart';
 import 'package:flutter_app/KanaConverters/RomanKanaConverter.dart' as convert;
@@ -13,8 +13,8 @@ import 'package:flutter_app/KanaConverters/RomanKanaConverter.dart' as convert;
 class OfflineSearchPage extends StatefulWidget {
   String searchTextField;
   bool romajiOn = false;
-  static Trie JPRoot;
-  static Trie ENRoot;
+  static Trie jpRoot;
+  static Trie enRoot;
 
   static Map pos;
   static Map fields;
@@ -52,7 +52,6 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
   static BuildContext _context;
 
   static copyDialogue(String copiedWord) {
-    var context = _context;
 
     Scaffold.of(_context).showSnackBar(new SnackBar(
         content: new Text("copied \"" + copiedWord + "\" to clipboard")));
@@ -66,33 +65,14 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (fullQuery) {
-      if (_defWidgets.length > 0) {
-        return new Scaffold(
-            appBar: new AppBar(title: new Text("Search Results")),
-            body: new Builder(builder: (BuildContext context) {
-              _context = context;
-              return new Padding(
-                  padding: new EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
-                  child: new ListView(children: _defWidgets));
-            }));
-      } else {
-        return new Scaffold(
-            appBar: new AppBar(title: new Text("Search Results")),
-            body: new Padding(
-              padding:
-                  new EdgeInsets.symmetric(vertical: 30.0, horizontal: 10.0),
-              child: new Text("Loading Query"),
-            ));
-      }
-    } else {
-      return new Scaffold(
-          appBar: new AppBar(title: new Text("Search Results")),
-          body: new Padding(
-              padding:
-                  new EdgeInsets.symmetric(vertical: 30.0, horizontal: 10.0),
-              child: new Text("Query had no results.")));
-    }
+    return new Scaffold(
+        appBar: new AppBar(title: new Text("Search Results")),
+        body: new Builder(builder: (BuildContext context) {
+          _context = context;
+          return new Padding(
+              padding: new EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+              child: new ListView(children: _defWidgets));
+        }));
   }
 
   @override
@@ -101,6 +81,9 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
     fullQuery = true;
     loadInDefinitions();
   }
+
+
+
 
   void loadMisc() async {
     if (OfflineSearchPage.misc == null) {
@@ -144,6 +127,9 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
   }
 
   void loadInDefinitions() async {
+    setState(() {
+      _defWidgets.add(new Text("Loading Query"));
+    });
     String mode;
     Trie root;
     loadInAuxMaps();
@@ -151,41 +137,46 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
 
     if (convert.cleanTransliteration(transliteration)) {
       mode = "JP";
-      if (OfflineSearchPage.JPRoot == null) {
-        await loadJPRoot();
+      if (OfflineSearchPage.jpRoot == null) {
+         loadJPRoot();
       }
       searchTextField = transliteration;
-      root = OfflineSearchPage.JPRoot;
+      root = OfflineSearchPage.jpRoot;
     } else {
       mode = "EN";
-      if (OfflineSearchPage.ENRoot == null) {
-        await loadENRoot();
+      if (OfflineSearchPage.enRoot == null) {
+        loadENRoot();
       }
-      root = OfflineSearchPage.ENRoot;
+      if (searchTextField.substring(0,1) == '"' && searchTextField.substring(searchTextField.length - 1) == '"') {
+        searchTextField = searchTextField.substring(1,searchTextField.length - 1);
+      }
+      root = OfflineSearchPage.enRoot;
     }
     List<Answer> answers =
         await OfflineModeUtils.searchTrie(searchTextField, root, mode);
-    //TODO build widgets based off of answers...
-    //Make text look nice
-    //Link up Kanji when possible.
+
+    List<Widget> defWidgets = List();
     answers.forEach((Answer a) {
-      Column JPSubWidget = getJapaneseSubWidget(a);
-      Column ENSubWidget = getEnglishSubWidget(a);
-      Widget CommonWidget = getCommonWidget(a);
-      setState(() {
-        if (CommonWidget != null) {
-          _defWidgets.add(new Row(
-              children: [CommonWidget], mainAxisSize: MainAxisSize.min));
+      Column jpSubWidget = getJapaneseSubWidget(a);
+      Column enSubWidget = getEnglishSubWidget(a);
+      Widget commonWidget = getCommonWidget(a);
+        if (commonWidget != null) {
+          defWidgets.add(new Row(
+              children: [commonWidget], mainAxisSize: MainAxisSize.min));
         }
-        _defWidgets.add(JPSubWidget);
-        _defWidgets.add(ENSubWidget);
+        defWidgets.add(jpSubWidget);
+        defWidgets.add(enSubWidget);
         fullQuery = true;
-      });
-      //set state
     });
-    if (_defWidgets.length == 0) {
+    if (defWidgets.length == 0) {
       setState(() {
         fullQuery = false;
+        _defWidgets[0] = new Text("Query had no results.");
+      });
+    } else {
+
+      setState(() {
+        _defWidgets = defWidgets;
       });
     }
   }
@@ -247,9 +238,6 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
         });
       }
       if (m.containsKey('misc') && m['misc'] != null) {
-        print(m['misc']);
-        print(OfflineSearchPage.misc);
-        print(OfflineSearchPage.misc[m['misc']]);
         defChildren.add(new TextSpan(
             text: " " + OfflineSearchPage.misc[m['misc']] + ".",
             style: new TextStyle(color: Colors.black54)));
