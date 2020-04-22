@@ -1,5 +1,6 @@
 import json
 import re
+import pyparsing
 class answer:
 	def __init__(self,num,kanjistr,kanastr,en_defs):
 		self.num_id = num
@@ -261,10 +262,20 @@ def remove_artifacts(cur_def):
 	# 		cur_def= cur_def[:rem] + cur_def[rem + 1:]
 	# 	else:
 	# 		break
+	mmv = False
+	content = pyparsing.Word(pyparsing.printables,excludeChars='()')
+	parens = pyparsing.nestedExpr('(',')',content = content)
+	cur_def = cur_def.replace('ō','o')
+	cur_def = cur_def.replace('Ō','O')
+	cur_def = cur_def.replace('ū','u')
 	while '(' in cur_def and ')' in cur_def:
-		if cur_def.index('(') > cur_def.index(')'):
-			break
-		cur_def = cur_def[:cur_def.index('(')] + cur_def[cur_def.index(')') + 1:]
+		nd = ""
+
+		for m in parens.parseString('(' + cur_def + ')')[0]:
+			if isinstance(m,str) and len(m):
+				nd += m + ' '
+		cur_def = nd
+
 	while True:
 		oldLen = len(cur_def)
 		cur_def = cur_def.lstrip('()')
@@ -273,10 +284,9 @@ def remove_artifacts(cur_def):
 		cur_def = cur_def.lstrip(')')
 		cur_def = cur_def.lstrip('/')
 		cur_def = cur_def.strip()
+
 		if oldLen == len(cur_def):
 			break
-	
-	
 	return cur_def
 
 def create_from_line(line):
@@ -293,7 +303,7 @@ def create_from_line(line):
 	"""
 	is_common = False
 	global num_id
-	num_id += 1
+
 	i = 0
 	kanji = True
 	kana = False
@@ -384,20 +394,27 @@ def create_from_line(line):
 			if re.search(regexstr,en_defs[i]):
 				en_defs[i] = en_defs[i][:en_defs[i].index(kInfo)] + en_defs[i][en_defs[i].index(kInfo) + len(kInfo):]
 
+		try:
+			removed = remove_artifacts(en_defs[i])
+			en_defs_revised[i]['definition'] = removed
+		except:
+			print(en_defs[i] + "OUCH")
 
-		removed = remove_artifacts(en_defs[i])
-		en_defs_revised[i]['definition'] = removed
+		
 	en_defs = en_defs_revised
-
+	if is_common:
+		num_id += 1
 	return num_id,kanjistr,kanastr,en_defs,is_common
 res = {}
-
+x = 1
 for m in lines:
 	if "(oK)" in m:
 		continue
 	if "(arch)" in m:
 		continue
 	num,kstr,kanastr,endf,is_common = create_from_line(m)
+	if not is_common:
+		continue
 	endf = [json.dumps(m) for m in endf]
 	res[num]=json.dumps({"num_id":num,"kanjistr":kstr,"kanastr":kanastr,"en_defs":endf,"common":is_common})
 x = json.dumps(res)
