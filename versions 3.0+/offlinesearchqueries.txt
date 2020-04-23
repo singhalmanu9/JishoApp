@@ -1,0 +1,24 @@
+Query | Expected Behavior | Actual Behavior | Notes
+
+red | aka, akai, akairo ... | akairo, ake, aka, reddo ... | see note 1
+radical | kageki, babbonteki, kyuushinteki, bushu ... | rajikaru, radikaru, kageki, kyuugeki ... | see note 1
+abstract | chuushouteki, chuushou, mukei, shoroku ... | shouroku, chuushouteki, mukei, aramashi | see note 1
+perfect blue | pa-fekutoburu- | buru-, pa-fekuto, kanzen, ao ... | returns results for individual tokens instead of whole thing
+house | ie, kaoku, uchi, taku ... | loading query after 3+ minutes | check OfflineModeUtils.dart.searchTrie/OfflineModeUtils._getIdsForQuery
+thirteen | juusan, sa-ti-n, juusanbutsu, shintoujuusanpa ... | juusan, juusan, sa-ti-n | missing some results (have 13 in description)
+maniac | maniakku, kichi, satsujinkyou, shuuchuuma ... | maniakku, kichi | missing some results
+
+wakaru | 1 entry | 4 entries with same definition (different kanji) | duplicate entries
+waka | 和歌、若、分かる | 和歌、若、稚、倭歌 | missing some results, duplicate entries
+hone | 骨、骨抜き、骨身... | 骨 | missing some results (containing 骨)
+sekkekkyuu | 赤血球、赤血球沈降速度... | 赤血球 | uncommon word, need not appear
+akuma | 悪魔、飽くまで、飽くまでも、悪魔の宴... | 悪魔 | missing some results
+
+
+Overall:
+Information presented differs than jisho/online mode (potentially major)
+Tapping on kanji information errors (major)
+
+Transition to search results page not smooth (minor)
+Order of presented information different than jisho (minor)
+Selecting display romaji does nothing (minor)
