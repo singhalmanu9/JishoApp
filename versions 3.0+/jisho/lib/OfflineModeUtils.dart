@@ -32,15 +32,17 @@ class OfflineModeUtils {
   ///Performs the search for a given query on a Trie node. Ideally, this is only
   ///called on the root.
   static Future<List<int>> _getIdsForQuery(String assetPath,String query, Trie cur, Map idMap, Map loadedChunks) async{
+    print(query);
     while (query.length != 0) {
       String next = query.substring(0, 1);
       query = query.substring(1);
-      if (cur.c.containsKey(next)) {
+      if (cur != null && cur.c.containsKey(next)) {
         cur = await getTrieFromID(assetPath,cur.c[next],idMap,loadedChunks);
       } else {
         return List();
       }
     }
+
     return cur.t;
   }
 
@@ -120,6 +122,7 @@ class OfflineModeUtils {
       int y = b.common ? 1:0;
       return x + y;
     });
+
     return ret;
   }
 }

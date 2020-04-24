@@ -171,7 +171,7 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
     if (defWidgets.length == 0) {
       setState(() {
         fullQuery = false;
-        _defWidgets[0] = new Text("Query had no results.");
+        _defWidgets = [new Text("Query had no results.")];
       });
     } else {
 
