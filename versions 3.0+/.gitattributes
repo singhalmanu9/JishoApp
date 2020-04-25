@@ -1,0 +1,2 @@
+jisho/assets/json_files/* filter=lfs diff=lfs merge=lfs -text
+jisho/assets/json_files/ filter=lfs diff=lfs merge=lfs -text
