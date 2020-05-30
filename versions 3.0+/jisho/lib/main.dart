@@ -13,7 +13,13 @@ import 'dart:typed_data';
 
 void main() => runApp(new MyApp());
 
-void loadJPRoot()async{
+///Used for page transitions. Stops the initial page from having a transition
+///effect.
+final String initialRouteName = 'initial';
+
+/// Loading the Trie root for the Japanese trie. This resource is
+/// used in offline mode.
+void loadJPRoot() async {
   String jsonString;
   print("entering loading JPRoot");
   final ByteData data = await rootBundle.load('assets/json_files/JPTrie/root');
@@ -25,6 +31,9 @@ void loadJPRoot()async{
   OfflineSearchPage.jpRoot = root;
   print("loaded JPRoot");
 }
+
+/// Loading the Trie root for the English Trie. This resource is
+/// used in offline mode.
 void loadENRoot() async {
   String jsonString;
   print("entering loading ENRoot");
@@ -37,7 +46,6 @@ void loadENRoot() async {
   print(root.toMap());
 }
 
-
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
@@ -45,6 +53,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'Jisho',
+      initialRoute: initialRouteName,
       theme: new ThemeData(
         primarySwatch: MaterialColor(
             0xFF56d926,
@@ -145,10 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
   static bool ENRootLoaded = false;
   static bool JPRootLoaded = false;
 
-
-
-
-  static void _loadkDic(BuildContext context) async{
+  static void _loadkDic(BuildContext context) async {
     final ByteData data = await rootBundle.load('assets/json_files/kdic2');
     String jsonString = utf8.decode(data.buffer.asUint8List());
     KanjiPage.kdic = jsonDecode(jsonString);
@@ -156,144 +162,143 @@ class _MyHomePageState extends State<MyHomePage> {
 
     kdicLoaded = true;
   }
-  static void _loadENRoot(BuildContext context)async {
+
+  static void _loadENRoot(BuildContext context) async {
     loadENRoot();
     ENRootLoaded = true;
   }
-  static void _loadJPRoot(BuildContext context)async {
+
+  static void _loadJPRoot(BuildContext context) async {
     loadJPRoot();
     JPRootLoaded = true;
   }
 
   @override
   Widget build(BuildContext context) {
-    if(!kdicLoaded) {
+    if (!kdicLoaded) {
       _loadkDic(context);
-      kdicLoaded= true;
+      kdicLoaded = true;
     }
-      return new Scaffold(
-        body: new Center(
-            child: new Padding(
-                padding: new EdgeInsets.fromLTRB(0.0, 90.0, 0.0, 0.0),
-                child: new Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      new Image(
-                        image: new AssetImage('assets/drawable/download.png'),
-                        width: 264.0,
-                        height: 128.0,
-                      ),
-                      new Padding(
-                          padding: new EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 40.0),
-                          child: new TextField(
-                            decoration: const InputDecoration(
-                                border: const OutlineInputBorder(
-                                    borderSide:
-                                    BorderSide(color: Color(0x00000000))),
-                                labelText: "Type your query here:"),
-                            textAlign: TextAlign.left,
-                            controller: searchBarController,
-                          )),
-                      new Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 100.0),
-                          child: new CheckboxListTile(
-                              title: new Text('Click for romaji results: '),
-                              value: _MyHomePageState.romajiOn,
-                              onChanged: (bool value) => setState(() {
-                                _MyHomePageState.romajiOn = value;
-                              }))),
-                      new Text(
-                        "To translate E -> J, surround with \"  \".",
-                        textAlign: TextAlign.center,
-                        textScaleFactor: 1.25,
-                        style: new TextStyle(color: Colors.black54),
-                      ),
-                      new Text(
-                        "Queries are case-sensitive!",
-                        textAlign: TextAlign.center,
-                        textScaleFactor: 1.25,
-                        style: new TextStyle(color: Colors.black54),
-                      ),
-                      new Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 5.0, horizontal: 100.0),
-                          child: new CheckboxListTile(
-                            title: Text("OfflineMode"), //    <-- label
-                            value: offlineModeOn,
-                            onChanged: (newValue) {
-                              setState(() {
-
-                                offlineModeOn = newValue;
-                              });
-
-                            },
-                          )),
-                      new Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 0.0),
-                          child: new Container(
-                            child: new FlatButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(context, '/radical');},
-                                child: new Text(
-                                  "Radical Search",
-                                  textDirection: TextDirection.ltr,
-                                )),
-                            decoration: new BoxDecoration(
-                              color: Colors.black12,
-                            ),
-                            padding: new EdgeInsets.all(3.0),
-                          )),
-                      new Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 15.0, horizontal: 0.0),
-                          child: new Container(
-                            child: new FlatButton(
-                                onPressed: () =>
-                                    Navigator.pushNamed(context, '/about'),
-                                child: new Text(
-                                  "About",
-                                  textDirection: TextDirection.ltr,
-                                )),
-                            decoration: new BoxDecoration(
-                              color: Colors.black12,
-                            ),
-                            padding: new EdgeInsets.all(3.0),
-                          )),
-                    ]))),
-        floatingActionButton: new Builder(builder: (context) {
-          return new FloatingActionButton(
-            onPressed: () {
-              if (searchBarController.text.length > 0) {
-                if (!offlineModeOn) {
-                  Navigator.pushNamed(context, '/defaultSearch');
-                } else {
-                  //TODO change to if query is not kanaizable
-                  if (!ENRootLoaded) {
-                    _loadENRoot(context);
-                  }
-//
-//                if (!JPRootLoaded) {
-//                  _loadJPRoot(context);
-//                }
-                  Navigator.pushNamed(context, '/offlineSearch');
-                }
+    return new Scaffold(
+      body: new Center(
+          child: new Padding(
+              padding: new EdgeInsets.fromLTRB(0.0, 50.0, 0.0, 0.0),
+              child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    new Image(
+                      image: new AssetImage('assets/drawable/download.png'),
+                      width: 264.0,
+                      height: 128.0,
+                    ),
+                    new Padding(
+                        padding: new EdgeInsets.fromLTRB(40.0, 12.0, 40.0, 8.0),
+                        child: new TextField(
+                          decoration: const InputDecoration(
+                              border: const OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Color(0x00000000))),
+                              labelText: "Type your query here:"),
+                          textAlign: TextAlign.left,
+                          controller: searchBarController,
+                        )),
+                    new Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 100.0),
+                        child: new CheckboxListTile(
+                            title: new Text('Click for romaji results: '),
+                            value: _MyHomePageState.romajiOn,
+                            onChanged: (bool value) => setState(() {
+                                  _MyHomePageState.romajiOn = value;
+                                }))),
+                    new Text(
+                      "To translate E -> J, surround with \"  \".",
+                      textAlign: TextAlign.center,
+                      textScaleFactor: 1.25,
+                      style: new TextStyle(color: Colors.black54),
+                    ),
+                    new Text(
+                      "Queries are case-sensitive!",
+                      textAlign: TextAlign.center,
+                      textScaleFactor: 1.25,
+                      style: new TextStyle(color: Colors.black54),
+                    ),
+                    new Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 5.0, horizontal: 100.0),
+                        child: new CheckboxListTile(
+                          title: Text("Offline Mode"), //    <-- label
+                          value: offlineModeOn,
+                          onChanged: (newValue) {
+                            setState(() {
+                              offlineModeOn = newValue;
+                            });
+                          },
+                        )),
+                    new Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 0.0),
+                        child: new Container(
+                          child: new FlatButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/radical');
+                              },
+                              child: new Text(
+                                "Radical Search",
+                                textDirection: TextDirection.ltr,
+                              )),
+                          decoration: new BoxDecoration(
+                            color: Colors.black12,
+                          ),
+                          padding: new EdgeInsets.all(3.0),
+                        )),
+                    new Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 15.0, horizontal: 0.0),
+                        child: new Container(
+                          child: new FlatButton(
+                              onPressed: () =>
+                                  Navigator.pushNamed(context, '/about'),
+                              child: new Text(
+                                "About",
+                                textDirection: TextDirection.ltr,
+                              )),
+                          decoration: new BoxDecoration(
+                            color: Colors.black12,
+                          ),
+                          padding: new EdgeInsets.all(3.0),
+                        )),
+                  ]))),
+      floatingActionButton: new Builder(builder: (context) {
+        return new FloatingActionButton(
+          onPressed: () {
+            if (searchBarController.text.length > 0) {
+              if (!offlineModeOn) {
+                Navigator.pushNamed(context, '/defaultSearch');
               } else {
-                Scaffold.of(context).showSnackBar(new SnackBar(
-                    content:
-                    new Text("Please enter in a query before searching.")));
+                if (!ENRootLoaded) {
+                  _loadENRoot(context);
+                }
+                if (!JPRootLoaded) {
+                  _loadJPRoot(context);
+                }
+                Navigator.pushNamed(context, '/offlineSearch');
               }
-            },
-            //anonymous function deeming whether there is sufficient information to search,
-            tooltip: 'Search',
-            child: new Icon(Icons.search),
-          );
-        }),
-      );
-    }
+            } else {
+              Scaffold.of(context).showSnackBar(new SnackBar(
+                  content:
+                      new Text("Please enter in a query before searching.")));
+            }
+          },
+          //anonymous function deeming whether there is sufficient information to search,
+          tooltip: 'Search',
+          child: new Icon(Icons.search),
+        );
+      }),
+    );
   }
+}
 
+///A helper class that creates transition effects between pages.
 class CustomRoute<T> extends MaterialPageRoute<T> {
   CustomRoute({WidgetBuilder builder, RouteSettings settings})
       : super(builder: builder, settings: settings);
@@ -301,7 +306,7 @@ class CustomRoute<T> extends MaterialPageRoute<T> {
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
-    if (settings.isInitialRoute) {
+    if (settings.name == initialRouteName) {
       return child;
     }
     return new SlideTransition(

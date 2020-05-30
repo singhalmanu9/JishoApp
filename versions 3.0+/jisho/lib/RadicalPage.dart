@@ -1,21 +1,18 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:async';
-
 import 'package:flutter_app/main.dart';
-
 
 //TODO get Navigator route added somewhere... google this.
 class RadicalPage extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() {
     return new _RadicalPageState();
   }
+
   static TextEditingController getSearchBarController() {
     var x = _RadicalPageState.searchBarController;
     return x;
@@ -62,12 +59,16 @@ class _RadicalPageState extends State<RadicalPage> {
     if (strokeMapJSON == null || radicalMapJSON == null) {
       getMaps();
     }
-    Text lengthMessage = new Text(selectedSet.length != 0 ?
-      'current radicals: ' + selectedSet.toString().substring(1, selectedSet.toString().length-1) : 'Input some radicals!');
-    return new Scaffold(appBar: new AppBar(title: new Text("Search Results")),
+    Text lengthMessage = new Text(selectedSet.length != 0
+        ? 'current radicals: ' +
+            selectedSet
+                .toString()
+                .substring(1, selectedSet.toString().length - 1)
+        : 'Input some radicals!');
+    return new Scaffold(
+        appBar: new AppBar(title: new Text("Search Results")),
         body: new Padding(
-            padding: EdgeInsets.fromLTRB(
-                20.0, 40.0, 20.0, 5.0),
+            padding: EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 5.0),
             child: new Column(children: <Widget>[
               new TextField(
                 decoration: const InputDecoration(
@@ -77,57 +78,49 @@ class _RadicalPageState extends State<RadicalPage> {
                 textAlign: TextAlign.left,
                 controller: searchBarController,
               ),
+              new Padding(padding: EdgeInsets.all(10.0), child: lengthMessage),
               new Padding(
-                padding : EdgeInsets.all(10.0),
-                child: lengthMessage
-              ),
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: new Container(
+                      height: 50.0,
+                      child: new ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (BuildContext context, int index) {
+                            return index < conditionedButtons.length
+                                ? conditionedButtons[index]
+                                : null;
+                          }))),
               new Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
-                child: new Container(
-                  height: 50.0,
-                  child: new ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (BuildContext context, int index) {
-                      return index < conditionedButtons.length ? conditionedButtons[index] : null;
-                    }
-                  ))
-              ),
-              new Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
-                child: Container(
-                  height: 150.0,
-                  child: currRadicals == null ?
-                    new Text("Select radicals to be displayed") :
-                    new GridView(
-                      gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 6,
-                        mainAxisSpacing: 0.0
-                      ),
-                      children: currRadicals,
-                  ),
-                )
-              ),
-              new Padding(
-                padding: EdgeInsets.symmetric(horizontal:10.0),
-                child: Container(
-                    height: 200.0,
-                    child: new GridView(
-                      gridDelegate:
-                          new SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 5,
-                            mainAxisSpacing: 0.0
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Container(
+                    height: 150.0,
+                    child: currRadicals == null
+                        ? new Text("Select radicals to be displayed")
+                        : new GridView(
+                            gridDelegate:
+                                new SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 6, mainAxisSpacing: 0.0),
+                            children: currRadicals,
                           ),
-                      children: radicalButtons == null
-                          ? <Widget>[Text("Loading")]
-                          : radicalButtons,
-                    ))),
-
+                  )),
+              new Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Container(
+                      height: 200.0,
+                      child: new GridView(
+                        gridDelegate:
+                            new SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 5, mainAxisSpacing: 0.0),
+                        children: radicalButtons == null
+                            ? <Widget>[Text("Loading")]
+                            : radicalButtons,
+                      ))),
             ])),
         floatingActionButton: new Builder(builder: (context) {
           return new FloatingActionButton(
             onPressed: () {
               if (searchBarController.text.length > 0) {
-                if(!MyApp.OfflineModeOn()) {
+                if (!MyApp.OfflineModeOn()) {
                   Navigator.pushNamed(context, '/radical/defaultSearch');
                 } else {
                   Navigator.pushNamed(context, '/radical/offlineSearch');
@@ -145,20 +138,47 @@ class _RadicalPageState extends State<RadicalPage> {
   }
 
   void setCurrentRadical(String strokeNum) {
-    List<String> bads = ['5316', '4e2a', '5e76', '5208', '4e5e', '8fbc', '5c1a',
-      '5fd9', '624e', '6c41', '72af', '827e', '90a6', '9621', '8001', '6770',
-      '793c', '521d', '7594', '6ef4'];
+    List<String> bads = [
+      '5316',
+      '4e2a',
+      '5e76',
+      '5208',
+      '4e5e',
+      '8fbc',
+      '5c1a',
+      '5fd9',
+      '624e',
+      '6c41',
+      '72af',
+      '827e',
+      '90a6',
+      '9621',
+      '8001',
+      '6770',
+      '793c',
+      '521d',
+      '7594',
+      '6ef4'
+    ];
     if (currRadStroke == "0" || currRadStroke != strokeNum) {
       currRadStroke = strokeNum;
       currRadicals = new List<Widget>();
       for (int i = 0; i < strokeMapJSON[strokeNum].length; i++) {
-        String c = strokeMapJSON[strokeNum.toString()][i].toString().codeUnitAt(0).toRadixString(16).toLowerCase();
+        String c = strokeMapJSON[strokeNum.toString()][i]
+            .toString()
+            .codeUnitAt(0)
+            .toRadixString(16)
+            .toLowerCase();
         if (bads.contains(c)) {
           currRadicals.add(new GridTile(
             child: new RaisedButton(
-              color: selectedSet.contains(strokeMapJSON[strokeNum.toString()][i].toString()) ? Colors.green : Colors.white,
+              color: selectedSet.contains(
+                      strokeMapJSON[strokeNum.toString()][i].toString())
+                  ? Colors.green
+                  : Colors.white,
               onPressed: () {
-                setState(() => addOrDeleteRadical(strokeMapJSON[strokeNum.toString()][i].toString()));
+                setState(() => addOrDeleteRadical(
+                    strokeMapJSON[strokeNum.toString()][i].toString()));
               },
               child: new Image.asset(
                 'assets/drawable/r' + c + '.png',
@@ -169,15 +189,19 @@ class _RadicalPageState extends State<RadicalPage> {
         } else {
           currRadicals.add(new GridTile(
               child: new RaisedButton(
-                color: selectedSet.contains(strokeMapJSON[strokeNum.toString()][i].toString()) ? Colors.green : Colors.white,
-                onPressed: () {
-                  setState(() => addOrDeleteRadical(strokeMapJSON[strokeNum.toString()][i].toString()));
-                },
-                child: new Text(strokeMapJSON[strokeNum.toString()][i].toString(),
-                  style: new TextStyle(fontSize: 28.0),
-                ),
-              )
-          ));
+            color: selectedSet
+                    .contains(strokeMapJSON[strokeNum.toString()][i].toString())
+                ? Colors.green
+                : Colors.white,
+            onPressed: () {
+              setState(() => addOrDeleteRadical(
+                  strokeMapJSON[strokeNum.toString()][i].toString()));
+            },
+            child: new Text(
+              strokeMapJSON[strokeNum.toString()][i].toString(),
+              style: new TextStyle(fontSize: 28.0),
+            ),
+          )));
         }
       }
     } else {
@@ -207,10 +231,11 @@ class _RadicalPageState extends State<RadicalPage> {
     ];
     for (int i = 0; i < 15 /*strokeMapJSON.length*/; i++) {
       _radButtons.add(new RaisedButton(
-        onPressed: () {
-          setState(() => setCurrentRadical(strokeVals[i]));
-        },
-        child: new Text(strokeVals[i], style: new TextStyle(fontSize: 28.0, color: Colors.black))));
+          onPressed: () {
+            setState(() => setCurrentRadical(strokeVals[i]));
+          },
+          child: new Text(strokeVals[i],
+              style: new TextStyle(fontSize: 28.0, color: Colors.black))));
     }
     setState(() {
       radicalButtons = _radButtons;
@@ -218,8 +243,7 @@ class _RadicalPageState extends State<RadicalPage> {
   }
 
   void getMaps() {
-    DefaultAssetBundle
-        .of(context)
+    DefaultAssetBundle.of(context)
         .loadString('assets/json_files/radicalMap')
         .then((radMap) {
       setState(() {
@@ -227,8 +251,7 @@ class _RadicalPageState extends State<RadicalPage> {
       });
     });
 
-    DefaultAssetBundle
-        .of(context)
+    DefaultAssetBundle.of(context)
         .loadString('assets/json_files/strokeMap')
         .then((strokeMap) {
       setState(() {
@@ -283,7 +306,8 @@ class _RadicalPageState extends State<RadicalPage> {
   }
 
   List<Widget> makeConditionedButtons() {
-    List<Widget> condButtons = new List<Widget>(math.min(50, conditionedKanji.length)); //set max size to 50, for the sake of the UI.
+    List<Widget> condButtons = new List<Widget>(math.min(50,
+        conditionedKanji.length)); //set max size to 50, for the sake of the UI.
     condText = conditionedKanji.toList();
     for (int i = 0; i < condButtons.length; i++) {
       condButtons[i] = new RaisedButton(
