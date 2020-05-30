@@ -19,7 +19,7 @@ final String initialRouteName = 'initial';
 
 /// Loading the Trie root for the Japanese trie. This resource is
 /// used in offline mode.
-void loadJPRoot() async {
+Future<void> loadJPRoot() async {
   String jsonString;
   print("entering loading JPRoot");
   final ByteData data = await rootBundle.load('assets/json_files/JPTrie/root');
@@ -34,7 +34,7 @@ void loadJPRoot() async {
 
 /// Loading the Trie root for the English Trie. This resource is
 /// used in offline mode.
-void loadENRoot() async {
+Future<void> loadENRoot() async {
   String jsonString;
   print("entering loading ENRoot");
   final ByteData data = await rootBundle.load('assets/json_files/ENTrie/root');
@@ -163,16 +163,6 @@ class _MyHomePageState extends State<MyHomePage> {
     kdicLoaded = true;
   }
 
-  static void _loadENRoot(BuildContext context) async {
-    loadENRoot();
-    ENRootLoaded = true;
-  }
-
-  static void _loadJPRoot(BuildContext context) async {
-    loadJPRoot();
-    JPRootLoaded = true;
-  }
-
   @override
   Widget build(BuildContext context) {
     if (!kdicLoaded) {
@@ -275,12 +265,6 @@ class _MyHomePageState extends State<MyHomePage> {
               if (!offlineModeOn) {
                 Navigator.pushNamed(context, '/defaultSearch');
               } else {
-                if (!ENRootLoaded) {
-                  _loadENRoot(context);
-                }
-                if (!JPRootLoaded) {
-                  _loadJPRoot(context);
-                }
                 Navigator.pushNamed(context, '/offlineSearch');
               }
             } else {

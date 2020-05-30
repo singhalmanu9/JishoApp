@@ -181,14 +181,14 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
     if (convert.cleanTransliteration(transliteration)) {
       mode = "JP";
       if (OfflineSearchPage.jpRoot == null) {
-        loadJPRoot();
+        await loadJPRoot();
       }
       searchTextField = transliteration;
       root = OfflineSearchPage.jpRoot;
     } else {
       mode = "EN";
       if (OfflineSearchPage.enRoot == null) {
-        loadENRoot();
+        await loadENRoot();
       }
       if (searchTextField.substring(0, 1) == '"' &&
           searchTextField.substring(searchTextField.length - 1) == '"') {
@@ -199,7 +199,6 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
     }
     List<Answer> answers =
         await OfflineModeUtils.searchTrie(searchTextField, root, mode);
-
     List<Widget> defWidgets = List();
     answers.forEach((Answer a) {
       Column jpSubWidget = getJapaneseSubWidget(a);
@@ -381,6 +380,7 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
         children: children);
   }
 }
+
 /// Simple wrapper method that adds LTRB padding to a given widget.
 Widget addPad(Widget w, left, top, right, bottom) {
   return Padding(
