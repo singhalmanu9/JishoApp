@@ -18,7 +18,7 @@ for g in x[1:]:
 	lines.append(g.decode("euc_jp"))
 
 
-defnums = ["(" + str(i) + ")" for i in range(1,30)]
+defnums = ["(" + str(i) + ")" for i in range(1,70)]
 fieldUsage = {
 "anat" :	"anatomical term",
 "archit" :	"architecture term",
@@ -355,6 +355,8 @@ def create_from_line(line):
 			if line[i] == "\n":
 				continue
 			cur_def += line[i]
+		if kanjistr == '意識':
+			print(cur_def);
 	en_defs_revised = [{"pos":[], "rInfo":[]} for _ in en_defs]
 	for i in range(len(en_defs)):
 		if '(P)' in en_defs[i]:
@@ -374,7 +376,7 @@ def create_from_line(line):
 
 		for misc in miscInfo.keys():
 			regexstr = '\((.*,)?' + misc + '(,.*)?\)'
-			if re.search(misc,en_defs[i]):
+			if re.search(regexstr,en_defs[i]):
 				en_defs[i] = en_defs[i][:en_defs[i].index(misc)] + en_defs[i][en_defs[i].index(misc) + len(misc):]
 				en_defs_revised[i]['misc']= misc
 
@@ -400,6 +402,9 @@ def create_from_line(line):
 		except:
 			print(en_defs[i] + "OUCH")
 
+
+	if kanjistr == '意識':
+		print(en_defs_revised)
 		
 	en_defs = en_defs_revised
 	if is_common:

@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/OfflineModeUtils.dart';
@@ -171,7 +172,13 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
   /// populate the _defWidgets list if applicable.
   void loadInDefinitions() async {
     setState(() {
-      _defWidgets.add(new Text("Loading Query"));
+      _defWidgets.add(new Row(children: [
+        new Text("Loading Query"),
+        new TyperAnimatedTextKit(
+          text: ["..."],
+          speed: Duration(milliseconds: 350),
+        )
+      ]));
     });
     String mode;
     Trie root;
@@ -251,12 +258,19 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
       if (m.containsKey('pos') && m['pos'] != null && m['pos'].length > 0) {
         List<Widget> PoSRow = List();
         if (m['pos'].length != 0) {
+          String PosText = "";
           m['pos'].forEach((s) {
-            PoSRow.add(Text(
-              OfflineSearchPage.pos[s],
-              style: new TextStyle(color: Colors.black87),
-            )); //TODO double check scale factor
+            if (PosText.length > 0) {
+              PosText = PosText + ', ' + OfflineSearchPage.pos[s];
+            } else {
+              PosText = OfflineSearchPage.pos[s];
+            } //TODO double check scale factor
           });
+          PoSRow.add(Text(
+            PosText,
+            style: new TextStyle(color: Colors.black87),
+            textScaleFactor: .8,
+          ));
         }
         Widget posRowWidget = new Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,8 +285,11 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
 
       if (m.containsKey('definition') && m['definition'] != null) {
         defChildren.add(new TextSpan(
-            text: def_ct.toString() + ". " + m['definition'],
-            style: new TextStyle(color: Colors.black)));
+            text: def_ct.toString() + ". ",
+            style: TextStyle(color: Colors.black, fontSize: 14.0)));
+        defChildren.add(new TextSpan(
+            text: m['definition'],
+            style: new TextStyle(color: Colors.black, fontSize: 18.0)));
       }
       if (m.containsKey('rInfo') &&
           m['rInfo'] != null &&
@@ -280,23 +297,23 @@ class _OfflineSearchPageState extends State<OfflineSearchPage> {
         m['rInfo'].forEach((t) {
           defChildren.add(new TextSpan(
               text: ' ' + OfflineSearchPage.rInf[t] + ".",
-              style: new TextStyle(color: Colors.black54)));
+              style: new TextStyle(color: Colors.black54, fontSize: 12.0)));
         });
       }
       if (m.containsKey('misc') && m['misc'] != null) {
         defChildren.add(new TextSpan(
             text: " " + OfflineSearchPage.misc[m['misc']] + ".",
-            style: new TextStyle(color: Colors.black54)));
+            style: new TextStyle(color: Colors.black54, fontSize: 12.0)));
       }
       if (m.containsKey('field') && m['field'] != null) {
         defChildren.add(new TextSpan(
             text: ' ' + OfflineSearchPage.fields[m['field']] + ".",
-            style: new TextStyle(color: Colors.black54)));
+            style: new TextStyle(color: Colors.black54, fontSize: 12.0)));
       }
       if (m.containsKey('dialInfo') && m['dialInfo'] != null) {
         defChildren.add(new TextSpan(
             text: ' ' + OfflineSearchPage.dialects[m['dialInfo']] + ".",
-            style: new TextStyle(color: Colors.black54)));
+            style: new TextStyle(color: Colors.black54, fontSize: 12.0)));
       }
       Widget defChildrenWidget =
           new RichText(text: new TextSpan(children: defChildren));
