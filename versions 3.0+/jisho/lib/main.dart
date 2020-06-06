@@ -154,6 +154,9 @@ class _MyHomePageState extends State<MyHomePage> {
   static bool ENRootLoaded = false;
   static bool JPRootLoaded = false;
 
+  /// This is used to allow for dynamic sizing of the widgets. Smaller phones
+  /// will have the widgets closer together
+  final double testPhoneHeight = 737.46 - 128;
   static void _loadkDic(BuildContext context) async {
     final ByteData data = await rootBundle.load('assets/json_files/kdic2');
     String jsonString = utf8.decode(data.buffer.asUint8List());
@@ -165,6 +168,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height - 128;
+    double heightRatio = height / testPhoneHeight;
     if (!kdicLoaded) {
       _loadkDic(context);
       kdicLoaded = true;
@@ -172,7 +177,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return new Scaffold(
       body: new Center(
           child: new Padding(
-              padding: new EdgeInsets.fromLTRB(0.0, 50.0, 0.0, 0.0),
+              padding:
+                  new EdgeInsets.fromLTRB(0.0, heightRatio * 75.0, 0.0, 0.0),
               child: new Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
@@ -182,7 +188,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       height: 128.0,
                     ),
                     new Padding(
-                        padding: new EdgeInsets.fromLTRB(40.0, 12.0, 40.0, 8.0),
+                        padding: new EdgeInsets.fromLTRB(
+                            40.0, heightRatio * 30.0, 40.0, heightRatio * 15.0),
                         child: new TextField(
                           decoration: const InputDecoration(
                               border: const OutlineInputBorder(
@@ -193,7 +200,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           controller: searchBarController,
                         )),
                     new Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 100.0),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 100.0, vertical: heightRatio * 15.0),
                         child: new CheckboxListTile(
                             title: new Text('Click for romaji results: '),
                             value: _MyHomePageState.romajiOn,
@@ -214,7 +222,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     new Padding(
                         padding: EdgeInsets.symmetric(
-                            vertical: 5.0, horizontal: 100.0),
+                            vertical: heightRatio * 8.0, horizontal: 100.0),
                         child: new CheckboxListTile(
                           title: Text("Offline Mode"), //    <-- label
                           value: offlineModeOn,
@@ -226,7 +234,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         )),
                     new Padding(
                         padding: EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 0.0),
+                            vertical: heightRatio * 8.0, horizontal: 0.0),
                         child: new Container(
                           child: new FlatButton(
                               onPressed: () {
@@ -243,7 +251,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         )),
                     new Padding(
                         padding: EdgeInsets.symmetric(
-                            vertical: 15.0, horizontal: 0.0),
+                            vertical: heightRatio * 8.0, horizontal: 0.0),
                         child: new Container(
                           child: new FlatButton(
                               onPressed: () =>
